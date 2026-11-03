@@ -6,7 +6,7 @@
   {
    "id": "L01",
    "speaker": "Consultant",
-   "text": "Thanks for making the time, and sorry about the screen share dropping earlier. I would like to understand how a job turns into an invoice, from the very start. Who touches it?"
+   "text": "Thanks for making the time, and sorry about the screen share dropping earlier. I'd like to understand how a job turns into an invoice, from the very start. Who touches it?"
   },
   {
    "id": "L02",
@@ -31,7 +31,7 @@
   {
    "id": "L06",
    "speaker": "Finance manager",
-   "text": "Not sometimes. Usually. But then every April we put the price up by whatever the index says, so it is not always the same amount."
+   "text": "Not sometimes. Usually. But then every April we put the price up by whatever the index says, so it's not always the same amount."
   },
   {
    "id": "L07",
@@ -51,7 +51,7 @@
   {
    "id": "L10",
    "speaker": "MD",
-   "text": "Yes. Well, for repairs it is when the job is done, not when it is won. Owen knows."
+   "text": "Yes. Well, for repairs it's when the job is done, not when it's won. Owen knows."
   },
   {
    "id": "L11",
@@ -66,7 +66,7 @@
   {
    "id": "L13",
    "speaker": "Finance manager",
-   "text": "A description, a quantity and a price. Planned maintenance goes to account two hundred, repairs to two ten. I have to pick the right one every time, and I get it wrong when I am rushed."
+   "text": "A description, a quantity and a price. Planned maintenance goes to account two hundred, repairs to two ten. I've to pick the right one every time, and I get it wrong when I'm rushed."
   },
   {
    "id": "L14",
@@ -81,7 +81,7 @@
   {
    "id": "L16",
    "speaker": "Finance manager",
-   "text": "Most of it is twenty percent. Some new build work is zero rated, and a couple of the housing associations are exempt, I think. And some of the subcontractor work might be reverse charge, I would need to ask our accountant."
+   "text": "Most of it's twenty percent. Some new build work is zero rated, and a couple of the housing associations are exempt, I think. And some of the subcontractor work might be reverse charge, I'd need to ask our accountant."
   },
   {
    "id": "L17",
@@ -96,7 +96,7 @@
   {
    "id": "L19",
    "speaker": "Finance manager",
-   "text": "Region. North and South. It is a tracking category. There is a second one for job type, I think, that someone set up years ago. I do not use it."
+   "text": "Region. North and South. It's a tracking category. There is a second one for job type, I think, that someone set up years ago. I don't use it."
   },
   {
    "id": "L20",
@@ -111,12 +111,12 @@
   {
    "id": "L22",
    "speaker": "Finance manager",
-   "text": "Me. I want to look at every one before it goes to the customer. Nothing should go out without me seeing it. Although I am off the last week of every month at the moment, school run, so someone else would have to."
+   "text": "Me. I want to look at every one before it goes to the customer. Nothing should go out without me seeing it. Although I'm off the last week of every month at the moment, school run, so someone else would have to."
   },
   {
    "id": "L23",
    "speaker": "MD",
-   "text": "Fine, but it should not slow things down. The sync should be quick."
+   "text": "Fine, but it shouldn't slow things down. The sync should be quick."
   },
   {
    "id": "L24",
@@ -126,7 +126,7 @@
   {
    "id": "L25",
    "speaker": "MD",
-   "text": "I do not know. Not days. Before the end of the day, ideally."
+   "text": "I don't know. Not days. Before the end of the day, ideally."
   },
   {
    "id": "L26",
@@ -136,7 +136,7 @@
   {
    "id": "L27",
    "speaker": "Finance manager",
-   "text": "A purchase order number. They send it straight back if it is missing. And the invoice goes to the managing agent, not the landlord, even though the landlord is the customer in Salesforce."
+   "text": "A purchase order number. They send it straight back if it's missing. And the invoice goes to the managing agent, not the landlord, even though the landlord is the customer in Salesforce."
   },
   {
    "id": "L28",
@@ -146,7 +146,7 @@
   {
    "id": "L29",
    "speaker": "Finance manager",
-   "text": "Thirty days, mostly. Forty five for the housing associations. Sixty for one of them, they will not move."
+   "text": "Thirty days, mostly. Forty five for the housing associations. Sixty for one of them, they won't move."
   },
   {
    "id": "L30",
@@ -156,12 +156,12 @@
   {
    "id": "L31",
    "speaker": "Finance manager",
-   "text": "It does happen. Sales renegotiate. Honestly I would just want to know about it, and I would sort it out in Xero."
+   "text": "It does happen. Sales renegotiate. Honestly I'd just want to know about it, and I'd sort it out in Xero."
   },
   {
    "id": "L32",
    "speaker": "MD",
-   "text": "Do not let it create a second invoice. That would be a disaster. Last time it happened with the old tool we had to apologise to a customer."
+   "text": "Don't let it create a second invoice. That would be a disaster. Last time it happened with the old tool we had to apologise to a customer."
   },
   {
    "id": "L33",
@@ -171,7 +171,7 @@
   {
    "id": "L34",
    "speaker": "Finance manager",
-   "text": "All the time. Housing associations especially. They pay half, then the rest weeks later. Xero still shows it as awaiting payment, which confuses the sales team. And the payment only shows up once I have matched it to the bank feed, so it can be days."
+   "text": "All the time. Housing associations especially. They pay half, then the rest weeks later. Xero still shows it as awaiting payment, which confuses the sales team. And the payment only shows up once I've matched it to the bank feed, so it can be days."
   },
   {
    "id": "L35",
@@ -186,7 +186,7 @@
   {
    "id": "L37",
    "speaker": "Finance manager",
-   "text": "When there is a dispute. I raise them in Xero. I would like sales to be able to see them against the job."
+   "text": "When there is a dispute. I raise them in Xero. I'd like sales to be able to see them against the job."
   },
   {
    "id": "L38",
@@ -206,12 +206,12 @@
   {
    "id": "L41",
    "speaker": "Finance manager",
-   "text": "Yes, unfortunately. The same company with slightly different names, from before my time. About four hundred contacts altogether, and I would say thirty of them are doubles. I would rather it stopped and asked me than guessed."
+   "text": "Yes, unfortunately. The same company with slightly different names, from before my time. About four hundred contacts altogether, and I'd say thirty of them are doubles. I'd rather it stopped and asked me than guessed."
   },
   {
    "id": "L42",
    "speaker": "MD",
-   "text": "And one customer pays in euros. One. I do not want to spend money on that."
+   "text": "And one customer pays in euros. One. I don't want to spend money on that."
   },
   {
    "id": "L43",
@@ -226,7 +226,7 @@
   {
    "id": "L45",
    "speaker": "MD",
-   "text": "I do not care how it works as long as nothing goes missing."
+   "text": "I don't care how it works as long as nothing goes missing."
   },
   {
    "id": "L46",
@@ -236,7 +236,7 @@
   {
    "id": "L47",
    "speaker": "Finance manager",
-   "text": "Yes. We would have to pick a month and stop typing them. I am nervous about doing it twice."
+   "text": "Yes. We would have to pick a month and stop typing them. I'm nervous about doing it twice."
   },
   {
    "id": "L48",
@@ -246,12 +246,12 @@
   {
    "id": "L49",
    "speaker": "Finance manager",
-   "text": "Mondays. I go through the aged debtors report in Xero and email people one by one. It takes most of the morning. I did not know Xero could send reminders by itself."
+   "text": "Mondays. I go through the aged debtors report in Xero and email people one by one. It takes most of the morning. I didn't know Xero could send reminders by itself."
   },
   {
    "id": "L50",
    "speaker": "MD",
-   "text": "If we could stop doing that by hand, that would be worth something. And the engineers keep asking me for job sheets. That is a separate headache."
+   "text": "If we could stop doing that by hand, that would be worth something. And the engineers keep asking me for job sheets. That's a separate headache."
   },
   {
    "id": "L51",
@@ -266,7 +266,7 @@
   {
    "id": "L53",
    "speaker": "Consultant",
-   "text": "Thank you. I will write this up as one page and a list of questions, so you can tell me what I have got wrong."
+   "text": "Thank you. I will write this up as one page and a list of questions, so you can tell me what I've got wrong."
   }
  ]
 }

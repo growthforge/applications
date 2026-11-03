@@ -65,13 +65,15 @@
 
   // ---- building the invoice -------------------------------------------------
   const taxType = (vat) => TAX[vat || 'Standard'] || null;
-  function buildInvoice(i) {
+  function buildInvoice(i, opts) {
     const o = i.opp, a = i.account;
     if (o.vat === 'Reverse charge') return { ok: false, reason: 'needs-review' };      // never guessed
     if (!REGIONS.includes(a.region)) return { ok: false, reason: 'missing-region' };
     if (!taxType(o.vat)) return { ok: false, reason: 'unknown-vat-treatment' };
     if (a.poRequired && !o.po) return { ok: false, reason: 'po-required' };           // they send it straight back
-    const key = o.number + ':' + (i.line || 'FINAL');                                  // job, then which invoice it is
+    // The invoice's own key (job, then which invoice it is). It is stored on the Salesforce invoice record and sent as the
+    // idempotency key, not written into the Reference, which finance can edit and housing association payables read.
+    const key = (opts && opts.defect === 'key-per-job') ? o.number : o.number + ':' + (i.line || 'FINAL');
     const items = o.lines.map((l) => ({
       Description: l.description, Quantity: l.qty, UnitAmount: l.unit,
       AccountCode: l.accountCodeOverride || ACCOUNT[l.family],
@@ -83,12 +85,13 @@
     return {
       ok: true,
       key,
+      idempotencyKey: key,
       payload: {
         Type: 'ACCREC',
         Contact: billTo ? { ContactID: billTo } : { Name: a.name },
-        Reference: o.po ? 'PO ' + o.po + ' (' + key + ')' : key,
-        Date: i.today,
-        DueDate: addDays(i.today, a.termsDays || 30),
+        Reference: o.po ? 'PO ' + o.po : o.number,
+        Date: i.invoiceDate || i.today,                     // the completion or schedule date, not the day the sync ran
+        DueDate: addDays(i.invoiceDate || i.today, a.termsDays || 30),
         Status: 'DRAFT',                  // finance approves in Xero; the sync never authorises
         LineAmountTypes: 'Exclusive',
         LineItems: items                  // no InvoiceNumber: Xero generates a unique one for receivable invoices
@@ -114,6 +117,7 @@
   function matchContact(i) {
     const a = i.account, cs = i.xeroContacts;
     if (a.xeroContactId) return cs.some((c) => c.id === a.xeroContactId) ? { action: 'use', contactId: a.xeroContactId, by: 'stored-id' } : { action: 'review', reason: 'stored-id-not-found' };
+    if (a.email && a.sharedEmail) return { action: 'review', reason: 'shared-email' };          // a managing agent can serve several landlords
     const byEmail = a.email ? cs.filter((c) => (c.email || '').toLowerCase() === a.email.toLowerCase()) : [];
     if (byEmail.length === 1) return { action: 'use', contactId: byEmail[0].id, by: 'email' };
     if (byEmail.length > 1) return { action: 'review', reason: 'several-with-same-email' };
@@ -126,8 +130,7 @@
     const t = new Date(i.trigger + 'Z').getTime(), d = new Date(i.drafted + 'Z').getTime();
     const day = iso(t), hour = new Date(t).getUTCHours() + new Date(t).getUTCMinutes() / 60;
     const inHours = working(day, i.holidays) && hour >= 9 && hour < 17;
-    const due = inHours ? day : workingAfter(day, 1, i.holidays);
-    const dueDay = working(day, i.holidays) && hour < 9 ? day : due;
+    const dueDay = inHours ? day : workingAfter(day, 1, i.holidays);
     return { met: d <= new Date(dueDay + 'T17:00:00Z').getTime() };
   }
 
@@ -165,15 +168,15 @@
   }
 
   // ---- a retry never makes a second invoice ----------------------------------
-  // Every invoice has its own key (job, then which invoice it is). The key is the last bracket in the Reference, or the
-  // whole Reference when there is no PO. Only an exact match is adopted: a deposit is not the balance and a month is not the next.
-  const refKey = (ref) => { const t = String(ref || '').trim(); const m = /\(([^()]+)\)$/.exec(t); return m ? m[1] : t; };
+  // The Salesforce invoice record holds the invoice's own key and, once known, the Xero InvoiceID. If the answer from Xero was
+  // lost, the retry sends the same key, so Xero treats it as the same request. It never searches Xero and adopts a look-alike,
+  // so a voided or deleted invoice cannot be taken for the live one, and one run at a time may touch a record.
   function resolveCreate(i, opts) {
     if (i.record.xeroInvoiceId) return { action: 'skip', invoiceId: i.record.xeroInvoiceId };
-    const loose = opts && opts.defect === 'retry-by-job-number';
-    const found = i.xeroInvoices.find((x) => loose ? String(x.reference || '').includes(i.key.split(':')[0]) : refKey(x.reference) === i.key);
-    if (found) return { action: 'adopt-existing', invoiceId: found.id };
-    return { action: 'create' };
+    if (i.record.inFlight) return { action: 'wait', reason: 'another-run-in-progress' };
+    if (!i.idempotencySupported) return { action: 'hold-for-review', reason: 'no-idempotency-key' };
+    const key = (opts && opts.defect === 'new-key-each-retry') ? i.record.key + ':retry' + (i.record.attempts || 0) : i.record.key;
+    return { action: 'retry-with-key', key };
   }
 
   // ---- month end: the books close on the third working day, so anything still unapproved is chased the day before ----
@@ -182,12 +185,19 @@
     const end = iso(Date.UTC(p[0], p[1], 0));                 // last day of the month
     const closes = workingAfter(end, 3, i.holidays);
     const warnFrom = workingAfter(end, 2, i.holidays);
-    const open = (i.invoices || []).filter((x) => x.date.slice(0, 7) === i.month && (x.status === 'DRAFT' || x.status === 'SUBMITTED')).map((x) => x.id);
-    return { closes, open, warn: open.length > 0 && i.today >= warnFrom && i.today <= closes, late: open.length > 0 && i.today > closes };
+    const inMonth = (x) => x.date.slice(0, 7) === i.month;
+    const waiting = (i.invoices || []).filter((x) => inMonth(x) && (x.status === 'DRAFT' || x.status === 'SUBMITTED')).map((x) => x.id);
+    const held = (i.held || []).filter(inMonth).map((x) => ({ id: x.id, reason: x.reason }));    // held in Salesforce, never reached Xero
+    const open = waiting.concat(held.map((x) => x.id));
+    return { closes, open, held, warn: open.length > 0 && i.today >= warnFrom && i.today <= closes, late: open.length > 0 && i.today > closes };
   }
 
   // ---- the start: nothing before the start month, and no go-live with unlinked customers ----
-  function cutover(i) { return { create: i.invoiceDate.slice(0, 7) >= i.startMonth }; }
+  function cutover(i) {
+    if (i.invoiceDate.slice(0, 7) < i.startMonth) return { create: false, reason: 'before-start-month' };
+    if (i.alreadyInXero) return { create: false, reason: 'already-invoiced' };      // typed by hand before go-live: link it, never repeat it
+    return { create: true };
+  }
   function goLive(i) { return { ready: i.unlinkedAccounts === 0 && !!i.rehearsalPassed }; }
   // A contract already running at go-live starts its schedule from the start month, not from its original start date.
   function remainingSchedule(i) { return scheduleAmounts(i).filter((x) => x.date.slice(0, 7) >= i.startMonth); }

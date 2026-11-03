@@ -70,10 +70,10 @@
    "REQ-02"
   ],
   "steps": [
-   "Win a repair worth 1,001.01 with a 50 percent deposit and complete it at 1,200. Compare the deposit and balance invoices in Xero with the final amount.",
-   "Win a repair worth 1,000 with a 50 percent deposit and complete it at 400."
+   "Win a repair quoted at \u00a31,001.01 with a 50 percent deposit and complete it at \u00a31,200. Compare the deposit and balance invoices in Xero with the final amount.",
+   "Win a repair quoted at \u00a31,000 with a 50 percent deposit and complete it at \u00a3400."
   ],
-  "expected": "Deposit 500.51 on the quote and balance 699.49 on completion, which add up to the final amount of 1,200. When the job comes in below the deposit, finance is told a credit is due.",
+  "expected": "Deposit \u00a3500.51 on the quote and balance \u00a3699.49 on completion, which add up to the final amount of \u00a31,200. When the job comes in below the deposit, finance is told a credit is due.",
   "fn": "splitDeposit",
   "cases": [
    {
@@ -596,7 +596,7 @@
    "Check the Reference and who it is addressed to.",
    "Draft one for a housing association that needs a PO, on a job with none."
   ],
-  "expected": "The Reference starts with the PO number and ends with the invoice's own code in brackets, for example PO HA-7781 (OPP-2210:FINAL). The invoice goes to the billing contact, the managing agent. The invoice with no PO is held and finance is asked for it.",
+  "expected": "The Reference shows the PO number and nothing else, for example PO HA-7781, and the invoice goes to the billing contact, the managing agent. The invoice with no PO is held and finance is asked for it.",
   "fn": "buildInvoice",
   "cases": [
    {
@@ -627,7 +627,7 @@
      "today": "2027-02-01"
     },
     "expect": {
-     "payload.Reference": "PO HA-7781 (OPP-2210:FINAL)",
+     "payload.Reference": "PO HA-7781",
      "payload.Contact.ContactID": "xc-agent"
     }
    },
@@ -657,7 +657,7 @@
      "today": "2027-02-01"
     },
     "expect": {
-     "payload.Reference": "OPP-2210:FINAL",
+     "payload.Reference": "OPP-2210",
      "payload.Contact.ContactID": "xc-100"
     }
    },
@@ -724,7 +724,7 @@
     }
    },
    {
-    "name": "a monthly invoice carries its month",
+    "name": "a monthly invoice has its own key, kept out of the Reference",
     "input": {
      "opp": {
       "number": "OPP-2210",
@@ -751,8 +751,9 @@
      "line": "2027-03"
     },
     "expect": {
-     "payload.Reference": "PO HA-7781 (OPP-2210:2027-03)",
-     "key": "OPP-2210:2027-03"
+     "payload.Reference": "PO HA-7781",
+     "key": "OPP-2210:2027-03",
+     "idempotencyKey": "OPP-2210:2027-03"
     }
    }
   ],
@@ -766,9 +767,10 @@
   ],
   "steps": [
    "Draft invoices dated 1 February 2027 for a customer on 30, 45 and 60 days.",
-   "Read the due dates."
+   "Read the due dates.",
+   "Complete a job on 29 January and let the sync run on 1 February."
   ],
-  "expected": "3 March, 18 March and 2 April 2027.",
+  "expected": "3 March, 18 March and 2 April 2027. The invoice for the job completed on 29 January is dated 29 January.",
   "fn": "buildInvoice",
   "cases": [
    {
@@ -886,6 +888,37 @@
     "expect": {
      "payload.DueDate": "2027-03-03"
     }
+   },
+   {
+    "name": "dated on the completion day, not the day the sync ran",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "invoiceDate": "2027-01-29"
+    },
+    "expect": {
+     "payload.Date": "2027-01-29",
+     "payload.DueDate": "2027-02-28"
+    }
    }
   ],
   "runBy": "client"
@@ -967,8 +1000,8 @@
    "REQ-10"
   ],
   "steps": [
-   "Mark the finance manager as away with a named deputy.",
-   "Mark them away with no deputy."
+   "Take approval rights away from the finance manager for a day and name a deputy who has them.",
+   "Do the same with no deputy named."
   ],
   "expected": "The deputy approves. With no deputy, a warning is raised before drafts pile up.",
   "fn": "approver",
@@ -1013,10 +1046,10 @@
    "REQ-11"
   ],
   "steps": [
-   "Win a repair at 11:00 on a Wednesday and note when the draft appears.",
-   "Repeat at 18:00 on a Friday."
+   "Mark a repair job complete at 11:00 on a Wednesday and note when the draft appears.",
+   "Repeat at 18:00 on a Friday, and at 07:00 on a Wednesday."
   ],
-  "expected": "By 17:00 the same day. When the trigger is after hours, by 17:00 on the next working day.",
+  "expected": "By 17:00 the same day. When the job is completed outside 09:00 to 17:00 on a working day, by 17:00 on the next working day.",
   "fn": "slaMet",
   "cases": [
    {
@@ -1075,6 +1108,28 @@
     "expect": {
      "met": true
     }
+   },
+   {
+    "name": "before opening counts to the next working day",
+    "input": {
+     "trigger": "2027-02-03T07:00:00",
+     "drafted": "2027-02-04T16:00:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": true
+    }
+   },
+   {
+    "name": "before opening, drafted two days later",
+    "input": {
+     "trigger": "2027-02-03T07:00:00",
+     "drafted": "2027-02-05T09:00:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": false
+    }
    }
   ],
   "runBy": "us"
@@ -1087,9 +1142,10 @@
   ],
   "steps": [
    "Change the amount on a deal whose invoice is a draft, then on one that has been approved, then on one that has been paid.",
+   "Approve a deposit invoice, then enter the final amount of the job.",
    "Check Xero and the finance task list."
   ],
-  "expected": "The draft is updated. The approved and paid ones are locked, no second invoice appears, and finance gets a task. For the paid one the task is to raise a credit note.",
+  "expected": "The draft is updated. The approved and paid ones are locked, no second invoice appears, and finance gets a task. For the paid one the task is to raise a credit note. The final amount can still be entered after the deposit is approved, and it creates the balance.",
   "fn": "onAmountChange",
   "cases": [
    {
@@ -1110,6 +1166,19 @@
     "expect": {
      "action": "update-draft",
      "editsInvoice": true,
+     "createsInvoice": false
+    }
+   },
+   {
+    "name": "the deposit is approved but the balance does not exist yet",
+    "input": {
+     "line": "BAL",
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "nothing-to-update",
+     "locked": false,
      "createsInvoice": false
     }
    },
@@ -1442,6 +1511,27 @@
     }
    },
    {
+    "name": "one email shared by several accounts",
+    "input": {
+     "account": {
+      "name": "Fairview Estates",
+      "email": "office@agent.example",
+      "sharedEmail": true
+     },
+     "xeroContacts": [
+      {
+       "id": "7",
+       "name": "Agent Lettings",
+       "email": "office@agent.example"
+      }
+     ]
+    },
+    "expect": {
+     "action": "review",
+     "reason": "shared-email"
+    }
+   },
+   {
     "name": "similar name",
     "input": {
      "account": {
@@ -1488,124 +1578,90 @@
   "steps": [
    "Stop the connection just after Xero has created an invoice, so Salesforce never hears back.",
    "Let the sync retry.",
-   "Do the same for a job that has a deposit and a balance, and for a contract with several months."
+   "Do the same for a job that has a deposit and a balance, and for a contract with several months.",
+   "Start two runs at the same moment."
   ],
-  "expected": "The existing invoice is adopted and no second one appears. A deposit is never taken for the balance, and one month is never taken for the next.",
+  "expected": "The retry carries the same key, so Xero returns the same invoice and no second one appears. A deposit is never taken for the balance, and one month is never taken for the next. A second run waits.",
   "fn": "resolveCreate",
   "cases": [
    {
     "name": "already linked",
     "input": {
      "record": {
-      "xeroInvoiceId": "inv-1"
+      "xeroInvoiceId": "inv-1",
+      "key": "OPP-2210:FINAL"
      },
-     "key": "OPP-2210:FINAL",
-     "xeroInvoices": []
+     "idempotencySupported": true
     },
     "expect": {
-     "action": "skip"
+     "action": "skip",
+     "invoiceId": "inv-1"
     }
    },
    {
-    "name": "found by its own code after a timeout",
+    "name": "the answer was lost, so the retry sends the same key",
     "input": {
-     "record": {},
-     "key": "OPP-2210:FINAL",
-     "xeroInvoices": [
-      {
-       "id": "inv-7",
-       "reference": "PO HA-7781 (OPP-2210:FINAL)"
-      }
-     ]
+     "record": {
+      "key": "OPP-2210:FINAL",
+      "attempts": 1
+     },
+     "idempotencySupported": true
     },
     "expect": {
-     "action": "adopt-existing",
-     "invoiceId": "inv-7"
+     "action": "retry-with-key",
+     "key": "OPP-2210:FINAL"
     }
    },
    {
-    "name": "nothing in Xero yet",
+    "name": "the balance has its own key, not the deposit's",
     "input": {
-     "record": {},
-     "key": "OPP-2210:FINAL",
-     "xeroInvoices": [
-      {
-       "id": "inv-8",
-       "reference": "OPP-1999:FINAL"
-      }
-     ]
+     "record": {
+      "key": "OPP-2210:BAL"
+     },
+     "idempotencySupported": true
     },
     "expect": {
-     "action": "create"
+     "action": "retry-with-key",
+     "key": "OPP-2210:BAL"
     }
    },
    {
-    "name": "the deposit is there, the balance is not",
+    "name": "month two has its own key",
     "input": {
-     "record": {},
-     "key": "OPP-2210:BAL",
-     "xeroInvoices": [
-      {
-       "id": "inv-3",
-       "reference": "OPP-2210:DEP"
-      }
-     ]
+     "record": {
+      "key": "OPP-2210:2027-02"
+     },
+     "idempotencySupported": true
     },
     "expect": {
-     "action": "create"
+     "action": "retry-with-key",
+     "key": "OPP-2210:2027-02"
     }
    },
    {
-    "name": "month one is there, month two is not",
+    "name": "a second run waits",
     "input": {
-     "record": {},
-     "key": "OPP-2210:2027-02",
-     "xeroInvoices": [
-      {
-       "id": "inv-4",
-       "reference": "PO HA-7781 (OPP-2210:2027-01)"
-      }
-     ]
+     "record": {
+      "key": "OPP-2210:FINAL",
+      "inFlight": true
+     },
+     "idempotencySupported": true
     },
     "expect": {
-     "action": "create"
+     "action": "wait"
     }
    },
    {
-    "name": "the right month among several",
+    "name": "no idempotency key available: hold for finance, never guess",
     "input": {
-     "record": {},
-     "key": "OPP-2210:2027-02",
-     "xeroInvoices": [
-      {
-       "id": "inv-4",
-       "reference": "OPP-2210:2027-01"
-      },
-      {
-       "id": "inv-5",
-       "reference": "OPP-2210:2027-02"
-      }
-     ]
+     "record": {
+      "key": "OPP-2210:FINAL"
+     },
+     "idempotencySupported": false
     },
     "expect": {
-     "action": "adopt-existing",
-     "invoiceId": "inv-5"
-    }
-   },
-   {
-    "name": "a shorter job number is not a match",
-    "input": {
-     "record": {},
-     "key": "OPP-221:FINAL",
-     "xeroInvoices": [
-      {
-       "id": "inv-6",
-       "reference": "OPP-2210:FINAL"
-      }
-     ]
-    },
-    "expect": {
-     "action": "create"
+     "action": "hold-for-review",
+     "reason": "no-idempotency-key"
     }
    }
   ],
@@ -1745,9 +1801,10 @@
   ],
   "steps": [
    "Set the start month to February 2027.",
-   "Consider an invoice dated 28 January and one dated 1 February."
+   "Consider an invoice dated 28 January and one dated 1 February.",
+   "Type a February invoice into Xero by hand, then let the sync consider the same job."
   ],
-  "expected": "The January invoice is not created, the February one is.",
+  "expected": "The January invoice is not created. The February one is, unless it was already typed into Xero by hand: that one is linked and never created again.",
   "fn": "cutover",
   "cases": [
    {
@@ -1768,6 +1825,18 @@
     },
     "expect": {
      "create": true
+    }
+   },
+   {
+    "name": "typed into Xero by hand before go-live",
+    "input": {
+     "invoiceDate": "2027-02-01",
+     "startMonth": "2027-02",
+     "alreadyInXero": true
+    },
+    "expect": {
+     "create": false,
+     "reason": "already-invoiced"
     }
    }
   ],
@@ -1940,7 +2009,7 @@
    "REQ-20"
   ],
   "steps": [
-   "Leave one January invoice as a draft.",
+   "Leave one January invoice as a draft and hold another because its PO is missing.",
    "Look at the finance task list on 2 February, the working day before the close, and again on 4 February."
   ],
   "expected": "On 2 February a warning names the draft, and says the books close on 3 February. On 4 February it is marked late. When every invoice is approved, no warning is raised.",
@@ -1977,6 +2046,34 @@
      ],
      "warn": true,
      "late": false
+    }
+   },
+   {
+    "name": "an invoice held in Salesforce is listed with its reason",
+    "input": {
+     "month": "2027-01",
+     "today": "2027-02-02",
+     "holidays": [],
+     "invoices": [],
+     "held": [
+      {
+       "id": "h1",
+       "date": "2027-01-20",
+       "reason": "po-required"
+      }
+     ]
+    },
+    "expect": {
+     "open": [
+      "h1"
+     ],
+     "held": [
+      {
+       "id": "h1",
+       "reason": "po-required"
+      }
+     ],
+     "warn": true
     }
    },
    {
@@ -2054,5 +2151,141 @@
    }
   ],
   "runBy": "us"
+ },
+ {
+  "id": "TC-26",
+  "title": "Every invoice on a job has its own key",
+  "requirements": [
+   "REQ-15"
+  ],
+  "steps": [
+   "Draft a deposit, a balance, and two monthly invoices for the same job.",
+   "Compare the key shown on each invoice record in Salesforce."
+  ],
+  "expected": "Four different keys, each built from the job number and which invoice it is. The Reference in Xero shows the PO only.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "final",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "line": "FINAL"
+    },
+    "expect": {
+     "key": "OPP-2210:FINAL"
+    }
+   },
+   {
+    "name": "deposit",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "line": "DEP"
+    },
+    "expect": {
+     "key": "OPP-2210:DEP"
+    }
+   },
+   {
+    "name": "balance",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "line": "BAL"
+    },
+    "expect": {
+     "key": "OPP-2210:BAL"
+    }
+   },
+   {
+    "name": "a month",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "line": "2027-02"
+    },
+    "expect": {
+     "key": "OPP-2210:2027-02"
+    }
+   }
+  ],
+  "runBy": "client"
  }
 ]

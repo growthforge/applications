@@ -2,7 +2,7 @@
  {
   "id": "G-01",
   "question": "Where does the monthly billing schedule live?",
-  "why": "A won deal is a single event. A 12 or 24 month contract needs somewhere that holds the start date, the term and the monthly amount, and today the contract is a PDF and the start date is in the notes. This is the biggest design decision in the project.",
+  "why": "A won deal is a single event. A 12 or 24 month contract needs somewhere that holds the start date, the term and the monthly amount, and today the contract is a PDF and the start date is in the notes. This is the biggest design decision in the project. The Salesforce edition decides what can be built and how many calls to Xero a day it allows, so it is the first thing to confirm.",
   "default": "Create a billing schedule in Salesforce when a contract is won, and let it generate the monthly drafts. Whether Xero repeating invoices could carry it instead is something to check before we commit.",
   "decider": "Finance manager and us",
   "blocks": "REQ-03",
@@ -49,7 +49,7 @@
  {
   "id": "G-05",
   "question": "Which work is zero rated, exempt or reverse charge, and who decides?",
-  "why": "The wrong VAT on an invoice is expensive to unpick. Reverse charge was mentioned and has not been confirmed. Reverse charge on construction work can also sit on the purchase bill rather than the sales invoice, depending on who is supplying whom, so the accountant must say which side it touches.",
+  "why": "The wrong VAT on an invoice is expensive to unpick. Reverse charge was mentioned and has not been confirmed. Reverse charge on construction work can also sit on the purchase bill rather than the sales invoice, depending on who is supplying whom, so the accountant must say which side it touches. The 5 percent reduced rate, which may apply to some work, is not mapped either, and neither is the Construction Industry Scheme: the accountant has to name them.",
   "default": "Standard unless finance sets another treatment. Reverse charge is held for review. Please confirm with your accountant.",
   "decider": "Finance manager and the accountant",
   "blocks": "REQ-05",
@@ -95,7 +95,7 @@
   "id": "G-09",
   "question": "Which month do we stop typing, and who links the existing customers?",
   "why": "About 400 customers are already in Xero, around 30 of them doubles. Starting without linking them creates more doubles.",
-  "default": "Start at a month boundary after a sandbox rehearsal. We produce a matching report; finance decides each double.",
+  "default": "Start at a month boundary after a sandbox rehearsal. Link every invoice and open deposit already in Xero for the start month first, so nothing is created twice. We produce a matching report; finance decides each double.",
   "decider": "Finance manager",
   "blocks": "REQ-15, REQ-18",
   "sources": [
@@ -177,9 +177,9 @@
  },
  {
   "id": "G-16",
-  "question": "Who is Owen, and who enters the invoices as against who approves them?",
-  "why": "Owen is named as the person who types invoices into Xero, as the person who knows when a repair is done and as the VAT expert. The finance manager is the one who wants to see every invoice before it goes out. The call never says they are the same person. If they are two people, the person who enters and the person who approves are separate, and the cover when the finance manager is away changes. If they are one person, nobody else checks the invoice.",
-  "default": "Treat Owen as the person who enters and the finance manager as the approver until told otherwise, and set the permissions so that either arrangement can be used.",
+  "question": "We have assumed Owen is the finance manager. Is that right?",
+  "why": "Owen is named as the person who types invoices into Xero, who knows when a repair is done and who is the VAT expert, and the finance manager answers for Owen's tasks, so we have assumed they are one person. If they are two, the person who enters and the person who approves are separate, and the cover when the finance manager is away changes. If they are one person, the sync replaces the typing and nobody else checks the invoice, which is the client's choice to make.",
+  "default": "Treat Owen as the finance manager: the sync replaces the typing and approval stays with the same person. Set the permissions so that a separate approver can be added later.",
   "decider": "Managing director",
   "blocks": "REQ-09, REQ-10, REQ-17",
   "sources": [
@@ -205,7 +205,7 @@
  {
   "id": "G-18",
   "question": "What has to be finished by the close on the third working day?",
-  "why": "The books close on the third working day, and the finance manager is away in the last week of the month, when the pile of monthly invoices arrives. Nobody said whether every invoice dated in the month must be approved by the close.",
+  "why": "The books close on the third working day, and the finance manager is away in the last week of the month, when the pile of monthly invoices arrives. Nobody said whether every invoice dated in the month must be approved by the close. Xero's lock date, if finance uses one, also decides what happens to a draft dated before it.",
   "default": "Every invoice dated in the month is approved by the close, and a warning goes to the finance manager and the deputy the working day before.",
   "decider": "Finance manager",
   "blocks": "REQ-20",

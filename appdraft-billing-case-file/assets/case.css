@@ -228,3 +228,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 /* A section label and its heading stay together on paper, and the header does not eat a small screen */
 @media print { html body .band__head, html body .band__head > * { break-after: avoid; break-inside: avoid; } }
 @media (max-width: 719px) { .top { position: static; } }
+
+.byline { font-weight: 700; color: var(--text); margin-top: var(--space-3); }
+/* Buttons are hidden in print by the design system; the line references on them are content, so show them as text */
+@media print { html body .chipbtn { display: inline !important; border: 0; background: none; padding: 0 2px; color: inherit; font: inherit; } }
