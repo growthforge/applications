@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en-GB" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP agent and deployment plan: AI Deployment Strategist, Didero</title>
+<meta name="description" content="A small AP invoice and PO-chasing agent built and tested in n8n, run on a fictional manufacturer's inbox, and the deployment plan to get one to its first end-to-end automation. Prepared by Hemanth Vallamkonda for Didero's AI Deployment Strategist role.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="An AP and PO-chasing agent, and the plan to take one live">
+<meta property="og:description" content="Built and tested in n8n on synthetic data, with the deployment plan. By Hemanth Vallamkonda.">
+<meta property="og:url" content="https://growthforge.github.io/applications/didero-ap-agent/">
+<meta property="og:image" content="https://growthforge.github.io/applications/didero-ap-agent/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/hanken-grotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/hanken-grotesk-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/print.css">
+<script type="module" src="assets/replay.mjs"></script>
+<script type="module" src="assets/value.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="hero-d">
+  <div class="wrap hero-d__inner">
+    <div>
+      <p class="hero-d__for" data-src="S1">A proof of work by Hemanth Vallamkonda for the AI Deployment Strategist role at Didero, London. <a class="cite" href="#src-S1">[S1]</a></p>
+      <h1 data-src="S2">An AP and PO-chasing agent I built in n8n, and how I would take one live in 18 days</h1>
+      <p class="hero-d__lede" data-src="S2">Didero says a customer goes from ERP connect to the first end-to-end automation in 18 days. <a class="cite" href="#src-S2">[S2]</a> Below is a small working agent on a fictional manufacturer's inbox (what it reads, what it decides, what it leaves to a person), what that would be worth, and the plan I would run for those days.</p>
+      <div class="hero-d__actions">
+        <a class="btn" href="#cases">Try the cases</a>
+        <a class="btn btn--ghost" href="#plan" data-src="S2">See the 18 days</a>
+        <a class="btn btn--ghost" href="downloads/didero-ap-agent.n8n.json" download>Download the n8n workflow</a>
+      </div>
+      <p class="hero-d__me" data-fact="hv">About me: 5+ years in finance operations and applied AI. I have run payment exception queues, redesigned case routing and escalation with the team that ran it, and built an AI tool that a test team now runs with a person approving every case. <a href="#proof">More below.</a></p>
+    </div>
+    <aside class="real" aria-labelledby="real-title" data-illustrative>
+      <h2 id="real-title">What is real here</h2>
+      <ul>
+        <li>The workflow runs in n8n 2.46.4: imported, executed, and paused for each approval, answered through n8n's signed resume URLs by a scripted approver.</li>
+        <li>The same rules run on this page, against a 26-item regression suite I labelled myself: 26 of 26 decisions as intended.</li>
+        <li class="not">The Claude path is built and its failure handling unit-tested, but it has not run on real documents here; it needs your own key.</li>
+        <li class="not">Illustrative data only: the manufacturer, suppliers, invoices, phone numbers and bank details are fictional.</li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="sec sec--cream" id="cases" aria-labelledby="cases-title">
+  <div class="wrap" data-illustrative>
+    <div class="sec__head">
+      <h2 id="cases-title">Cases from the run</h2>
+      <p>The agent's code runs below on a fictional manufacturer's morning: 21 supplier emails and the PO-chasing job. It opens on the case a controller worries about most. Pick any case, see what the agent read and decided, then resolve it as the AP clerk or buyer would.</p>
+      <span class="tag-ill">Illustrative: synthetic data, fictional companies</span>
+    </div>
+    <div class="cases-tabs" role="group" aria-label="Which items to show">
+      <button type="button" class="case-tab" aria-pressed="true" data-view="featured">Six cases</button>
+      <button type="button" class="case-tab" aria-pressed="false" data-view="all">All 26 items</button>
+    </div>
+    <div class="replay">
+      <ul class="replay__list" id="replay-list" aria-label="Items in the run"></ul>
+      <div class="detail" id="replay-detail" tabindex="-1" aria-live="polite"></div>
+    </div>
+    <p class="replay-status" id="replay-status" role="status"></p>
+    <div class="print-cases"><!-- pre:printcases --><h3>Four cases in detail</h3><div class="detail-print"><p class="detail-print__head"><span class="st st--fraud">Possible payment fraud</span> <span class="mono">E07</span> URGENT: updated bank details and invoice KF-55822</p><p><strong>Held: possible payment fraud.</strong> Possible payment fraud: sent from kestrel-fastners.example, not kestrel-fasteners.example. Do not pay and do not change bank details. Call Priya Shah on +44 20 7946 0101 (on file), never a number in the email.</p><p><strong>Why:</strong> Look-alike domain; Bank details changed</p><p><strong>A person chooses:</strong> Callback on the number on file: not genuine (Blocked and reported to the fraud lead; supplier warned by phone); Callback on the number on file: genuine (Change confirmed by phone; supplier master change raised for dual approval with a Confirmation of Payee check; nothing is paid to the new details until it is approved)</p></div><div class="detail-print"><p class="detail-print__head"><span class="st st--person">Waiting for a person</span> <span class="mono">E03</span> AP-90417 invoice attached</p><p><strong>Exception for AP.</strong> Three-way match failed: price above the PO. Credit note CN-3302 (received) offsets the price variance.</p><p><strong>Why:</strong> Price variance</p><p><strong>A person chooses:</strong> Apply CN-3302 and release (CN-3302 applied; the invoice now matches the PO price and is marked ready for the payment run); Hold both and query the supplier (Invoice and credit note held; supplier asked to confirm)</p></div><div class="detail-print"><p class="detail-print__head"><span class="st st--person">Waiting for a person</span> <span class="mono">E21</span> Order confirmation PO-24020</p><p><strong>Needs approval.</strong> The supplier acknowledged PO-24020 with terms that differ from the PO. Buyer to decide.</p><p><strong>Why:</strong> Price changed on acknowledgement</p><p><strong>A person chooses:</strong> Hold the supplier to the PO price (Reply drafted: the PO price stands); Buyer accepts the new price (PO price updated after buyer approval)</p></div><div class="detail-print"><p class="detail-print__head"><span class="st st--person">Waiting for a person</span> <span class="mono">CHASE-PO-24009</span> Call Tamar Packaging Ltd about PO-24009</p><p><strong>Needs approval.</strong> 3 chases sent and still no acknowledgement: the buyer takes over.</p><p><strong>Why:</strong> Escalated to the buyer</p><p><strong>A person chooses:</strong> Buyer calls the supplier (Escalated: buyer to call; chase sequence paused)</p></div><!-- /pre:printcases --></div>
+    <div class="static-cases table-wrap" role="region" aria-label="All items in a table" tabindex="0">
+      <!-- pre:static --><table class="tests"><caption>Illustrative: every item in the synthetic run and what the agent did with it</caption><thead><tr><th scope="col">Item</th><th scope="col">Email or task</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead><tbody><tr><td class="mono">E01</td><td>Invoice KF-55821 for PO-24001</td><td>Agent acted: Ready for the payment run</td><td>Three-way match</td></tr><tr><td class="mono">E02</td><td>Invoice NP-7740</td><td>Agent acted: Ready for the payment run</td><td>Price within tolerance; Three-way match</td></tr><tr><td class="mono">E03</td><td>AP-90417 invoice attached</td><td>Waiting for a person: Exception for AP</td><td>Price variance</td></tr><tr><td class="mono">E04</td><td>Invoice LE-2211</td><td>Waiting for a person: Exception for AP</td><td>Not yet received</td></tr><tr><td class="mono">E05</td><td>Invoice FS-11873</td><td>Waiting for a person: Exception for AP</td><td>No PO quoted</td></tr><tr><td class="mono">E06</td><td>RESEND: Invoice TP-30118</td><td>Agent acted: Blocked as duplicate</td><td>Duplicate</td></tr><tr><td class="mono">E07</td><td>URGENT: updated bank details and invoice KF-55822</td><td>Possible payment fraud: Held: possible payment fraud</td><td>Look-alike domain; Bank details changed</td></tr><tr><td class="mono">E08</td><td>Invoice TP-30152</td><td>Waiting for a person: Exception for AP</td><td>Totals do not add up</td></tr><tr><td class="mono">E09</td><td>Invoice BW-0091 freight</td><td>Waiting for a person: Exception for AP</td><td>Unknown supplier</td></tr><tr><td class="mono">E10</td><td>Credit note CN-3302 against AP-90417</td><td>Waiting for a person: Needs approval</td><td>Credit note</td></tr><tr><td class="mono">E11</td><td>our bill</td><td>Waiting for a person: Exception for AP</td><td>Could not read reliably</td></tr><tr><td class="mono">E12</td><td>Invoice LE-2230</td><td>Waiting for a person: Exception for AP</td><td>VAT looks wrong</td></tr><tr><td class="mono">E13</td><td>Order confirmation PO-24008</td><td>Agent acted: PO updated</td><td>Confirmed on time</td></tr><tr><td class="mono">E14</td><td>Re: PO-24012</td><td>Waiting for a person: Needs approval</td><td>Confirmed late</td></tr><tr><td class="mono">E15</td><td>Delivery update PO-24011</td><td>Waiting for a person: Needs approval</td><td>Delivery delayed</td></tr><tr><td class="mono">E16</td><td>Automatic reply: out of office</td><td>Agent acted: Ignored</td><td>Auto-reply</td></tr><tr><td class="mono">E17</td><td>Payment query KF-55790</td><td>Waiting for a person: Needs approval</td><td>Payment query</td></tr><tr><td class="mono">E18</td><td>Invoice OD-2026-4471</td><td>Agent acted: Ready for the payment run</td><td>Imported goods: no UK VAT on the invoice; Three-way match</td></tr><tr><td class="mono">E19</td><td>Invoice FS-11902</td><td>Agent acted: Ready for the payment run</td><td>Carriage within allowance; Supplier part number mapped; Three-way match</td></tr><tr><td class="mono">E20</td><td>Invoice AP-90433</td><td>Waiting for a person: Exception for AP</td><td>Price variance</td></tr><tr><td class="mono">E21</td><td>Order confirmation PO-24020</td><td>Waiting for a person: Needs approval</td><td>Price changed on acknowledgement</td></tr><tr><td class="mono">CHASE-PO-24004</td><td>PO-24004 is overdue: new delivery date?</td><td>Waiting for a person: Needs approval</td><td>Delivery overdue</td></tr><tr><td class="mono">CHASE-PO-24007</td><td>Please confirm PO-24007 (reminder 3)</td><td>Waiting for a person: Needs approval</td><td>No acknowledgement</td></tr><tr><td class="mono">CHASE-PO-24009</td><td>Call Tamar Packaging Ltd about PO-24009</td><td>Waiting for a person: Needs approval</td><td>Escalated to the buyer</td></tr><tr><td class="mono">CHASE-PO-24010</td><td>PO-24010 is overdue: new delivery date?</td><td>Waiting for a person: Needs approval</td><td>Delivery overdue</td></tr><tr><td class="mono">CHASE-PO-24021</td><td>PO-24021: dispatch for 2026-11-05?</td><td>Waiting for a person: Needs approval</td><td>Dispatch check</td></tr></tbody></table><!-- /pre:static -->
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="value" aria-labelledby="value-title">
+  <div class="wrap" data-illustrative>
+    <div class="sec__head">
+      <h2 id="value-title">What it would be worth</h2>
+      <p data-src="S1">The advert asks for business outcomes made explicit: cost savings, cycle time, supplier risk. <a class="cite" href="#src-S1">[S1]</a> This is the sum I would put in front of a sponsor before day 1, then replace with their own baseline. <span class="js-only">Change any assumption to recalculate.</span></p>
+      <span class="tag-ill">Illustrative: assumptions, not a forecast</span>
+    </div>
+    <div class="value">
+      <form class="value__inputs" id="value-form" aria-label="Assumptions"><!-- pre:valueform --><label>Supplier invoices a month<input type="number" name="invoices" value="3000" min="0" step="100" inputmode="decimal"></label><label>Touchless today (%)<input type="number" name="touchlessNow" value="33" min="0" max="100" step="1" inputmode="decimal"></label><label>Touchless target (%)<input type="number" name="touchlessTarget" value="49" min="0" max="100" step="1" inputmode="decimal"></label><label>Clerk minutes on an invoice that needs a person<input type="number" name="minutesPerInvoice" value="10" min="0" step="1" inputmode="decimal"></label><label>PO lines chased a week<input type="number" name="chasesPerWeek" value="120" min="0" step="10" inputmode="decimal"></label><label>Buyer minutes to chase by hand<input type="number" name="minutesPerChase" value="6" min="0" step="1" inputmode="decimal"></label><label>Minutes to approve the agent’s draft<input type="number" name="minutesToApprove" value="1" min="0" step="1" inputmode="decimal"></label><label>Cost of an hour of clerk or buyer time (£)<input type="number" name="hourlyCost" value="32" min="0" step="1" inputmode="decimal"></label><!-- /pre:valueform --></form>
+      <div class="value__out" id="value-out" aria-live="polite"><!-- pre:value --><dl class="value__nums"><div><dt>Invoices moved to touchless, a month</dt><dd>480</dd></div><div><dt>Clerk hours returned, a month</dt><dd>80</dd></div><div><dt>Buyer hours returned from chasing, a month</dt><dd>43</dd></div><div class="value__total"><dt>Value of the time returned, a year</dt><dd>£47,400</dd></div></dl><p class="value__sum">3,000 invoices × (49% − 33%) × 10 min, plus 120 chases a week × (6 − 1) min, at £32 an hour.</p><!-- /pre:value --></div>
+    </div>
+    <p class="value__src" data-src="S6">The touchless defaults are Ardent Partners' benchmark: 32.6% of invoices on average, 49.2% for best-in-class teams. <a class="cite" href="#src-S6">[S6]</a> The other inputs are placeholders for the customer's numbers.</p>
+    <p class="value__src muted">Only staff time is valued here. Measured rather than modelled, in the day 30, 60 and 90 reports: invoice cycle time, past-due PO lines, expedite costs, early-payment discounts taken, and duplicate or fraudulent payments stopped.</p>
+  </div>
+</section>
+
+<section class="sec sec--cream" id="plan" aria-labelledby="plan-title">
+  <div class="wrap" data-plan>
+    <div class="sec__head">
+      <h2 id="plan-title">The 18 days, from ERP connect to the first end-to-end automation</h2>
+      <p data-src="S2 S3 S4">Didero counts the 18 days from ERP connect and starts customers on one workflow. <a class="cite" href="#src-S2">[S2]</a> Its own advice is a sandbox first, experts vetting the output, then production with human oversight. <a class="cite" href="#src-S3">[S3]</a> Its deployments begin by mapping how POs are raised and acknowledged. <a class="cite" href="#src-S4">[S4]</a> The plan follows that shape. I read the 18 as calendar days, about 13 working days, which is why access, security and data work happens before day 1. The days, gates and thresholds are mine; the customer's controller would set the real ones.</p>
+      <span class="tag-ill">Illustrative plan</span>
+    </div>
+    <!-- pre:plan --><div class="ruler"><div class="ruler__scale" aria-hidden="true"><span>before</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>after</span></div><nav class="ruler__bars" aria-label="Plan phases"><a class="ruler__bar ruler__bar--pre" href="#phase-pre" style="grid-column:1 / 2">Before day 1</a><a class="ruler__bar ruler__bar--map" href="#phase-map" style="grid-column:2 / 5">Map the work, agree the rules</a><a class="ruler__bar ruler__bar--shadow" href="#phase-shadow" style="grid-column:5 / 10">Shadow</a><a class="ruler__bar ruler__bar--tune" href="#phase-tune" style="grid-column:10 / 14">Tune on their history</a><a class="ruler__bar ruler__bar--live" href="#phase-live" style="grid-column:14 / 19">Supervised go-live, lowest risk first</a><a class="ruler__bar ruler__bar--first" href="#phase-first" style="grid-column:19 / 20" aria-label="Day 18: first end-to-end automation">18</a><a class="ruler__bar ruler__bar--value" href="#phase-value" style="grid-column:20 / 21">Days 19 to 90</a></nav></div><ol class="phases"><li class="phase phase--pre" id="phase-pre"><span class="phase__days">Two weeks before day 1</span><h3>Before day 1: access and evidence</h3><p>Access, security and data work done before the 18 days start.</p><p class="phase__who">Customer sponsor, IT and security, ERP admin, AP lead; Didero deployment and FDE.</p><ul><li>Security review and data processing agreement signed</li><li>Read-only ERP user and a sandbox company</li><li>Access to the AP inbox and the buyers' inboxes, where acknowledgements actually land</li><li>Day-1 data pulled (list below)</li><li>Baseline measured: exception rate, cycle time, past-due lines, chases per week</li></ul><p class="phase__gate"><strong>Gate:</strong> Read access works in the sandbox; the data pull is complete; baseline signed off by the AP lead.</p></li><li class="phase phase--map" id="phase-map"><span class="phase__days">Days 1 to 3</span><h3>Map the work, agree the rules</h3><p>One workflow mapped to the step, with every human decision point named.</p><p class="phase__who">AP lead, two clerks, two buyers, financial controller.</p><ul><li>Current-state map from shadowing the clerks and buyers</li><li>Exception taxonomy agreed (the reason codes in the kit)</li><li>Tolerances, carriage allowances and the supervised limit signed by the controller</li><li>Chase cadence and escalation agreed with purchasing</li><li>Who resolves what, with response times</li></ul><p class="phase__gate"><strong>Gate:</strong> The controller signs the rules sheet. Anything not on it stays with a person.</p></li><li class="phase phase--shadow" id="phase-shadow"><span class="phase__days">Days 4 to 8</span><h3>Shadow: the agent recommends, people decide</h3><p>Evidence that the agent agrees with the clerks before it acts. Didero’s own advice: a sandbox first, experts vet the output.</p><p class="phase__who">Clerks and buyers review every recommendation; deployment strategist runs the daily review.</p><ul><li>Agent runs on live mail in recommend-only mode; nothing is written</li><li>Daily disagreement review: each one either changes a rule or joins the test set</li><li>Test set built from the customer’s own history, including its last fraud attempt if there was one</li></ul><p class="phase__gate"><strong>Gate:</strong> Agreement with the clerks of at least 95% on at least 200 items; no missed duplicate; every bank-detail change held.</p></li><li class="phase phase--tune" id="phase-tune"><span class="phase__days">Days 9 to 12</span><h3>Tune on their history</h3><p>Rules and prompts tuned against the test set, with no safety regressions.</p><p class="phase__who">Deployment strategist with Didero product and engineering for anything that needs a code change.</p><ul><li>Tolerance and cadence sweeps run on the test set</li><li>Extraction checked field by field on the customer’s real document layouts</li><li>Approval routing and notifications live in the channel the team already uses</li><li>Kill switch tested: one setting returns every action to recommend-only</li></ul><p class="phase__gate"><strong>Gate:</strong> Field accuracy at least 98% on required fields; zero unsafe auto-actions on the test set; the AP lead signs the tuning log.</p></li><li class="phase phase--live" id="phase-live"><span class="phase__days">Days 13 to 17</span><h3>Supervised go-live, lowest risk first</h3><p>Autonomy switched on in order of risk: acknowledgements and chasing first, invoice matching second.</p><p class="phase__who">Named queue owner in AP and in purchasing; controller on call.</p><ul><li>Day 13: on-time acknowledgements and chase drafts handled by the agent, sends approved</li><li>Day 15: matched invoices under the supervised limit marked ready for the payment run</li><li>Every override logged with its reason, for the tuning log</li><li>Daily stand-up on the queue: age, volume, overrides</li></ul><p class="phase__gate"><strong>Gate:</strong> Queue answered within the agreed response time; overrides under 5% of agent actions; no go-live in month-end close week.</p></li><li class="phase phase--first" id="phase-first"><span class="phase__days">Day 18</span><h3>Day 18: first end-to-end automation</h3><p>An invoice or a PO moves from inbox to ERP with no one touching it, inside the agreed limits, with a full audit trail.</p><p class="phase__who">Sponsor, controller, AP lead.</p><ul><li>First automated end-to-end run recorded and walked through with the controller</li><li>Handover: runbook, queue ownership, rules sheet, test set</li></ul><p class="phase__gate"><strong>Gate:</strong> The controller agrees the trail is complete enough for audit.</p></li><li class="phase phase--value" id="phase-value"><span class="phase__days">Days 19 to 90</span><h3>Days 19 to 90: adoption and value</h3><p>Value reported against the customer’s own baseline, then one more workflow at a time.</p><p class="phase__who">Sponsor, AP lead, purchasing lead; Didero account team.</p><ul><li>Day 30, 60 and 90 value reports: touchless rate, exception rate by reason, cycle time, past-due lines, chase response time, hours returned</li><li>Supervised limit raised as accuracy holds</li><li>Next workflow chosen from the exception data (for example credit-note requests or carrier invoices)</li><li>Product feedback filed from the disagreement log</li></ul><p class="phase__gate"><strong>Gate:</strong> The sponsor accepts the day 90 report and agrees the next workflow.</p></li></ol><!-- /pre:plan -->
+    <div class="plan-extras">
+      <div><h3>Data on day 1</h3><!-- pre:day1 --><ul><li>Three to six months of purchase orders, goods receipts and invoices, with the clerks’ hold and exception reasons</li><li>Supplier master, including the bank-detail change log and phone numbers on file</li><li>Current tolerances, carriage terms and the approval matrix</li><li>A sample of acknowledgement and delivery emails from the top 20 suppliers</li><li>The chase history: who chases what, when, and how often</li><li>Baseline KPIs for the same period</li></ul><!-- /pre:day1 --></div>
+      <div><h3>Who does what at the customer</h3><!-- pre:roles --><dl><dt>Sponsor</dt><dd>Owns the outcome and the day 90 decision.</dd><dt>Financial controller</dt><dd>Owns tolerances, the supervised limit and go-live sign-off.</dd><dt>AP lead</dt><dd>Owns the AP queue, the rules sheet and the baseline.</dd><dt>Buyers</dt><dd>Own acknowledgement changes, chases and escalations.</dd><dt>ERP admin and IT security</dt><dd>Own access, the sandbox and the security review.</dd><dt>Didero deployment strategist</dt><dd>Runs the plan, configures and tunes the agents, writes the playbook.</dd><dt>Didero forward deployed engineer</dt><dd>Owns integration work and anything that needs code.</dd></dl><!-- /pre:roles --></div>
+      <div><h3>Change management</h3><!-- pre:change --><ul><li>A named owner for each queue, with a response time the team agreed</li><li>Short training for clerks and buyers on their own exceptions, run in the first shadow days</li><li>A note to suppliers: nothing changes for them</li><li>No go-live in month-end close week</li><li>A kill switch the AP lead can use without asking anyone</li></ul><!-- /pre:change --></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="built" aria-labelledby="built-title">
+  <div class="wrap">
+    <div class="sec__head">
+      <h2 id="built-title">How it is built</h2>
+      <p>Claude, or the parser, reads each email and drafts any reply. Written rules make every decision, so the same email always gets the same outcome and the controller can read and sign the rules. A person approves anything risky, and everything is logged.</p>
+    </div>
+    <ol class="stages">
+      <li><strong>Trigger and settings</strong>Manual run, or a webhook with header authentication. Callers can choose only the mode; thresholds and the approval endpoint are set by the workflow owner. <span class="st st--agent who">code</span></li>
+      <li><strong>Read</strong>A parser for labelled layouts, or Claude with a strict JSON schema. A refusal, truncation or odd shape counts as unreadable. <span class="st st--person who">model or parser</span></li>
+      <li data-src="S5"><strong>Decide</strong>Fraud and duplicate checks first, then three-way match line by line, VAT by supplier type (no UK VAT on imported goods, which go through postponed VAT accounting <a class="cite" href="#src-S5">[S5]</a>), acknowledgements, credit-note pairing and the chase cadence. <span class="st st--agent who">rules</span></li>
+      <li><strong>Act or ask</strong>Only low-risk actions run alone. Everything else waits for a person, with specific resolutions to choose from. <span class="st st--person who">people</span></li>
+      <li><strong>Audit and report</strong>Every read, decision, action and human choice is logged with who made it, plus the metrics for the value report. <span class="st st--agent who">code</span></li>
+    </ol>
+    <figure class="canvas">
+      <a href="assets/n8n-canvas-full.png"><img src="assets/n8n-canvas.png" width="1600" height="455" alt="The workflow open in the n8n editor: triggers, settings, a switch between parser and Claude, the rules node, a switch between safe actions and the approval path, an approval loop with notify, wait and record nodes, and the audit and report nodes. Sticky notes explain the workflow, label the five stages and say why the rules library repeats in each Code node."></a>
+      <figcaption>The workflow in the n8n editor (<code>2.46.4</code>), running locally. The warning on the Claude node is the missing credential: you add your own key. Select the image for full size.</figcaption>
+    </figure>
+    <div class="downloads">
+      <a class="btn" href="downloads/didero-ap-agent.n8n.json" download>n8n workflow (JSON)</a>
+      <a class="btn btn--ghost" href="downloads/deployment-kit.md" download>Deployment kit</a>
+      <a class="btn btn--ghost" href="downloads/how-to-run.md" download>How to run it</a>
+      <a class="btn btn--ghost" href="downloads/eval-results.md" download>Test results</a>
+      <a class="btn btn--ghost" href="downloads/didero-ap-agent-source.zip" download>Source and tests (zip)</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--cream" id="tested" aria-labelledby="tested-title">
+  <div class="wrap">
+    <div class="sec__head">
+      <h2 id="tested-title">What I tested, and what I did not</h2>
+      <p>Each line can be re-run from the source download: <code>node --test tests/core.test.mjs</code>, then <code>node eval/run-eval.mjs</code>.</p>
+    </div>
+    <div class="table-wrap" role="region" aria-label="Tests" tabindex="0" data-illustrative>
+      <!-- pre:tests --><table class="tests"><caption>Results on illustrative synthetic data, 3 November 2026</caption><thead><tr><th scope="col">What</th><th scope="col">How</th><th scope="col">Result</th></tr></thead><tbody><tr><td>Rules</td><td>Unit tests in Node</td><td>23 pass, 0 fail</td></tr><tr><td>Policy</td><td>A 26-item regression suite whose expected outcomes I wrote before running it</td><td>26 of 26 decisions and reasons as intended; 0 auto-actions that should have gone to a person; the fraud email held</td></tr><tr><td>Tuning</td><td>Price tolerance sweep, with and without the 50 pound per-line cap</td><td>With the cap, 2% to 10% made no unsafe decision. Without it, 10% let E03 and E20 through. The cap stays.</td></tr><tr><td>In n8n</td><td>n8n 2.46.4 on Node 24.22.2: import, then a headless run</td><td>Ran without errors; the same 26 of 26 decisions (same code, so this checks the wiring)</td></tr><tr><td>Human approvals</td><td>n8n server, header-authenticated webhook, a scripted approver answering each pause through n8n’s signed resume URL</td><td>Without the key the webhook refused the call (403). 19 pauses, 19 resumes; 18 resolutions applied; a decision sent with a forged token was ignored; a request body that tried to redirect approvals was ignored</td></tr><tr><td>Claude</td><td>Structured-output request, its shape and headers checked against the Claude API reference; refusal, truncation, bad JSON and schema mismatches fall back to a person</td><td>Unit-tested. Not run on real documents here: it needs your own key</td></tr><tr><td>Not tested</td><td>Real ERP connectors, PDFs and scans, supplier portals and EDI, Didero’s own platform</td><td>Those come with a real deployment</td></tr></tbody></table><!-- /pre:tests -->
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="proof" aria-labelledby="proof-title">
+  <div class="wrap">
+    <div class="sec__head">
+      <h2 id="proof-title">Where I have done parts of this</h2>
+      <p data-fact="hv">I have built workflows in n8n for over a year. These are the parts of this job I have already done elsewhere.</p>
+    </div>
+    <ul class="proof-d">
+      <li data-fact="hv"><h3>Configured, tested and tuned an agent</h3><p>At MTest Labs I built a staged, multi-agent tool for test design, grounded in the firm's own library. Test design fell from an 8-hour day, or 2 to 3 days on larger projects, to 1 to 3 supervised hours. A tester approves every case, and I trained the team to run it.</p></li>
+      <li data-fact="hv"><h3>Mapped a business end to end, then automated it</h3><p>At Atelier di Venice I mapped operations from first enquiry to delivery and automated dozens of workflows, with an autonomy boundary that keeps client and financial steps supervised. Supplier invoices and credit notes are checked against terms.</p></li>
+      <li data-fact="hv"><h3>Redesigned a process with the people who run it</h3><p>At Bnk To The Future I redesigned case routing, triage and escalation across 100+ cases, with ~25% faster turnaround, and prepared the reporting for the risk committee.</p></li>
+      <li data-fact="hv"><h3>Ran exception queues in payments</h3><p>At AirTM I matched payment volumes against provider and bank statements, cleared a 150-case backlog in three weeks, cut the standing backlog by ~30% and held a 95%+ service level.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec sec--cream" id="sources" aria-labelledby="sources-title">
+  <div class="wrap">
+    <div class="sec__head"><h2 id="sources-title">Sources</h2><p data-src="S1 S2 S3 S4 S5 S6">Public sources only, accessed 3 November 2026. Claims about Didero are Didero's own.</p></div>
+    <ol class="sources-d">
+      <li id="src-S1" data-src="S1"><span class="sid">S1</span><span>Didero, AI Deployment Strategist (London), advert. Posted 27 Oct 2026. <a href="https://www.didero.ai/careers?ashby_jid=660abfdb-ce6c-465a-aa93-300c9c8947e0">didero.ai/careers</a></span></li>
+      <li id="src-S2" data-src="S2"><span class="sid">S2</span><span>Didero homepage: "18 days, from ERP connect to first end-to-end automation"; "Start small, one workflow, then expand". <a href="https://www.didero.ai/">didero.ai</a></span></li>
+      <li id="src-S3" data-src="S3"><span class="sid">S3</span><span>Didero blog, customer voice: sandbox first, experts vet the responses, then production with human oversight. 14 Jan 2026. <a href="https://www.didero.ai/blog/customer-voice">didero.ai</a></span></li>
+      <li id="src-S4" data-src="S4"><span class="sid">S4</span><span>Didero case study, Footprint: the deployment began by mapping how POs were created and acknowledged. <a href="https://www.didero.ai/case-studies/footprint">didero.ai</a></span></li>
+      <li id="src-S5" data-src="S5"><span class="sid">S5</span><span>GOV.UK, Check when you can account for import VAT on your VAT Return (postponed VAT accounting): applies to goods imported into Great Britain from anywhere outside the UK. Updated 16 Jun 2025. <a href="https://www.gov.uk/guidance/check-when-you-can-account-for-import-vat-on-your-vat-return">gov.uk</a></span></li>
+      <li id="src-S6" data-src="S6"><span class="sid">S6</span><span>Ardent Partners, AP Metrics that Matter in 2025: touchless rate 32.6% on average, 49.2% best-in-class. Feb 2025. <a href="https://www.datocms-assets.com/80283/1744404602-ardent-partners-ap-metrics-that-matter-in-2025-pagero-final.pdf">datocms-assets.com (PDF)</a></span></li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot-d">
+  <div class="wrap">
+    <p><strong>Prepared by Hemanth Vallamkonda as part of an application to Didero. Independent and illustrative; uses public information only.</strong></p>
+    <p>Not affiliated with or endorsed by Didero. No logos or brand assets are used. The manufacturer, suppliers, documents, phone numbers and bank details are fictional; the plan is illustrative. Last updated 3 November 2026.</p>
+    <p>Hemanth Vallamkonda, London. <a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a>, +44 7553 909828. Right to work in the UK; no sponsorship required.</p>
+  </div>
+</footer>
+</body>
+</html>
