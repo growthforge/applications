@@ -232,3 +232,17 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 .byline { font-weight: 700; color: var(--text); margin-top: var(--space-3); }
 /* Buttons are hidden in print by the design system; the line references on them are content, so show them as text */
 @media print { html body .chipbtn { display: inline !important; border: 0; background: none; padding: 0 2px; color: inherit; font: inherit; } }
+
+/* The call and the extra questions start folded away when JavaScript is on, so the page is not a wall of text; print and no-JS show everything */
+.js .callgrid.is-collapsed { grid-template-columns: 1fr; }
+.js .callgrid.is-collapsed .transcript { display: none; }
+.js .callgrid.is-collapsed .side { position: static; max-height: none; }
+@media (min-width: 720px) { .js .callgrid.is-collapsed .picks { columns: 2; column-gap: 24px; } .js .callgrid.is-collapsed .picks li { break-inside: avoid; } }
+.js .qmore:not(.is-open) { display: none; }
+.needs-js { display: none; } .js .needs-js { display: block; }
+@media print {
+  html body .callgrid.is-collapsed .transcript { display: block !important; }
+  html body .qmore { display: block !important; }
+  html body .hero .cluster { display: none !important; }
+  html body .needs-js { display: none !important; }
+}

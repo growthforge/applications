@@ -4,6 +4,7 @@
   against it, so two rules that contradict each other, or a requirement that cannot be tested, show up on paper
   before anything is built. It does not prove that a build works; the sandbox run with the client does that.
   Pure functions, no network. The Xero tax types and statuses come from the public Xero developer documentation.
+  Times in the cases are written as UK local time and read as written; the model does no time zone conversion.
 */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -138,7 +139,9 @@
   // A draft can be updated. After that the deal is locked in Salesforce and finance decides in Xero.
   function onAmountChange(i) {
     const st = i.invoiceStatus;
+    if (i.deletedInXero) return { action: 'report-deleted', createsInvoice: false, editsInvoice: false, locked: false };
     if (!st) return { action: 'nothing-to-update', createsInvoice: false, editsInvoice: false, locked: false };
+    if (st === 'DRAFT' && i.editedInXero) return { action: 'finance-task', createsInvoice: false, editsInvoice: false, locked: false, how: 'finance-edited-the-draft' };
     if (st === 'DRAFT') return { action: 'update-draft', createsInvoice: false, editsInvoice: true, locked: false };
     const how = st === 'PAID' ? 'credit-note' : 'finance-decides';
     return { action: 'finance-task', createsInvoice: false, editsInvoice: false, locked: true, how };
@@ -168,15 +171,21 @@
   }
 
   // ---- a retry never makes a second invoice ----------------------------------
-  // The Salesforce invoice record holds the invoice's own key and, once known, the Xero InvoiceID. If the answer from Xero was
-  // lost, the retry sends the same key, so Xero treats it as the same request. It never searches Xero and adopts a look-alike,
-  // so a voided or deleted invoice cannot be taken for the live one, and one run at a time may touch a record.
+  // The Salesforce invoice record holds the invoice's own key and, once known, the Xero InvoiceID. Xero keeps an idempotency
+  // key for six minutes from the first call (Xero Developer, Idempotent requests). Within that window a retry sends the same
+  // key, so Xero returns the original response. After it, repeating the key would be processed as a new request, so the sync
+  // never retries blindly and never searches Xero and adopts a look-alike either: finance is shown the likely matches and decides.
+  // One run at a time may touch a record.
+  const KEY_MINUTES = 6;
   function resolveCreate(i, opts) {
     if (i.record.xeroInvoiceId) return { action: 'skip', invoiceId: i.record.xeroInvoiceId };
     if (i.record.inFlight) return { action: 'wait', reason: 'another-run-in-progress' };
     if (!i.idempotencySupported) return { action: 'hold-for-review', reason: 'no-idempotency-key' };
     const key = (opts && opts.defect === 'new-key-each-retry') ? i.record.key + ':retry' + (i.record.attempts || 0) : i.record.key;
-    return { action: 'retry-with-key', key };
+    if (!i.record.firstAttemptAt) return { action: 'create-with-key', key };
+    const minutes = (new Date(i.now + 'Z').getTime() - new Date(i.record.firstAttemptAt + 'Z').getTime()) / 60000;
+    if (minutes <= KEY_MINUTES || (opts && opts.defect === 'retry-after-expiry')) return { action: 'retry-with-key', key };
+    return { action: 'hold-for-review', reason: 'key-expired', showLikelyMatches: true };
   }
 
   // ---- month end: the books close on the third working day, so anything still unapproved is chased the day before ----
@@ -202,12 +211,12 @@
   // A contract already running at go-live starts its schedule from the start month, not from its original start date.
   function remainingSchedule(i) { return scheduleAmounts(i).filter((x) => x.date.slice(0, 7) >= i.startMonth); }
 
-  // ---- nothing goes missing: every won deal or completed job ends as a draft, a scheduled invoice or an exception ----
+  // ---- nothing goes missing: every won deal ends as a draft, a scheduled invoice, a held invoice with a reason, a failure, or a repair awaiting completion ----
   function reconcile(i) {
     const handled = new Set((i.handled || []).map((h) => h.id));
     const missing = i.expected.filter((id) => !handled.has(id));
     const by = (k) => (i.handled || []).filter((h) => h.as === k).length;
-    return { ok: missing.length === 0, missing, counts: { expected: i.expected.length, drafts: by('draft'), scheduled: by('scheduled'), exceptions: by('exception') } };
+    return { ok: missing.length === 0, missing, counts: { expected: i.expected.length, drafts: by('draft'), scheduled: by('scheduled'), held: by('held'), failed: by('failed'), awaiting: by('awaiting') } };
   }
 
   // ---- who sees what ----------------------------------------------------------

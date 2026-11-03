@@ -180,7 +180,7 @@
   "title": "Purchase order number, and who is billed",
   "actor": "Finance",
   "trigger": "Invoice drafted",
-  "rule": "When the customer quotes a purchase order, the invoice Reference shows it and nothing else (the job number when there is no PO). A customer marked as needing a PO (the housing associations) with no PO on the job is held, not drafted, because they send the invoice straight back. The invoice goes to the billing contact when there is one, otherwise to the customer.",
+  "rule": "When the customer quotes a purchase order, the invoice Reference shows it, written PO HA-7781 for example, and the job number when there is no PO. A customer marked as needing a PO (the housing associations) with no PO on the job is held, not drafted, because they send the invoice straight back. The invoice goes to the billing contact when there is one, otherwise to the customer.",
   "plain": "Invoices show the customer's PO number and go to the right person, and an invoice for a customer who needs a PO is held if there is none.",
   "sources": [
    "L27"
@@ -259,8 +259,7 @@
    }
   ],
   "gaps": [
-   "G-15",
-   "G-16"
+   "G-15"
   ]
  },
  {
@@ -289,8 +288,7 @@
    }
   ],
   "gaps": [
-   "G-04",
-   "G-16"
+   "G-04"
   ]
  },
  {
@@ -334,8 +332,8 @@
   "title": "Changes after an invoice exists",
   "actor": "Sales",
   "trigger": "Amount edited on a won deal",
-  "rule": "While an invoice is a draft, the draft is updated. Once an invoice is approved it is locked, no second invoice is ever created, and a task goes to finance. The locking is per invoice, so the final amount of a repair stays editable until its balance invoice is approved. If an invoice has been paid, finance raises a credit note in Xero.",
-  "plain": "If the amount changes after an invoice has gone out, finance is told and no second invoice is made.",
+  "rule": "While an invoice is a draft, the draft is updated, unless finance has edited it in Xero: then the change goes to finance as a task and the draft is left alone. A draft deleted in Xero is reported to finance and not recreated. Once an invoice is approved it is locked, no second invoice is ever created, and a task goes to finance. The locking is per invoice, so the final amount of a repair stays editable until its balance invoice is approved. If an invoice has been paid, finance raises a credit note in Xero.",
+  "plain": "If the amount changes after an invoice is approved, finance is told and no second invoice is made. A draft finance has edited is never overwritten.",
   "sources": [
    "L30",
    "L31",
@@ -354,6 +352,16 @@
     "given": "a deposit invoice is approved and the balance invoice does not exist yet",
     "when": "the final amount of the job is entered",
     "then": "it is accepted and the balance invoice is created from it"
+   },
+   {
+    "given": "a draft that finance has edited in Xero",
+    "when": "someone changes the deal amount",
+    "then": "the draft is left as finance edited it and a task is created for finance"
+   },
+   {
+    "given": "a draft that finance has deleted in Xero",
+    "when": "someone changes the deal amount",
+    "then": "finance is told and no new invoice is created"
    }
   ],
   "gaps": [
@@ -391,7 +399,7 @@
   "title": "Credit notes and voided invoices are visible",
   "actor": "Sales",
   "trigger": "Credit note or void recorded in Xero",
-  "rule": "Credit notes and voids raised in Xero show against the job in Salesforce. A void on a won deal with no replacement creates a task for finance.",
+  "rule": "Credit notes and voids raised in Xero show against the job in Salesforce. A void on a won deal with no replacement creates a task for finance. Finance links a replacement invoice to the job; the sync never links one on its own.",
   "plain": "Sales can see credit notes and voids against the job.",
   "sources": [
    "L36",
@@ -416,7 +424,7 @@
   "title": "No duplicate customers, no duplicate invoices",
   "actor": "Finance",
   "trigger": "Invoice needs a customer, or a retry",
-  "rule": "The customer is matched by the stored Xero ID, then by an email that belongs to one customer only. If several customers match, an email is shared, or a name is only similar, the invoice is held for finance to choose. A retry never creates a second invoice: every invoice has its own key (the job number, then which invoice it is: the billing month, the deposit or the balance), kept on the Salesforce invoice record with the Xero InvoiceID once known. A retry after a lost answer sends the same key, so Xero treats it as the same request; it never searches Xero and adopts a look-alike. Only one run may touch a record at a time. If Xero cannot honour the key, the invoice is held for finance.",
+  "rule": "The customer is matched by the stored Xero ID, then by an email that belongs to one customer only. If several customers match, an email is shared, or a name is only similar, the invoice is held for finance to choose. A retry never creates a second invoice: every invoice has its own key (the job number, then which invoice it is: the billing month, the deposit or the balance), kept on the Salesforce invoice record with the Xero InvoiceID once known. Xero keeps an idempotency key for six minutes from the first call, so a retry within six minutes sends the same key and Xero returns the original response. After six minutes the sync does not retry and does not search Xero and adopt a look-alike: the invoice is held for finance, who see the likely matches and decide. Only one run may touch a record at a time. If Xero cannot honour the key, the invoice is held for finance.",
   "plain": "The system stops and asks rather than guess, and never bills twice.",
   "sources": [
    "L32",
@@ -433,9 +441,14 @@
     "then": "it is held for finance"
    },
    {
-    "given": "a retry after a timeout where Xero may already hold the invoice",
+    "given": "a retry after a timeout, within six minutes of the first attempt",
     "when": "the sync runs again",
     "then": "it sends the same key and no second invoice is created"
+   },
+   {
+    "given": "a retry after a timeout, more than six minutes after the first attempt",
+    "when": "the sync runs again",
+    "then": "it does not retry, the invoice is held for finance and the likely matches are shown"
    },
    {
     "given": "a job whose deposit invoice is already in Xero",
@@ -508,7 +521,7 @@
   "title": "A clean start",
   "actor": "Finance manager",
   "trigger": "Go-live",
-  "rule": "Nothing dated before the chosen start month is created. Every invoice already typed into Xero for the start month or later, including an open deposit, is linked to its Salesforce record first, and nothing is created for a period that has already been invoiced. A contract already running at go-live starts its schedule from the start month, not from its original start date. Every existing Xero customer is linked to a Salesforce account first, with the doubles resolved. A full rehearsal in the sandbox against the Xero demo company passes before go-live.",
+  "rule": "Nothing dated before the chosen start month is created. Every invoice already typed into Xero for the start month or later, including an open deposit, is linked to its Salesforce record first by finance, from a matching report we produce. The sync never links an invoice on its own, and nothing is created for a period that has already been invoiced. A contract already running at go-live starts its schedule from the start month, not from its original start date. Every existing Xero customer is linked to a Salesforce account first, with the doubles resolved. A full rehearsal in the sandbox against the Xero demo company passes before go-live.",
   "plain": "We pick a month, stop typing from then, and nothing is billed twice.",
   "sources": [
    "L46",
@@ -545,8 +558,8 @@
   "title": "Nothing goes missing",
   "actor": "Finance manager",
   "trigger": "End of each working day",
-  "rule": "Every deal won and every job completed that day ends up as a draft invoice, a scheduled invoice or an item on the failures list. A daily count reconciles them, and anything in none of those places is listed as missing.",
-  "plain": "Nothing is lost silently: every won deal or completed job is accounted for each day.",
+  "rule": "Every deal won, and every job completed, that day ends up as a draft invoice, a scheduled invoice, a held invoice with its reason, an item on the failures list, or a repair still awaiting completion. A daily count reconciles them, and anything in none of those places is listed as missing.",
+  "plain": "Nothing is lost silently: every won deal or completed job is accounted for each day, and a repair that is not finished yet is not counted as missing.",
   "sources": [
    "L43",
    "L45"
@@ -559,6 +572,11 @@
     "given": "3 deals were won today and 2 of them became drafts and 1 is on the failures list",
     "when": "the daily count runs",
     "then": "all 3 are accounted for and nothing is listed as missing"
+   },
+   {
+    "given": "a repair that was won today and is not finished",
+    "when": "the daily count runs",
+    "then": "it is shown as awaiting completion and not as missing"
    },
    {
     "given": "a won deal that is in none of those places",

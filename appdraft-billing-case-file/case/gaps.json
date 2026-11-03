@@ -2,7 +2,7 @@
  {
   "id": "G-01",
   "question": "Where does the monthly billing schedule live?",
-  "why": "A won deal is a single event. A 12 or 24 month contract needs somewhere that holds the start date, the term and the monthly amount, and today the contract is a PDF and the start date is in the notes. This is the biggest design decision in the project. The Salesforce edition decides what can be built and how many calls to Xero a day it allows, so it is the first thing to confirm.",
+  "why": "A won deal is a single event. A 12 or 24 month contract needs somewhere that holds the start date, the term and the monthly amount, and today the contract is a PDF and the start date is in the notes. This is the biggest design decision in the project.",
   "default": "Create a billing schedule in Salesforce when a contract is won, and let it generate the monthly drafts. Whether Xero repeating invoices could carry it instead is something to check before we commit.",
   "decider": "Finance manager and us",
   "blocks": "REQ-03",
@@ -154,7 +154,7 @@
   "id": "G-14",
   "question": "When an amount changes after an invoice has gone out, who is told and what do they do?",
   "why": "The finance manager wants to be told and to deal with it in Xero. Nobody has said whether the deal in Salesforce should be locked, or what happens once the invoice has been paid.",
-  "default": "Lock the amount in Salesforce once the invoice is no longer a draft. Create a task for finance. If it has been paid, finance raises a credit note in Xero. Check in Xero whether a paid invoice can be voided without removing its payments first.",
+  "default": "Lock the amount in Salesforce once the invoice is approved. Create a task for finance. If it has been paid, finance raises a credit note in Xero. Check in Xero whether a paid invoice can be voided without removing its payments first.",
   "decider": "Finance manager",
   "blocks": "REQ-12",
   "sources": [
@@ -172,20 +172,6 @@
   "blocks": "REQ-09",
   "sources": [
    "L02",
-   "L22"
-  ]
- },
- {
-  "id": "G-16",
-  "question": "We have assumed Owen is the finance manager. Is that right?",
-  "why": "Owen is named as the person who types invoices into Xero, who knows when a repair is done and who is the VAT expert, and the finance manager answers for Owen's tasks, so we have assumed they are one person. If they are two, the person who enters and the person who approves are separate, and the cover when the finance manager is away changes. If they are one person, the sync replaces the typing and nobody else checks the invoice, which is the client's choice to make.",
-  "default": "Treat Owen as the finance manager: the sync replaces the typing and approval stays with the same person. Set the permissions so that a separate approver can be added later.",
-  "decider": "Managing director",
-  "blocks": "REQ-09, REQ-10, REQ-17",
-  "sources": [
-   "L02",
-   "L10",
-   "L17",
    "L22"
   ]
  },
@@ -212,6 +198,30 @@
   "sources": [
    "L03",
    "L22"
+  ]
+ },
+ {
+  "id": "G-19",
+  "question": "What happens when a contract ends early, renews, or is cancelled after a deposit?",
+  "why": "The call covered contracts that run for 12 or 24 months and repairs with a deposit. It did not say what happens when a contract is cancelled part way, renewed, or when a repair is cancelled after the deposit invoice has been approved. Each needs a credit note, a stopped schedule or a new one, and somebody who owns the decision.",
+  "default": "Stop the schedule from the cancellation date and raise a credit note for any invoice already approved and not yet due, decided by finance each time. A renewal creates a new schedule from the old end date.",
+  "decider": "Finance manager",
+  "blocks": "REQ-03, REQ-12",
+  "sources": [
+   "L05",
+   "L08",
+   "L39"
+  ]
+ },
+ {
+  "id": "G-20",
+  "question": "Which Salesforce edition does the client have?",
+  "why": "Some editions have no Apex and no API access without an add-on, and the call never asked. The edition decides whether the sync can be built as described or needs another route, so it is worth confirming before anything is promised.",
+  "default": "Assume an edition with API access and Apex. If it has neither, the design changes and we say so before quoting.",
+  "decider": "Managing director",
+  "blocks": "REQ-15",
+  "sources": [
+   "L02"
   ]
  }
 ]

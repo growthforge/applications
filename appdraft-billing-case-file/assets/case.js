@@ -17,11 +17,17 @@
     document.querySelectorAll('.line.hl').forEach((l) => l.classList.remove('hl'));
     document.querySelectorAll('.pick[aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
   }
+  const grid = $('.callgrid'), callBtn = $('#call-toggle');
+  function setCall(open) { if (!grid) return; grid.classList.toggle('is-collapsed', !open); if (callBtn) callBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  if (callBtn) callBtn.addEventListener('click', () => setCall(grid.classList.contains('is-collapsed')));
+  const qBtn = $('#q-toggle'), qMore = $('#q-more');
+  if (qBtn && qMore) qBtn.addEventListener('click', () => { const on = !qMore.classList.contains('is-open'); qMore.classList.toggle('is-open', on); qBtn.setAttribute('aria-expanded', on ? 'true' : 'false'); qBtn.textContent = on ? 'Hide the other questions' : 'Show the other ' + qMore.querySelectorAll('.qcard').length + ' questions'; });
   function pick(id, lines) {
     const same = active === id;
     clear();
     if (same) { active = null; status.textContent = 'Nothing chosen yet.'; return; }
     active = id;
+    setCall(true);
     lines.forEach((l) => { const el = document.getElementById(l); if (el) el.classList.add('hl'); });
     document.querySelectorAll('.pick[data-pick="' + id + '"]').forEach((b) => b.setAttribute('aria-pressed', 'true'));
     status.textContent = id + ' comes from line' + (lines.length > 1 ? 's ' : ' ') + lines.join(', ') + '.';

@@ -321,7 +321,7 @@
  },
  {
   "id": "TC-05",
-  "title": "The right VAT, and nothing guessed",
+  "title": "The right VAT, and anything unusual held",
   "requirements": [
    "REQ-05"
   ],
@@ -329,7 +329,7 @@
    "Draft invoices for a standard job, a zero rated job, an exempt job and a job with no VAT.",
    "Mark one job as reverse charge."
   ],
-  "expected": "20 percent, zero rated, exempt and no VAT map to the matching Xero tax types; no treatment means 20 percent; reverse charge is held for finance.",
+  "expected": "20 percent, zero rated, exempt and no VAT map to the matching Xero tax types. A job with no treatment set gets 20 percent, the rate the client said covers most work, and is flagged for finance. Reverse charge is held for finance.",
   "fn": "buildInvoice",
   "cases": [
    {
@@ -1142,10 +1142,11 @@
   ],
   "steps": [
    "Change the amount on a deal whose invoice is a draft, then on one that has been approved, then on one that has been paid.",
+   "Edit a draft in Xero, then change the deal amount. Delete another draft in Xero.",
    "Approve a deposit invoice, then enter the final amount of the job.",
    "Check Xero and the finance task list."
   ],
-  "expected": "The draft is updated. The approved and paid ones are locked, no second invoice appears, and finance gets a task. For the paid one the task is to raise a credit note. The final amount can still be entered after the deposit is approved, and it creates the balance.",
+  "expected": "The draft is updated. The approved and paid ones are locked, no second invoice appears, and finance gets a task. For the paid one the task is to raise a credit note. A draft finance has edited is never overwritten, and a deleted draft is reported, not recreated. The final amount can still be entered after the deposit is approved, and it creates the balance.",
   "fn": "onAmountChange",
   "cases": [
    {
@@ -1179,6 +1180,34 @@
     "expect": {
      "action": "nothing-to-update",
      "locked": false,
+     "createsInvoice": false
+    }
+   },
+   {
+    "name": "finance edited the draft in Xero",
+    "input": {
+     "invoiceStatus": "DRAFT",
+     "editedInXero": true,
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "finance-task",
+     "how": "finance-edited-the-draft",
+     "editsInvoice": false,
+     "createsInvoice": false
+    }
+   },
+   {
+    "name": "finance deleted the draft in Xero",
+    "input": {
+     "invoiceStatus": "DRAFT",
+     "deletedInXero": true,
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "report-deleted",
      "createsInvoice": false
     }
    },
@@ -1577,11 +1606,11 @@
   ],
   "steps": [
    "Stop the connection just after Xero has created an invoice, so Salesforce never hears back.",
-   "Let the sync retry.",
+   "Let the sync retry within a few minutes, then again after ten minutes.",
    "Do the same for a job that has a deposit and a balance, and for a contract with several months.",
    "Start two runs at the same moment."
   ],
-  "expected": "The retry carries the same key, so Xero returns the same invoice and no second one appears. A deposit is never taken for the balance, and one month is never taken for the next. A second run waits.",
+  "expected": "Within six minutes the retry carries the same key, so Xero returns the same invoice and no second one appears. After six minutes the sync does not retry and does not guess: the invoice is held for finance, who see the likely matches. A deposit is never taken for the balance, and one month is never taken for the next. A second run waits.",
   "fn": "resolveCreate",
   "cases": [
    {
@@ -1591,7 +1620,8 @@
       "xeroInvoiceId": "inv-1",
       "key": "OPP-2210:FINAL"
      },
-     "idempotencySupported": true
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:00:00"
     },
     "expect": {
      "action": "skip",
@@ -1599,17 +1629,63 @@
     }
    },
    {
-    "name": "the answer was lost, so the retry sends the same key",
+    "name": "the first attempt",
+    "input": {
+     "record": {
+      "key": "OPP-2210:FINAL"
+     },
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:00:00"
+    },
+    "expect": {
+     "action": "create-with-key",
+     "key": "OPP-2210:FINAL"
+    }
+   },
+   {
+    "name": "the answer was lost, retried after three minutes with the same key",
     "input": {
      "record": {
       "key": "OPP-2210:FINAL",
+      "firstAttemptAt": "2027-02-01T10:00:00",
       "attempts": 1
      },
-     "idempotencySupported": true
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:03:00"
     },
     "expect": {
      "action": "retry-with-key",
      "key": "OPP-2210:FINAL"
+    }
+   },
+   {
+    "name": "exactly six minutes is still inside the window",
+    "input": {
+     "record": {
+      "key": "OPP-2210:FINAL",
+      "firstAttemptAt": "2027-02-01T10:00:00"
+     },
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:06:00"
+    },
+    "expect": {
+     "action": "retry-with-key"
+    }
+   },
+   {
+    "name": "after ten minutes the key has expired: hold, never repeat it",
+    "input": {
+     "record": {
+      "key": "OPP-2210:FINAL",
+      "firstAttemptAt": "2027-02-01T10:00:00"
+     },
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:10:00"
+    },
+    "expect": {
+     "action": "hold-for-review",
+     "reason": "key-expired",
+     "showLikelyMatches": true
     }
    },
    {
@@ -1618,10 +1694,11 @@
      "record": {
       "key": "OPP-2210:BAL"
      },
-     "idempotencySupported": true
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:00:00"
     },
     "expect": {
-     "action": "retry-with-key",
+     "action": "create-with-key",
      "key": "OPP-2210:BAL"
     }
    },
@@ -1629,9 +1706,11 @@
     "name": "month two has its own key",
     "input": {
      "record": {
-      "key": "OPP-2210:2027-02"
+      "key": "OPP-2210:2027-02",
+      "firstAttemptAt": "2027-02-01T10:00:00"
      },
-     "idempotencySupported": true
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:02:00"
     },
     "expect": {
      "action": "retry-with-key",
@@ -1645,7 +1724,8 @@
       "key": "OPP-2210:FINAL",
       "inFlight": true
      },
-     "idempotencySupported": true
+     "idempotencySupported": true,
+     "now": "2027-02-01T10:00:00"
     },
     "expect": {
      "action": "wait"
@@ -1657,7 +1737,8 @@
      "record": {
       "key": "OPP-2210:FINAL"
      },
-     "idempotencySupported": false
+     "idempotencySupported": false,
+     "now": "2027-02-01T10:00:00"
     },
     "expect": {
      "action": "hold-for-review",
@@ -1894,10 +1975,10 @@
    "REQ-19"
   ],
   "steps": [
-   "At the end of a day, count the deals won and jobs completed.",
-   "Check each one is a draft, a scheduled invoice or on the failures list."
+   "At the end of a day, count the deals won and the jobs completed.",
+   "Check each one is a draft, a scheduled invoice, held with a reason, on the failures list, or a repair still awaiting completion."
   ],
-  "expected": "Every one is accounted for. Anything that is in none of those places is listed as missing.",
+  "expected": "Every one is accounted for. A repair that is not finished yet is not a missing invoice. Anything in none of those places is listed as missing.",
   "fn": "reconcile",
   "cases": [
    {
@@ -1919,7 +2000,7 @@
       },
       {
        "id": "OPP-3",
-       "as": "exception"
+       "as": "failed"
       }
      ]
     },
@@ -1927,7 +2008,7 @@
      "ok": true,
      "counts.expected": 3,
      "counts.drafts": 2,
-     "counts.exceptions": 1
+     "counts.failed": 1
     }
    },
    {
@@ -1954,6 +2035,41 @@
      "missing": [
       "OPP-2"
      ]
+    }
+   },
+   {
+    "name": "held and awaiting completion are accounted for",
+    "input": {
+     "expected": [
+      "OPP-1",
+      "OPP-2",
+      "OPP-3",
+      "OPP-4"
+     ],
+     "handled": [
+      {
+       "id": "OPP-1",
+       "as": "draft"
+      },
+      {
+       "id": "OPP-2",
+       "as": "held"
+      },
+      {
+       "id": "OPP-3",
+       "as": "awaiting"
+      },
+      {
+       "id": "OPP-4",
+       "as": "scheduled"
+      }
+     ]
+    },
+    "expect": {
+     "ok": true,
+     "counts.held": 1,
+     "counts.awaiting": 1,
+     "counts.scheduled": 1
     }
    }
   ],
