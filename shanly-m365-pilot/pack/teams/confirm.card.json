@@ -1,0 +1,146 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "fallbackText": "A new email in the complaints mailbox needs a decision. Please open the Complaints register.",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "New email in the complaints mailbox",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Please check the reading below and confirm the type. Anything that might be a complaint is logged; only a person can decide that it is not.",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "From", "value": "@{outputs('Card_text')?['from']}" },
+        { "title": "Subject", "value": "@{outputs('Card_text')?['subject']}" },
+        { "title": "Received (UK time)", "value": "@{outputs('Card_text')?['receivedUk']}" },
+        { "title": "Clock starts if logged", "value": "@{outputs('Card_text')?['clockStarts']}" }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Start of the email",
+      "weight": "Bolder",
+      "spacing": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "@{outputs('Card_text')?['preview']}",
+      "wrap": true
+    },
+    {
+      "type": "Container",
+      "style": "emphasis",
+      "spacing": "Medium",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Suggested reading",
+          "weight": "Bolder",
+          "wrap": true
+        },
+        {
+          "type": "FactSet",
+          "facts": [
+            { "title": "Suggested type", "value": "@{outputs('Card_text')?['suggestedTypeLabel']}" },
+            { "title": "Possible emergency", "value": "@{outputs('Card_text')?['emergency']}" },
+            { "title": "Confidence", "value": "@{outputs('Card_text')?['confidence']}" },
+            { "title": "Issues found", "value": "@{outputs('Card_text')?['issues']}" }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "@{outputs('Card_text')?['reason']}",
+          "isSubtle": true,
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "type",
+      "label": "Type",
+      "isRequired": true,
+      "errorMessage": "Please choose a type.",
+      "style": "expanded",
+      "value": "@{outputs('Card_text')?['suggestedType']}",
+      "choices": [
+        { "title": "Formal complaint", "value": "formal_complaint" },
+        { "title": "Aftercare item for the customer portal", "value": "aftercare_item" },
+        { "title": "General enquiry", "value": "general_enquiry" }
+      ]
+    },
+    {
+      "type": "Input.Text",
+      "id": "customerName",
+      "label": "Customer name",
+      "maxLength": 255,
+      "value": "@{outputs('Card_text')?['customerName']}"
+    },
+    {
+      "type": "Input.Text",
+      "id": "development",
+      "label": "Development",
+      "maxLength": 255,
+      "value": "@{outputs('Card_text')?['development']}"
+    },
+    {
+      "type": "Input.Text",
+      "id": "plot",
+      "label": "Plot",
+      "maxLength": 50,
+      "value": "@{outputs('Card_text')?['plot']}"
+    },
+    {
+      "type": "Input.Date",
+      "id": "reservationDate",
+      "label": "Reservation date, if known (decides which code applies)",
+      "value": "@{outputs('Card_text')?['reservationDate']}"
+    },
+    {
+      "type": "Input.Date",
+      "id": "completionDate",
+      "label": "Legal completion date, if known",
+      "value": "@{outputs('Card_text')?['completionDate']}"
+    },
+    {
+      "type": "Input.Text",
+      "id": "issues",
+      "label": "Issues raised, in short",
+      "isMultiline": true,
+      "maxLength": 1000,
+      "value": "@{outputs('Card_text')?['issues']}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Dates are not set here: the flow works out the initiation date and every due date from the published rules.",
+      "isSubtle": true,
+      "size": "Small",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "id": "confirm",
+      "title": "Confirm and log",
+      "data": { "decision": "confirm" }
+    },
+    {
+      "type": "Action.Submit",
+      "id": "notComplaint",
+      "title": "Not a complaint",
+      "data": { "decision": "notComplaint" }
+    }
+  ]
+}

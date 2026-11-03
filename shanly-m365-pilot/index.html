@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Every complaint date in view: a Microsoft 365 pilot for Shanly Homes</title>
+  <meta name="description" content="A small, tested Microsoft 365 pilot built from Shanly Homes' published complaints process, with Copilot drafting and a person approving. Independent work by Hemanth Vallamkonda for the AI and Business Solutions Graduate role.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Every complaint date in view: a Microsoft 365 pilot for Shanly Homes">
+  <meta property="og:description" content="Independent, illustrative work by Hemanth Vallamkonda for the AI and Business Solutions Graduate role at Shanly Group.">
+  <meta property="og:url" content="https://growthforge.github.io/applications/shanly-m365-pilot/">
+  <meta property="og:image" content="https://growthforge.github.io/applications/shanly-m365-pilot/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/charis-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/print.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="assets/components.js"></script>
+  <script type="module" src="assets/pilot.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="topbar__name" href="#top">Hemanth Vallamkonda</a>
+      <nav aria-label="On this page">
+        <ul>
+          <li><a href="#built">Built before</a></li>
+          <li><a href="#pilot">The pilot</a></li>
+          <li><a href="#it">For IT</a></li>
+          <li><a href="build-pack.html">Build pack</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="indep"><span class="wrap" style="display:block">Independent work prepared for an application to Shanly Group. Not affiliated with or endorsed by Shanly.</span></p>
+  </header>
+
+  <main id="main">
+    <section class="hero hero--pilot" aria-labelledby="title" id="top">
+      <div class="wrap">
+        <div class="hero__grid">
+          <div>
+            <p class="eyebrow">Application for the AI &amp; Business Solutions Graduate role</p>
+            <h1 id="title">A small pilot that keeps every complaint date in view</h1>
+            <p class="lede" data-src="S1">Shanly Homes publishes a timetable for formal complaints: replies within 5, 10, 30 and 56 days, then at least every 28. I designed a small Microsoft 365 tool around it. It works out every date as soon as a complaint arrives, reminds the team before each one falls due, and has Copilot draft the letters for a person to approve.</p>
+            <p class="hero__honest">The date rules are built and tested here. The SharePoint, Teams and Power Automate parts are designed and checked against Microsoft's published formats, but nothing has been installed in a live Microsoft 365 tenant.</p>
+            <div class="cluster hero__actions">
+              <a class="btn" href="#pilot">Try the pilot</a>
+              <a class="btn btn--ghost" href="build-pack.html">Open the build pack</a>
+            </div>
+          </div>
+          <ul class="hero__facts">
+            <li><strong>From your published process</strong>The rules come from the customer care and New Homes Quality Code pages on shanlyhomes.com.</li>
+            <li><strong>The simplest version first</strong>One SharePoint list with the date formulas and one daily reminder in Teams. Everything else is optional.</li>
+            <li><strong>Rules set the dates</strong>Copilot only reads emails and drafts letters. It never picks a date or sends anything.</li>
+          </ul>
+        </div>
+
+        <figure class="clock" data-src="S1" aria-labelledby="clock-cap">
+          <p class="label clock__scale" aria-hidden="true">Days from the start, to scale</p>
+          <div class="clock__track" aria-hidden="true">
+            <span class="clock__tick" style="--at: 0%">0</span>
+            <span class="clock__tick" style="--at: 5.95%">5</span>
+            <span class="clock__tick" style="--at: 11.9%">10</span>
+            <span class="clock__tick" style="--at: 35.7%">30</span>
+            <span class="clock__tick" style="--at: 66.7%">56</span>
+            <span class="clock__tick" style="--at: 100%">84</span>
+          </div>
+          <ol class="clock__list">
+            <li class="clock__item"><span class="clock__day">Day 0</span><span><span class="clock__what">The clock starts</span><span class="clock__note">First working day after the complaint arrives</span></span></li>
+            <li class="clock__item"><span class="clock__day">Day 5</span><span><span class="clock__what">Acknowledge</span><span class="clock__note">Confirm the complaint is received</span></span></li>
+            <li class="clock__item"><span class="clock__day">Day 10</span><span><span class="clock__what">Proposed pathway</span><span class="clock__note">How it will be resolved, with timescales</span></span></li>
+            <li class="clock__item"><span class="clock__day">Day 30</span><span><span class="clock__what">Full assessment</span><span class="clock__note">The current position in full</span></span></li>
+            <li class="clock__item"><span class="clock__day">Day 56</span><span><span class="clock__what">Next steps</span><span class="clock__note">If it is not yet resolved</span></span></li>
+            <li class="clock__item"><span class="clock__day">Then</span><span><span class="clock__what">Every 28 days</span><span class="clock__note">Updates until it is concluded</span></span></li>
+          </ol>
+          <figcaption id="clock-cap">Calendar days from the complaint initiation date, as set out on the Shanly Homes customer care page (read 3 November 2026).</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="built" aria-labelledby="built-h">
+      <div class="wrap stack stack--loose">
+        <div class="section__intro">
+          <p class="label">Several examples</p>
+          <h2 id="built-h">What I have built, why, and how</h2>
+          <p>Your advert asks to see what candidates have built, why and how. Each of these was taken up by the people it was built for. Client systems are described, not shown; I would be glad to walk you through them in an interview.</p>
+        </div>
+        <div class="grid">
+          <article class="card build" data-fact="hv">
+            <p class="label">MTest Labs, a software-testing firm · AI build, from December 2025</p>
+            <h3>An AI test-design tool the testers run themselves</h3>
+            <dl>
+              <dt>Why</dt><dd>Designing tests by hand took a full 8-hour day, or 2 to 3 days on larger projects.</dd>
+              <dt>How</dt><dd>A simple interface gathers the project documents and asks a short set of questions; staged AI agents then draft the scenarios and cases from the firm's own test library and past issue logs. A chat assistant lets the team ask questions of the firm's knowledge.</dd>
+              <dt>Who adopted it</dt><dd>The testers. A tester approves every case before it reaches a client, and I trained the team to run it.</dd>
+            </dl>
+            <p class="build__result">Test design now takes 1 to 3 supervised hours.</p>
+          </article>
+          <article class="card build" data-fact="hv">
+            <p class="label">Atelier di Venice, an interior-design business · automation, from December 2025</p>
+            <h3>One connected system, from first enquiry to delivery</h3>
+            <dl>
+              <dt>Why</dt><dd>Operations, marketing and finance steps were handled separately and by hand.</dd>
+              <dt>How</dt><dd>I mapped the business end to end, then automated the steps through low-code automation and APIs, connecting tools it already had. A Power BI dashboard replaced a monthly pack that was rekeyed by hand. Low-risk steps run on their own; client and financial steps stay with a person.</dd>
+              <dt>Who adopted it</dt><dd>The owner, whom I trained to run it day to day.</dd>
+            </dl>
+            <p class="build__result">Dozens of automated workflows, run by the owner.</p>
+          </article>
+          <article class="card build" data-fact="hv">
+            <p class="label">Bnk To The Future, a regulated investment platform · process redesign, September 2023 to September 2024</p>
+            <h3>A simpler way to route, triage and escalate cases</h3>
+            <dl>
+              <dt>Why</dt><dd>Cases were slow to move, and the evidence behind each decision was inconsistent.</dd>
+              <dt>How</dt><dd>I simplified the process before automating any of it, set clear evidence standards, and created a template for each step.</dd>
+              <dt>Who adopted it</dt><dd>Colleagues across the firm adopted the templates.</dd>
+            </dl>
+            <p class="build__result">~25% faster turnaround across 100+ cases.</p>
+          </article>
+        </div>
+        <details class="more">
+          <summary>Two more, from earlier finance and operations roles</summary>
+          <div class="grid grid--2 more__grid">
+            <p class="card card--flat" data-fact="hv"><strong>Kuruvella &amp; Co., an accountancy practice.</strong> Excel dashboards and VBA macros for the monthly reporting pack across 30+ SME client entities, inside the tools the practice already used: ~35% less report preparation time.</p>
+            <p class="card card--flat" data-fact="hv"><strong>AirTM, payments.</strong> SQL queries and live dashboards in place of manual tracking, with each fix written up as a standard procedure: ~30% backlog reduction, a 150-case backlog cleared in three weeks, and a 95%+ service level.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" id="pilot" aria-labelledby="pilot-h">
+      <div class="wrap stack stack--loose">
+        <div class="section__intro">
+          <p class="label">Try it</p>
+          <h2 id="pilot-h">The pilot, in three steps</h2>
+          <p>Pick an email, check the first read, log it, move the date forward to see a reminder, then approve the first letter. The examples are set around this coming Christmas to show how bank holidays move the clock. The first reads and drafts are my prompts' real output on these emails, from a smoke test on a stand-in model (Claude Haiku); in the pilot, Copilot does this step.</p>
+        </div>
+        <div class="pilot" data-illustrative>
+          <div class="pilot__head">
+            <p class="cluster"><span class="badge badge--accent">Illustrative data</span><span class="hint">Fictional customers and developments. Nothing is sent.</span></p>
+            <button class="btn btn--ghost js-only" type="button" data-reset>Start again</button>
+          </div>
+
+          <div class="no-js-only stack" data-static>
+            <h3>Worked example</h3>
+            <p><strong>The email.</strong> Received on Thursday 24 December 2026 from a fictional customer at Plot 14, Orchard Rise (fictional): a repair agreed for four weeks has not been done, two visits were cancelled, and she asks for a formal complaint. She reserved on 9 January 2025 and completed on 27 June 2025.</p>
+            <p><strong>What Copilot read.</strong> Formal complaint, high confidence, because of "Please treat this as a formal complaint". A coordinator confirms it.</p>
+            <div class="table-wrap" role="region" aria-label="Register row for the worked example" tabindex="0">
+              <table class="table">
+                <caption>Illustrative register row</caption>
+                <thead><tr><th scope="col">Item</th><th scope="col">Date</th><th scope="col">Why</th></tr></thead>
+                <tbody>
+                  <tr><td>Clock starts</td><td>Tue 29 Dec 2026</td><td>Fri 25 Dec and Mon 28 Dec are bank holidays, with the weekend in between</td></tr>
+                  <tr><td>Acknowledge (day 5)</td><td>Sun 3 Jan 2027</td><td>Falls on a Sunday, so the suggested send-by date is Thu 31 Dec 2026</td></tr>
+                  <tr><td>Proposed pathway (day 10)</td><td>Fri 8 Jan 2027</td><td></td></tr>
+                  <tr><td>Full assessment (day 30)</td><td>Thu 28 Jan 2027</td><td></td></tr>
+                  <tr><td>Next steps if unresolved (day 56)</td><td>Tue 23 Feb 2027</td><td></td></tr>
+                  <tr><td>Code</td><td>New Homes Quality Code, version 1</td><td>Reserved 9 Jan 2025</td></tr>
+                  <tr><td>Two-year window</td><td>Until 27 Jun 2027</td><td>Two years from completion, the later date</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>The letter.</strong> Copilot drafts the acknowledgement; the register fills in "by Friday 8 January 2027" for the proposed pathway. A person ticks "I have read and checked this letter" before it can be approved and sent, and the approval is recorded.</p>
+          </div>
+
+          <div class="js-only" data-app></div>
+          <p class="visually-hidden" aria-live="polite" data-live></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="it" aria-labelledby="it-h">
+      <div class="wrap two-col">
+        <div class="stack">
+          <p class="label">Why this process</p>
+          <h2 id="it-h">Public rules, easy to check</h2>
+          <p>I chose this process because its rules are public and precise enough to test against, not because anything needs fixing.</p>
+          <p data-src="S1 S11">A formal complaint can be raised for two years from reservation or legal completion, whichever is later, and from day 56 a customer may refer it to the New Homes Ombudsman Service.</p>
+          <p data-src="S2">Three codes apply at once, chosen by the reservation date: the Consumer Code for Home Builders before 2 August 2023, version 1 of the New Homes Quality Code from 2 August 2023 to 1 March 2026, and version 2 from 2 March 2026. The register suggests the right one and a person confirms it.</p>
+          <div class="callout callout--note" role="note" aria-labelledby="unknown-h">
+            <p class="callout__title" id="unknown-h">What I do not know yet</p>
+            <p>How the Complaints Team logs complaints today, how many arrive, who signs the letters, and whether a register already exists. Aftercare items already run through Clixifix, which the business chose, and Clixifix also offers a complaints module, so some of this may already be covered. If so, the same method moves to the next process you choose.</p>
+          </div>
+        </div>
+        <div class="stack">
+          <h3>How it would run</h3>
+          <ol class="flow" aria-label="How a complaint moves through the pilot">
+            <li><span class="flow__part">A complaint arrives in the shared mailbox</span><span class="flow__tool">Outlook</span></li>
+            <li class="flow--person"><span class="flow__part">A coordinator confirms the type and dates on a Teams card</span><span class="flow__tool">Power Automate and Teams</span></li>
+            <li><span class="flow__part">The register works out every due date by formula</span><span class="flow__tool">SharePoint list</span></li>
+            <li><span class="flow__part">A daily reminder goes out two working days before each date</span><span class="flow__tool">Power Automate and Teams</span></li>
+            <li class="flow--person"><span class="flow__part">Copilot drafts the letter; a person approves and sends it</span><span class="flow__tool">Copilot in Outlook or Copilot Chat, Approvals</span></li>
+          </ol>
+          <h3>Questions I would expect from IT</h3>
+          <ul class="checklist">
+            <li><strong>Licensing:</strong> standard connectors only (Outlook, SharePoint, Teams, Approvals). The automated AI step is a later option, after a licensing check.</li>
+            <li><strong>Ownership:</strong> a service account with at least two co-owners, in a solution outside the default environment.</li>
+            <li><strong>Failure:</strong> run-failure alerts, plus a short daily "clock ran" message so a missed day is obvious.</li>
+            <li><strong>Personal data:</strong> stays in the tenant; the register is restricted to the Complaints Team; retention agreed with your data protection lead, and a DPIA before any automated AI step.</li>
+            <li><strong>Upkeep and exit:</strong> a yearly bank-holiday refresh from GOV.UK; turn the flows off and the team carries on by hand.</li>
+          </ul>
+          <p><a href="build-pack.html#for-it">The build pack and the handover note</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-h">
+      <div class="wrap wrap--narrow stack">
+        <p class="label">How I went about it</p>
+        <h2 id="how-h">Rules first, then AI where it helps</h2>
+        <ul class="checklist">
+          <li><strong>The rules became tests before anything else:</strong> Shanly Homes' own examples, Easter, Christmas, the code boundaries and the two-year window. Every test passes.</li>
+          <li><strong>Dates by formula:</strong> due dates are SharePoint formulas anyone can read; AI only reads emails and drafts letters.</li>
+          <li><strong>Prompts checked before suggesting them:</strong> a smoke test on illustrative emails written separately from the prompt. The first run failed because the prompt left out three fields; both runs are in the build pack.</li>
+          <li><strong>Agent-led build, checked at every step:</strong> as on client work, I directed AI coding agents (Claude Code) and made the checks part of the build, so every date rule has its own test and every Microsoft file is validated automatically before anyone relies on it. The results are in the build pack.</li>
+          <li><strong>If you choose this,</strong> I would start by spending time with the Complaints Team to see how complaints are handled today, then trial it alongside the current process.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="contact" aria-labelledby="contact-h">
+      <div class="wrap wrap--narrow contact">
+        <h2 id="contact-h">Contact</h2>
+        <p>In an interview I can run the pilot, explain the date rules line by line, and build the intake step in Power Automate with you. I would also like to hear which process the Group would most like to make simpler first.</p>
+        <p><a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a> · <a href="tel:+447553909828">+44 7553 909828</a></p>
+        <p class="hint">Right to work in the UK; no sponsorship required.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Shanly Group. Independent and illustrative; uses public information only.</p>
+      <p>Shanly Homes, Sorbon Estates and Clixifix are named only to describe public information. The rules quoted come from shanlyhomes.com, read 3 November 2026; bank holidays from GOV.UK under the Open Government Licence v3.0. Fonts: Charis SIL and Inter, SIL Open Font Licence. A <a href="deliverable.pdf">PDF version</a> is available.</p>
+    </div>
+  </footer>
+</body>
+</html>

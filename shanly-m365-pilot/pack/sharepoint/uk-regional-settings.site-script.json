@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/site-design-script-actions.schema.json",
+  "actions": [
+    {
+      "verb": "setRegionalSettings",
+      "timeZone": 2,
+      "locale": 2057,
+      "sortOrder": 25,
+      "hourFormat": "24"
+    }
+  ]
+}

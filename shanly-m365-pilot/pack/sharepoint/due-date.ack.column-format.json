@@ -1,0 +1,56 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "style": {
+    "display": "flex",
+    "align-items": "center",
+    "flex-wrap": "wrap"
+  },
+  "children": [
+    {
+      "elmType": "span",
+      "style": {
+        "margin-right": "6px",
+        "white-space": "nowrap"
+      },
+      "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 5)))"
+    },
+    {
+      "elmType": "span",
+      "attributes": {
+        "title": "Acknowledgement: due 5 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+      },
+      "style": {
+        "display": "inline-flex",
+        "align-items": "center",
+        "padding": "1px 8px",
+        "border-radius": "10px",
+        "font-size": "12px",
+        "font-weight": "600",
+        "white-space": "nowrap",
+        "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#0B5A0B', if(length([$AckSent]) > 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now >= addDays([$InitiationDate], 6), '#8E1F25', if(@now >= addDays([$InitiationDate], 3), '#5C4300', '#004578'))))))",
+        "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#DFF6DD', if(length([$AckSent]) > 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now >= addDays([$InitiationDate], 6), '#FDE7E9', if(@now >= addDays([$InitiationDate], 3), '#FFF4CE', '#EFF6FC'))))))"
+      },
+      "children": [
+        {
+          "elmType": "span",
+          "attributes": {
+            "aria-hidden": "true"
+          },
+          "style": {
+            "display": "inline-block",
+            "width": "8px",
+            "height": "8px",
+            "border-radius": "50%",
+            "margin-right": "5px",
+            "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#107C10', if(length([$AckSent]) > 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now >= addDays([$InitiationDate], 6), '#A4262C', if(@now >= addDays([$InitiationDate], 3), '#8A6400', '#0067B8'))))))"
+          }
+        },
+        {
+          "elmType": "span",
+          "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), 'Sent', if(length([$AckSent]) > 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now >= addDays([$InitiationDate], 6), 'Overdue', if(@now >= addDays([$InitiationDate], 3), 'Due soon', 'On track'))))))"
+        }
+      ]
+    }
+  ]
+}

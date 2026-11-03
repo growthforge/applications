@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build pack: the Microsoft 365 complaints pilot for Shanly Homes</title>
+  <meta name="description" content="The files behind the pilot: SharePoint set-up, Teams cards, flow recipes, the Copilot prompts, smoke-test results, a handover note for IT and a trial plan. Independent work by Hemanth Vallamkonda.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Build pack: the Microsoft 365 complaints pilot for Shanly Homes">
+  <meta property="og:description" content="Independent, illustrative work by Hemanth Vallamkonda for the AI and Business Solutions Graduate role at Shanly Group.">
+  <meta property="og:url" content="https://growthforge.github.io/applications/shanly-m365-pilot/build-pack.html">
+  <meta property="og:image" content="https://growthforge.github.io/applications/shanly-m365-pilot/og.png">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/print.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="assets/components.js"></script>
+  <script type="module" src="assets/calc.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="topbar__name" href="index.html">Hemanth Vallamkonda</a>
+      <nav aria-label="Build pack">
+        <ul>
+          <li><a href="index.html">The pilot</a></li>
+          <li><a href="#check">Check a date</a></li>
+          <li><a href="#flows">Flows</a></li>
+          <li><a href="#for-it">For IT</a></li>
+          <li><a href="pack.zip">Download the pack</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="indep"><span class="wrap" style="display:block">Independent work prepared for an application to Shanly Group. Not affiliated with or endorsed by Shanly.</span></p>
+  </header>
+
+  <main id="main">
+    <section class="hero hero--pilot" aria-labelledby="title">
+      <div class="wrap wrap--narrow stack">
+        <p class="eyebrow">The files behind the pilot</p>
+        <h1 id="title">Build pack</h1>
+        <p class="lede">Everything IT and an external partner would need to review the pilot, in the formats Microsoft 365 uses: a SharePoint set-up script, Teams cards, flow recipes, the Copilot prompts, the rules engine with its tests, a handover note and a trial plan.</p>
+        <p class="callout callout--note" role="note"><strong>Status.</strong> Validated against Microsoft's published schemas and tested here. Not yet imported into a live tenant: if a trial goes ahead, importing it into a test site with the IT Manager comes first.</p>
+        <p class="cluster"><a class="btn" href="pack.zip">Download the pack (zip)</a><a class="btn btn--ghost" href="index.html#pilot">Back to the pilot</a></p>
+      </div>
+    </section>
+
+    <section class="section" id="for-it" aria-labelledby="for-it-h">
+      <div class="wrap wrap--narrow stack">
+        <h2 id="for-it-h">For IT, in a minute</h2>
+        <ul class="checklist">
+          <li><strong>What it is:</strong> a SharePoint list that works out each complaint's due dates by formula, a daily Power Automate flow that reminds the owner in Teams, and an approval step before any letter is sent. Copilot drafts letters; it never sets a date or sends anything.</li>
+          <li><strong>Smallest useful version:</strong> the list and the daily reminder only. The confirmation card, the letter approval and the automated AI step are optional layers.</li>
+          <li><strong>Licensing:</strong> standard connectors only (Outlook, SharePoint, Teams, Approvals). The automated AI step would need Copilot Credits and a Dataverse environment, so it waits for a licensing check and a DPIA.</li>
+          <li><strong>Ownership and failure:</strong> a service account with co-owners, a solution outside the default environment, run-failure alerts and a daily "clock ran" message.</li>
+          <li><strong>Not verified yet:</strong> behaviour after import into a tenant (calculated columns, card response paths, date formats). The handover note lists each item.</li>
+        </ul>
+        <p><a href="#handover">Handover note</a> · <a href="#flows">Flow recipes</a> · <a href="#checks">Automated checks</a></p>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="check" aria-labelledby="check-h">
+      <div class="wrap wrap--narrow stack">
+        <h2 id="check-h">Check any date</h2>
+        <p>The same engine as the mock-up. Enter when a complaint arrived and, if known, the reservation and completion dates.</p>
+        <form class="calc" data-calc novalidate>
+          <div class="fields">
+            <div class="field"><label for="c-rec">Complaint received</label><input id="c-rec" type="date" name="received" value="2026-12-24" required></div>
+            <div class="field"><label for="c-res">Reservation date</label><input id="c-res" type="date" name="reservation" value="2025-01-09"></div>
+            <div class="field"><label for="c-comp">Completion date</label><input id="c-comp" type="date" name="completion" value="2025-06-27"></div>
+          </div>
+        </form>
+        <div class="calc__out" data-illustrative aria-live="polite" data-calc-out>
+          <p class="hint">Illustrative example: received Thursday 24 December 2026. The clock starts Tuesday 29 December 2026; acknowledge by Sunday 3 January 2027 (suggested send-by Thursday 31 December 2026); proposed pathway by Friday 8 January 2027; full assessment by Thursday 28 January 2027; next steps by Tuesday 23 February 2027.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contents" aria-labelledby="contents-h">
+      <div class="wrap wrap--narrow stack">
+        <h2 id="contents-h">What is in the pack</h2>
+        <div class="table-wrap" role="region" tabindex="0" aria-label="Files in the build pack"><table class="table table--stack"><caption>Every file in the pack (the zip holds the same files)</caption><thead><tr><th scope="col">File</th><th scope="col">What it is</th></tr></thead><tbody><tr><td data-label="File"><a href="pack/CHECKS.md"><code>CHECKS.md</code></a></td><td data-label="What it is">The automated checks run on the pack and their results</td></tr><tr><td data-label="File"><a href="pack/HANDOVER.md"><code>HANDOVER.md</code></a></td><td data-label="What it is">Support note for the IT Manager</td></tr><tr><td data-label="File"><a href="pack/README.md"><code>README.md</code></a></td><td data-label="What it is">How to use the pack, in order</td></tr><tr><td data-label="File"><a href="pack/TRIAL_PLAN.md"><code>TRIAL_PLAN.md</code></a></td><td data-label="What it is">The seven-week trial and the five-person test</td></tr><tr><td data-label="File"><a href="pack/ai/eval/RESULTS.md"><code>ai/eval/RESULTS.md</code></a></td><td data-label="What it is">Smoke-test results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/cases.jsonl"><code>ai/eval/cases.jsonl</code></a></td><td data-label="What it is">Illustrative test emails with expected answers</td></tr><tr><td data-label="File"><a href="pack/ai/eval/demo-cases.jsonl"><code>ai/eval/demo-cases.jsonl</code></a></td><td data-label="What it is">The mock-up&#x27;s four emails</td></tr><tr><td data-label="File"><a href="pack/ai/eval/runs/run1-RESULTS.md"><code>ai/eval/runs/run1-RESULTS.md</code></a></td><td data-label="What it is">Smoke-test run: raw answers or scored results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/runs/run1-haiku-outputs.jsonl"><code>ai/eval/runs/run1-haiku-outputs.jsonl</code></a></td><td data-label="What it is">Smoke-test run: raw answers or scored results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/runs/run2-RESULTS-blind.md"><code>ai/eval/runs/run2-RESULTS-blind.md</code></a></td><td data-label="What it is">Smoke-test run: raw answers or scored results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/runs/run2-RESULTS-demo.md"><code>ai/eval/runs/run2-RESULTS-demo.md</code></a></td><td data-label="What it is">Smoke-test run: raw answers or scored results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/runs/run2-haiku-outputs.jsonl"><code>ai/eval/runs/run2-haiku-outputs.jsonl</code></a></td><td data-label="What it is">Smoke-test run: raw answers or scored results</td></tr><tr><td data-label="File"><a href="pack/ai/eval/score.mjs"><code>ai/eval/score.mjs</code></a></td><td data-label="What it is">Model-agnostic scorer</td></tr><tr><td data-label="File"><a href="pack/ai/output-schema.json"><code>ai/output-schema.json</code></a></td><td data-label="What it is">The AI step&#x27;s output contract</td></tr><tr><td data-label="File"><a href="pack/ai/triage-prompt.md"><code>ai/triage-prompt.md</code></a></td><td data-label="What it is">Phase two: the AI Builder prompt</td></tr><tr><td data-label="File"><a href="pack/copilot/drafting-prompt.md"><code>copilot/drafting-prompt.md</code></a></td><td data-label="What it is">Phase one: the saved Copilot drafting prompt</td></tr><tr><td data-label="File"><a href="pack/engine/bank-holidays-england-wales.json"><code>engine/bank-holidays-england-wales.json</code></a></td><td data-label="What it is">GOV.UK bank holidays, Open Government Licence</td></tr><tr><td data-label="File"><a href="pack/engine/clock.js"><code>engine/clock.js</code></a></td><td data-label="What it is">The deadline rules, used by the mock-up and mirrored in the flows</td></tr><tr><td data-label="File"><a href="pack/engine/clock.test.mjs"><code>engine/clock.test.mjs</code></a></td><td data-label="What it is">Tests for every published rule (node --test)</td></tr><tr><td data-label="File"><a href="pack/power-automate/FLOWS.md"><code>power-automate/FLOWS.md</code></a></td><td data-label="What it is">The three flow recipes, step by step</td></tr><tr><td data-label="File"><a href="pack/sharepoint/complaints-register.site-script.json"><code>sharepoint/complaints-register.site-script.json</code></a></td><td data-label="What it is">Creates the Complaints register and UK bank holidays lists</td></tr><tr><td data-label="File"><a href="pack/sharepoint/due-date.ack.column-format.json"><code>sharepoint/due-date.ack.column-format.json</code></a></td><td data-label="What it is">Status formatting for the acknowledgement due date</td></tr><tr><td data-label="File"><a href="pack/sharepoint/due-date.assessment.column-format.json"><code>sharepoint/due-date.assessment.column-format.json</code></a></td><td data-label="What it is">Status formatting for the full assessment due date</td></tr><tr><td data-label="File"><a href="pack/sharepoint/due-date.nextsteps.column-format.json"><code>sharepoint/due-date.nextsteps.column-format.json</code></a></td><td data-label="What it is">Status formatting for the next-steps due date</td></tr><tr><td data-label="File"><a href="pack/sharepoint/due-date.pathway.column-format.json"><code>sharepoint/due-date.pathway.column-format.json</code></a></td><td data-label="What it is">Status formatting for the pathway due date</td></tr><tr><td data-label="File"><a href="pack/sharepoint/uk-regional-settings.site-script.json"><code>sharepoint/uk-regional-settings.site-script.json</code></a></td><td data-label="What it is">Optional: UK time zone and locale for the site</td></tr><tr><td data-label="File"><a href="pack/teams/confirm.card.json"><code>teams/confirm.card.json</code></a></td><td data-label="What it is">Teams card: the coordinator confirms type and dates</td></tr><tr><td data-label="File"><a href="pack/teams/reminder.card.json"><code>teams/reminder.card.json</code></a></td><td data-label="What it is">Teams card: the reminder before a date falls due</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="section" id="engine" aria-labelledby="engine-h"><div class="wrap wrap--narrow stack"><h2 id="engine-h">The rules engine and its tests</h2><p class="lede">The mock-up imports this file unchanged, and each flow expression is mapped to one of its functions.</p><p><a href="pack/engine/clock.js">engine/clock.js</a> · <a href="pack/engine/clock.test.mjs">engine/clock.test.mjs</a> · <a href="pack/engine/bank-holidays-england-wales.json">engine/bank-holidays-england-wales.json</a></p><p>Run the tests with Node:</p><pre><code>node --test pack/engine/clock.test.mjs</code></pre><details class="more"><summary>Show the tests</summary><pre><code>// Tests for clock.js. Run: node --test clock.test.mjs
+// Expected dates were worked out by hand from Shanly Homes' published rules and checked
+// against a calendar; bank holidays are England and Wales (GOV.UK).
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as c from './clock.js';
+
+const bh = JSON.parse(fs.readFileSync(new URL('./bank-holidays-england-wales.json', import.meta.url)));
+const H = c.holidaySet(bh.dates);
+
+test('published example: received Monday, initiation Tuesday', () =&gt; {
+  assert.equal(c.initiationDate('2026-11-02', H), '2026-11-03');
+});
+test('published example: received Saturday, initiation the next Monday', () =&gt; {
+  assert.equal(c.initiationDate('2026-11-07', H), '2026-11-09');
+});
+test('received Sunday: initiation Monday', () =&gt; {
+  assert.equal(c.initiationDate('2026-11-08', H), '2026-11-09');
+});
+test('received Friday: initiation Monday', () =&gt; {
+  assert.equal(c.initiationDate('2026-11-13', H), '2026-11-16');
+});
+test('bank holiday Monday is skipped (Spring bank holiday 2026)', () =&gt; {
+  assert.equal(c.initiationDate('2026-05-22', H), '2026-05-26');
+});
+test('Easter 2026: Good Friday and Easter Monday are skipped', () =&gt; {
+  assert.equal(c.initiationDate('2026-04-02', H), '2026-04-07');
+});
+test('Christmas 2026: 25 Dec and the substitute Boxing Day (28 Dec) are skipped', () =&gt; {
+  assert.equal(c.initiationDate('2026-12-24', H), '2026-12-29');
+});
+test('New Year 2027: received 31 Dec, 1 Jan is a bank holiday, initiation Monday 4 Jan', () =&gt; {
+  assert.equal(c.initiationDate('2026-12-31', H), '2027-01-04');
+});
+
+test('all four stage dates from a Monday receipt', () =&gt; {
+  const s = c.schedule('2026-11-09', H);
+  assert.equal(s.initiation, '2026-11-10');
+  assert.deepEqual(s.stages.map((x) =&gt; x.due), ['2026-11-15', '2026-11-20', '2026-12-10', '2027-01-05']);
+});
+test('a promise due on a Sunday must go by the Friday before', () =&gt; {
+  const ack = c.schedule('2026-11-09', H).stages[0];
+  assert.equal(ack.due, '2026-11-15');
+  assert.equal(ack.sendBy, '2026-11-13');
+});
+test('a promise due on a working day can go that day', () =&gt; {
+  const pathway = c.schedule('2026-11-09', H).stages[1];
+  assert.equal(pathway.due, '2026-11-20');
+  assert.equal(pathway.sendBy, '2026-11-20');
+});
+test('over Christmas: received 24 Dec, acknowledgement due Sun 3 Jan, send by Thu 31 Dec', () =&gt; {
+  const ack = c.schedule('2026-12-24', H).stages[0];
+  assert.equal(ack.due, '2027-01-03');
+  assert.equal(ack.sendBy, '2026-12-31');
+});
+test('updates every 28 days after day 56, chained from the letter that actually went', () =&gt; {
+  const planned = c.schedule('2026-11-09', H).updates.map((u) =&gt; u.due);
+  assert.deepEqual(planned, ['2027-02-02', '2027-03-02', '2027-03-30']);
+  const actual = c.schedule('2026-11-09', H, { sent: { nextSteps: '2026-12-31' } }).updates[0].due;
+...</code></pre></details></div></section>
+<section class="section" id="sharepoint" aria-labelledby="sharepoint-h"><div class="wrap wrap--narrow stack"><h2 id="sharepoint-h">SharePoint: the register and its formatting</h2><p class="lede">A site script that creates the Complaints register and the UK bank holidays list, with calculated due dates and views, plus the column formatting that shows each date&#x27;s status. For IT to review and run. Validated against Microsoft&#x27;s published schemas; not yet applied to a tenant.</p><div class="stack artefact"><h3>complaints-register.site-script.json</h3><p><a href="pack/sharepoint/complaints-register.site-script.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/site-design-script-actions.schema.json",
+  "actions": [
+    {
+      "verb": "createSPList",
+      "listName": "UK bank holidays",
+      "templateType": 100,
+      "subactions": [
+        {
+          "verb": "setDescription",
+          "description": "England and Wales bank holidays used by the complaints flows to find working days. Refresh once a year from GOV.UK (Open Government Licence v3.0)."
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{ecb01c83-da3e-5f5d-9b60-ba9745433f9f}\" Type=\"DateTime\" Name=\"HolidayDate\" StaticName=\"HolidayDate\" DisplayName=\"HolidayDate\" Description=\"Bank holiday date (England and Wales), copied from https://www.gov.uk/bank-holidays.json once a year. Put the holiday name in Title.\" Required=\"TRUE\" Format=\"DateOnly\" Indexed=\"TRUE\" EnforceUniqueValues=\"TRUE\" /&gt;",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPView",
+          "name": "Upcoming",
+          "viewFields": [
+            "LinkTitle",
+            "HolidayDate"
+          ],
+          "query": "&lt;OrderBy&gt;&lt;FieldRef Name=\"HolidayDate\" Ascending=\"TRUE\" /&gt;&lt;/OrderBy&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name=\"HolidayDate\" /&gt;&lt;Value Type=\"DateTime\"&gt;&lt;Today /&gt;&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": false,
+          "replaceViewFields": true
+        }
+      ]
+    },
+    {
+      "verb": "createSPList",
+      "listName": "Complaints register",
+      "templateType": 100,
+      "subactions": [
+        {
+          "verb": "setDescription",
+          "description": "Formal complaints register for the pilot: one row per complaint. Due dates are calendar days from the initiation date (5, 10, 30, 56, then updates at least every 28 days). Title holds the complaint reference."
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{18b3c56e-4e02-5e6b-ad41-d955554d005f}\" Type=\"Text\" Name=\"CustomerName\" StaticName=\"CustomerName\" DisplayName=\"CustomerName\" Description=\"Customer name as it appears in the email or letter.\" Required=\"FALSE\" MaxLength=\"255\" /&gt;",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{bd5b3ef2-b651-5b2e-af62-0ea973b409ab}\" Type=\"Text\" Name=\"CustomerEmail\" StaticName=\"CustomerEmail\" DisplayName=\"CustomerEmail\" Description=\"Address the acknowledgement and later letters go to.\" Required=\"FALSE\" MaxLength=\"255\" /&gt;",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{53dcdf37-23f5-5877-959d-ae33fccb7c36}\" Type=\"Text\" Name=\"Development\" StaticName=\"Development\" DisplayName=\"Development\" Description=\"Development name.\" Required=\"FALSE\" MaxLength=\"255\" /&gt;",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{6a382b91-885a-5927-ade4-f88bfac47eaa}\" Type=\"Text\" Name=\"Plot\" StaticName=\"Plot\" DisplayName=\"Plot\" Description=\"Plot number, if given.\" Required=\"FALSE\" MaxLength=\"255\" /&gt;",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{c7a18d74-7d20-5ac8-b366-1ce0b4e7139b}\" Type=\"DateTime\" Name=\"ReceivedDate\" StaticName=\"ReceivedDate\" DisplayName=\"ReceivedDate\" Description=\"Date and time the complaint arrived (stored in UTC by SharePoint, shown in the site time zone).\" Required=\"FALSE\" Format=\"DateTime\" /&gt;",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{e1a5da62-2943-563e-9064-c471f4ad8982}\" Type=\"DateTime\" Name=\"InitiationDate\" StaticName=\"InitiationDate\" DisplayName=\"InitiationDate\" Description=\"Complaint initiation date: the first working day after the complaint was received. Set by the intake flow; check it if entered by hand.\" Required=\"FALSE\" Format=\"DateOnly\" /&gt;",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{862c8c8e-ace6-5c11-a552-fa561341b7a0}\" Type=\"DateTime\" Name=\"ReservationDate\" StaticName=\"ReservationDate\" DisplayName=\"ReservationDate\" Description=\"Date of reservation, if known. Decides which code applies.\" Required=\"FALSE\" Format=\"DateOnly\" /&gt;",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "&lt;Field ID=\"{98fbaa5d-30a9-5149-af21-e228b150de26}\" Type=\"DateTime\" Name=\"CompletionDate\" StaticName=\"CompletionDate\" DisplayName=\"CompletionDate\" Description=\"Date of legal completion, if known.\" Required=\"FALSE\" Format=\"DateOnly\" /&gt;",
+          "addToDefaultView": false
+...</code></pre></details></div><div class="stack artefact"><h3>due-date.ack.column-format.json</h3><p><a href="pack/sharepoint/due-date.ack.column-format.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "style": {
+    "display": "flex",
+    "align-items": "center",
+    "flex-wrap": "wrap"
+  },
+  "children": [
+    {
+      "elmType": "span",
+      "style": {
+        "margin-right": "6px",
+        "white-space": "nowrap"
+      },
+      "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 5)))"
+    },
+    {
+      "elmType": "span",
+      "attributes": {
+        "title": "Acknowledgement: due 5 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+      },
+      "style": {
+        "display": "inline-flex",
+        "align-items": "center",
+        "padding": "1px 8px",
+        "border-radius": "10px",
+        "font-size": "12px",
+        "font-weight": "600",
+        "white-space": "nowrap",
+        "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$AckSent]) &gt; 0 &amp;&amp; [$AckSent] &lt; addDays([$InitiationDate], 6), '#0B5A0B', if(length([$AckSent]) &gt; 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now &gt;= addDays([$InitiationDate], 6), '#8E1F25', if(@now &gt;= addDays([$InitiationDate], 3), '#5C4300', '#004578'))))))",
+        "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$AckSent]) &gt; 0 &amp;&amp; [$AckSent] &lt; addDays([$InitiationDate], 6), '#DFF6DD', if(length([$AckSent]) &gt; 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now &gt;= addDays([$InitiationDate], 6), '#FDE7E9', if(@now &gt;= addDays([$InitiationDate], 3), '#FFF4CE', '#EFF6FC'))))))"
+      },
+      "children": [
+        {
+          "elmType": "span",
+          "attributes": {
+            "aria-hidden": "true"
+          },
+          "style": {
+            "display": "inline-block",
+            "width": "8px",
+            "height": "8px",
+            "border-radius": "50%",
+            "margin-right": "5px",
+            "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$AckSent]) &gt; 0 &amp;&amp; [$AckSent] &lt; addDays([$InitiationDate], 6), '#107C10', if(length([$AckSent]) &gt; 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now &gt;= addDays([$InitiationDate], 6), '#A4262C', if(@now &gt;= addDays([$InitiationDate], 3), '#8A6400', '#0067B8'))))))"
+          }
+        },
+        {
+          "elmType": "span",
+          "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$AckSent]) &gt; 0 &amp;&amp; [$AckSent] &lt; addDays([$InitiationDate], 6), 'Sent', if(length([$AckSent]) &gt; 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now &gt;= addDays([$InitiationDate], 6), 'Overdue', if(@now &gt;= addDays([$InitiationDate], 3), 'Due soon', 'On track'))))))"
+        }
+      ]
+    }
+  ]
+}
+</code></pre></details></div><div class="stack artefact"><h3>due-date.assessment.column-format.json</h3><p><a href="pack/sharepoint/due-date.assessment.column-format.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "style": {
+    "display": "flex",
+    "align-items": "center",
+    "flex-wrap": "wrap"
+  },
+  "children": [
+    {
+      "elmType": "span",
+      "style": {
+        "margin-right": "6px",
+        "white-space": "nowrap"
+      },
+      "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 30)))"
+    },
+    {
+      "elmType": "span",
+      "attributes": {
+        "title": "Full assessment: due 30 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+      },
+      "style": {
+        "display": "inline-flex",
+        "align-items": "center",
+        "padding": "1px 8px",
+        "border-radius": "10px",
+        "font-size": "12px",
+        "font-weight": "600",
+        "white-space": "nowrap",
+        "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$AssessmentSent]) &gt; 0 &amp;&amp; [$AssessmentSent] &lt; addDays([$InitiationDate], 31), '#0B5A0B', if(length([$AssessmentSent]) &gt; 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now &gt;= addDays([$InitiationDate], 31), '#8E1F25', if(@now &gt;= addDays([$InitiationDate], 28), '#5C4300', '#004578'))))))",
+        "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$AssessmentSent]) &gt; 0 &amp;&amp; [$AssessmentSent] &lt; addDays([$InitiationDate], 31), '#DFF6DD', if(length([$AssessmentSent]) &gt; 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now &gt;= addDays([$InitiationDate], 31), '#FDE7E9', if(@now &gt;= addDays([$InitiationDate], 28), '#FFF4CE', '#EFF6FC'))))))"
+      },
+      "children": [
+        {
+          "elmType": "span",
+          "attributes": {
+            "aria-hidden": "true"
+          },
+          "style": {
+            "display": "inline-block",
+            "width": "8px",
+            "height": "8px",
+            "border-radius": "50%",
+            "margin-right": "5px",
+            "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$AssessmentSent]) &gt; 0 &amp;&amp; [$AssessmentSent] &lt; addDays([$InitiationDate], 31), '#107C10', if(length([$AssessmentSent]) &gt; 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now &gt;= addDays([$InitiationDate], 31), '#A4262C', if(@now &gt;= addDays([$InitiationDate], 28), '#8A6400', '#0067B8'))))))"
+          }
+        },
+        {
+          "elmType": "span",
+          "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$AssessmentSent]) &gt; 0 &amp;&amp; [$AssessmentSent] &lt; addDays([$InitiationDate], 31), 'Sent', if(length([$AssessmentSent]) &gt; 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now &gt;= addDays([$InitiationDate], 31), 'Overdue', if(@now &gt;= addDays([$InitiationDate], 28), 'Due soon', 'On track'))))))"
+        }
+      ]
+    }
+  ]
+}
+</code></pre></details></div><div class="stack artefact"><h3>due-date.nextsteps.column-format.json</h3><p><a href="pack/sharepoint/due-date.nextsteps.column-format.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "style": {
+    "display": "flex",
+    "align-items": "center",
+    "flex-wrap": "wrap"
+  },
+  "children": [
+    {
+      "elmType": "span",
+      "style": {
+        "margin-right": "6px",
+        "white-space": "nowrap"
+      },
+      "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 56)))"
+    },
+    {
+      "elmType": "span",
+      "attributes": {
+        "title": "Next steps and timescales: due 56 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+      },
+      "style": {
+        "display": "inline-flex",
+        "align-items": "center",
+        "padding": "1px 8px",
+        "border-radius": "10px",
+        "font-size": "12px",
+        "font-weight": "600",
+        "white-space": "nowrap",
+        "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$NextStepsSent]) &gt; 0 &amp;&amp; [$NextStepsSent] &lt; addDays([$InitiationDate], 57), '#0B5A0B', if(length([$NextStepsSent]) &gt; 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now &gt;= addDays([$InitiationDate], 57), '#8E1F25', if(@now &gt;= addDays([$InitiationDate], 54), '#5C4300', '#004578'))))))",
+        "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$NextStepsSent]) &gt; 0 &amp;&amp; [$NextStepsSent] &lt; addDays([$InitiationDate], 57), '#DFF6DD', if(length([$NextStepsSent]) &gt; 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now &gt;= addDays([$InitiationDate], 57), '#FDE7E9', if(@now &gt;= addDays([$InitiationDate], 54), '#FFF4CE', '#EFF6FC'))))))"
+      },
+      "children": [
+        {
+          "elmType": "span",
+          "attributes": {
+            "aria-hidden": "true"
+          },
+          "style": {
+            "display": "inline-block",
+            "width": "8px",
+            "height": "8px",
+            "border-radius": "50%",
+            "margin-right": "5px",
+            "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$NextStepsSent]) &gt; 0 &amp;&amp; [$NextStepsSent] &lt; addDays([$InitiationDate], 57), '#107C10', if(length([$NextStepsSent]) &gt; 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now &gt;= addDays([$InitiationDate], 57), '#A4262C', if(@now &gt;= addDays([$InitiationDate], 54), '#8A6400', '#0067B8'))))))"
+          }
+        },
+        {
+          "elmType": "span",
+          "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$NextStepsSent]) &gt; 0 &amp;&amp; [$NextStepsSent] &lt; addDays([$InitiationDate], 57), 'Sent', if(length([$NextStepsSent]) &gt; 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now &gt;= addDays([$InitiationDate], 57), 'Overdue', if(@now &gt;= addDays([$InitiationDate], 54), 'Due soon', 'On track'))))))"
+        }
+      ]
+    }
+  ]
+}
+</code></pre></details></div><div class="stack artefact"><h3>due-date.pathway.column-format.json</h3><p><a href="pack/sharepoint/due-date.pathway.column-format.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "style": {
+    "display": "flex",
+    "align-items": "center",
+    "flex-wrap": "wrap"
+  },
+  "children": [
+    {
+      "elmType": "span",
+      "style": {
+        "margin-right": "6px",
+        "white-space": "nowrap"
+      },
+      "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 10)))"
+    },
+    {
+      "elmType": "span",
+      "attributes": {
+        "title": "Proposed pathway to resolution: due 10 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+      },
+      "style": {
+        "display": "inline-flex",
+        "align-items": "center",
+        "padding": "1px 8px",
+        "border-radius": "10px",
+        "font-size": "12px",
+        "font-weight": "600",
+        "white-space": "nowrap",
+        "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$PathwaySent]) &gt; 0 &amp;&amp; [$PathwaySent] &lt; addDays([$InitiationDate], 11), '#0B5A0B', if(length([$PathwaySent]) &gt; 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now &gt;= addDays([$InitiationDate], 11), '#8E1F25', if(@now &gt;= addDays([$InitiationDate], 8), '#5C4300', '#004578'))))))",
+        "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$PathwaySent]) &gt; 0 &amp;&amp; [$PathwaySent] &lt; addDays([$InitiationDate], 11), '#DFF6DD', if(length([$PathwaySent]) &gt; 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now &gt;= addDays([$InitiationDate], 11), '#FDE7E9', if(@now &gt;= addDays([$InitiationDate], 8), '#FFF4CE', '#EFF6FC'))))))"
+      },
+      "children": [
+        {
+          "elmType": "span",
+          "attributes": {
+            "aria-hidden": "true"
+          },
+          "style": {
+            "display": "inline-block",
+            "width": "8px",
+            "height": "8px",
+            "border-radius": "50%",
+            "margin-right": "5px",
+            "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$PathwaySent]) &gt; 0 &amp;&amp; [$PathwaySent] &lt; addDays([$InitiationDate], 11), '#107C10', if(length([$PathwaySent]) &gt; 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now &gt;= addDays([$InitiationDate], 11), '#A4262C', if(@now &gt;= addDays([$InitiationDate], 8), '#8A6400', '#0067B8'))))))"
+          }
+        },
+        {
+          "elmType": "span",
+          "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$PathwaySent]) &gt; 0 &amp;&amp; [$PathwaySent] &lt; addDays([$InitiationDate], 11), 'Sent', if(length([$PathwaySent]) &gt; 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now &gt;= addDays([$InitiationDate], 11), 'Overdue', if(@now &gt;= addDays([$InitiationDate], 8), 'Due soon', 'On track'))))))"
+        }
+      ]
+    }
+  ]
+}
+</code></pre></details></div><div class="stack artefact"><h3>uk-regional-settings.site-script.json</h3><p><a href="pack/sharepoint/uk-regional-settings.site-script.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/site-design-script-actions.schema.json",
+  "actions": [
+    {
+      "verb": "setRegionalSettings",
+      "timeZone": 2,
+      "locale": 2057,
+      "sortOrder": 25,
+      "hourFormat": "24"
+    }
+  ]
+}
+</code></pre></details></div></div></section>
+<section class="section" id="cards" aria-labelledby="cards-h"><div class="wrap wrap--narrow stack"><h2 id="cards-h">Teams cards</h2><p class="lede">The coordinator&#x27;s confirmation card and the reminder card, as Adaptive Cards for Teams. Validated against the Adaptive Card schema.</p><div class="stack artefact"><h3>confirm.card.json</h3><p><a href="pack/teams/confirm.card.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "fallbackText": "A new email in the complaints mailbox needs a decision. Please open the Complaints register.",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "New email in the complaints mailbox",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Please check the reading below and confirm the type. Anything that might be a complaint is logged; only a person can decide that it is not.",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "From", "value": "@{outputs('Card_text')?['from']}" },
+        { "title": "Subject", "value": "@{outputs('Card_text')?['subject']}" },
+        { "title": "Received (UK time)", "value": "@{outputs('Card_text')?['receivedUk']}" },
+        { "title": "Clock starts if logged", "value": "@{outputs('Card_text')?['clockStarts']}" }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Start of the email",
+      "weight": "Bolder",
+      "spacing": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "@{outputs('Card_text')?['preview']}",
+      "wrap": true
+    },
+    {
+      "type": "Container",
+      "style": "emphasis",
+      "spacing": "Medium",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Suggested reading",
+          "weight": "Bolder",
+          "wrap": true
+        },
+        {
+          "type": "FactSet",
+          "facts": [
+            { "title": "Suggested type", "value": "@{outputs('Card_text')?['suggestedTypeLabel']}" },
+            { "title": "Possible emergency", "value": "@{outputs('Card_text')?['emergency']}" },
+            { "title": "Confidence", "value": "@{outputs('Card_text')?['confidence']}" },
+            { "title": "Issues found", "value": "@{outputs('Card_text')?['issues']}" }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "@{outputs('Card_text')?['reason']}",
+          "isSubtle": true,
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "type",
+      "label": "Type",
+      "isRequired": true,
+      "errorMessage": "Please choose a type.",
+      "style": "expanded",
+      "value": "@{outputs('Card_text')?['suggestedType']}",
+      "choices": [
+        { "title": "Formal complaint", "value": "formal_complaint" },
+        { "title": "Aftercare item for the customer portal", "value": "aftercare_item" },
+        { "title": "General enquiry", "value": "general_enquiry" }
+...</code></pre></details></div><div class="stack artefact"><h3>reminder.card.json</h3><p><a href="pack/teams/reminder.card.json">Download</a></p><details class="more"><summary>Show the JSON</summary><pre><code>{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "fallbackText": "A complaint commitment is due soon or overdue. Please open the Complaints register.",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "@{outputs('Reminder_text')?['headline']}",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "Reference", "value": "@{outputs('Reminder_text')?['reference']}" },
+        { "title": "Customer", "value": "@{outputs('Reminder_text')?['customer']}" },
+        { "title": "Development and plot", "value": "@{outputs('Reminder_text')?['developmentPlot']}" },
+        { "title": "Commitment", "value": "@{outputs('Reminder_text')?['commitment']}" },
+        { "title": "Due date", "value": "@{outputs('Reminder_text')?['dueDate']}" },
+        { "title": "Suggested send-by date", "value": "@{outputs('Reminder_text')?['sendBy']}" },
+        { "title": "Status", "value": "@{outputs('Reminder_text')?['status']}" },
+        { "title": "Owner", "value": "@{outputs('Reminder_text')?['owner']}" }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "The due date is calendar days from the initiation date, as published. The send-by date is a suggestion: a due date on a weekend or bank holiday moves to the working day before. The Complaints Team's reading of the code governs over this reminder.",
+      "isSubtle": true,
+      "size": "Small",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "id": "openItem",
+      "title": "Open in the register",
+      "url": "@{outputs('Reminder_text')?['link']}"
+    }
+  ]
+}
+</code></pre></details></div></div></section>
+<section class="section" id="flows" aria-labelledby="flows-h"><div class="wrap wrap--narrow stack"><h2 id="flows-h">Power Automate: the three flows</h2><p class="lede">Intake, the daily clock and letter approval, written as step-by-step recipes with the exact actions and expressions.</p><p><a href="pack/power-automate/FLOWS.md">Download FLOWS.md</a></p><details class="more"><summary>Read FLOWS.md on this page</summary><div class="stack doc" data-plan><p>Status: designed for Microsoft 365 and written from Microsoft's published documentation. The JSON parts are validated against Microsoft's published schemas (see <code>CHECKS.md</code>); nothing has been imported into a tenant and no flow has been run. Every step below is to be built and checked in a test environment with IT before any real email is processed.</p>
+<p>These three cloud flows keep the dates in the complaints register. The dates themselves come from rules, never from AI: each rule here has a matching function in <code>engine/clock.js</code> and a test in <code>engine/clock.test.mjs</code> (table at the end).</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Flow</th><th scope="col">Starts when</th><th scope="col">What it does</th></tr></thead><tbody><tr><td>1. Complaints intake</td><td>An email arrives in the complaints shared mailbox</td><td>Works out the initiation date, asks a coordinator in Teams to confirm the type, then logs the complaint</td></tr><tr><td>2. Daily clock</td><td>07:30 UK time, Monday to Friday</td><td>Finds the next unsent commitment for each open complaint, reminds the owner, escalates anything overdue, posts a daily "clock ran" message</td></tr><tr><td>3. Letter approval</td><td>A coordinator marks a letter "Ready for approval" in the register</td><td>Fills the dates from the register, asks for approval, sends from the shared mailbox, records who approved and when</td></tr></tbody></table></div>
+<p>Phase 1 uses standard connectors only. Phase 2 (optional, after a data protection impact assessment and a licensing check) adds one AI Builder step to Flow 1.</p>
+<h3>Before you start</h3>
+<p><strong>Prerequisites</strong></p>
+<ul><li>The SharePoint site with the two lists from <code>sharepoint/complaints-register.site-script.json</code> ("Complaints register" and "UK bank holidays"), and the bank-holiday list filled for at least the current and next year (see <code>HANDOVER.md</code>, yearly refresh).</li><li>A Power Platform environment other than the default environment, with a solution to hold the three flows, their connection references and environment variables (<code>HANDOVER.md</code>, ownership). Build the flows inside that solution.</li><li>A service account (not a person's account) for the connections, with:</li><li>Full Access and Send As on the complaints shared mailbox. Exchange Online describes Full Access as the permission to open the mailbox and Send As as the permission to send from it, and says both are needed for normal shared mailbox use [L20]. Microsoft's connector reference notes that new permissions can take about two hours to replicate before the flow can use them [L1].</li><li>Edit rights on the two lists (through the Complaints Team SharePoint group).</li><li>Membership of the Complaints Team in Teams.</li><li>The Workflows app allowed in the Teams admin centre. Microsoft's Teams connector reference says the posting actions need it [L3].</li><li>Environment variables in the solution: <code>SiteUrl</code>, <code>ComplaintsMailbox</code>, <code>CoordinatorEmail</code>, <code>TeamLeadEmail</code>, <code>ApproverEmail</code>, and the Team and channel for the daily message.</li></ul>
+<p><strong>Conventions used below</strong></p>
+<ul><li>Action names matter: expressions refer to actions by name, with spaces replaced by underscores. Rename each action exactly as shown in bold (for example <strong>Received UK date</strong> is referenced as <code>outputs('Received_UK_date')</code>).</li><li>All dates passed between steps are text in the form <code>yyyy-MM-dd</code>, the same form the engine uses. ISO dates compare correctly as text, and <code>less()</code>, <code>greater()</code> and <code>lessOrEquals()</code> all accept strings [L5].</li><li>Microsoft's expression reference does not say whether <code>if()</code> evaluates only the branch it returns [L5]. Every expression here is written to be safe either way: where a branch would fail on an empty value, <code>coalesce()</code> gives it a harmless stand-in.</li><li>Where a value comes from an action whose outputs Microsoft documents as dynamic (the Teams card response, the AI Builder prompt), the recipe names the dynamic content. Check the exact path in the outputs of the first test run before relying on a written expression.</li></ul>
+<h3>Flow 1: Complaints intake</h3>
+<p><strong>Goal:</strong> every email to the complaints mailbox gets a UK-time received date and an initiation date by the published rule, then a person decides the type. Anything that might be a complaint is logged; only a person can decide that it is not.</p>
+<h4>1.1 Trigger</h4>
+<ol><li>In the solution, select <strong>New</strong> &gt; <strong>Automation</strong> &gt; <strong>Cloud flow</strong> &gt; <strong>Automated</strong>. Name it "Complaints intake".</li><li>Choose the trigger <strong>When a new email arrives in a shared mailbox (V2)</strong> (Office 365 Outlook). Microsoft's data policy list names this connector Microsoft 365 Outlook [L19].</li><li><strong>Original Mailbox Address:</strong> the <code>ComplaintsMailbox</code> environment variable.</li><li><strong>Folder:</strong> Inbox.</li><li><strong>Include Attachments:</strong> No. <strong>Only with Attachments:</strong> No.</li></ol>
+<p>The trigger returns the message as Microsoft Graph defines it, including <strong>Received Time</strong> (<code>receivedDateTime</code>), <strong>From</strong>, <strong>Subject</strong>, <strong>Body</strong>, <strong>Body Preview</strong>, <strong>Message Id</strong> and <strong>Internet Message Id</strong> [L1].</p>
+<p>Duplicate check (recommended): Microsoft lists a known issue where this trigger can fire again for older emails moved between folders [L1]. Add <strong>Get items</strong> on the Complaints register, renamed <strong>Already logged</strong>, with <strong>Filter Query</strong> <code>SourceEmailId eq '@{triggerOutputs()?['body/internetMessageId']}'</code> and <strong>Top Count</strong> 1, then a <strong>Condition</strong> <code>@greater(length(body('Already_logged')?['value']), 0)</code> whose yes branch is <strong>Terminate</strong> (Cancelled). The internet message ID is used rather than the message ID because Graph changes a message's <code>id</code> when it moves to another folder [L6].</p>
+<h4>1.2 Received date in UK time</h4>
+<ol><li>Add <strong>Compose</strong>, rename it <strong>Received UK date</strong>:</li></ol>
+<p>``<code>text convertFromUtc(triggerOutputs()?['body/receivedDateTime'], 'GMT Standard Time', 'yyyy-MM-dd') </code>``</p>
+<p>Why: Microsoft Graph returns <code>receivedDateTime</code> in UTC [L6]. In British Summer Time an email that arrives at 00:30 on Saturday UK time is recorded as 23:30 UTC on Friday. Without the conversion the clock would treat a Saturday complaint as a Friday one and start a working day early. <code>GMT Standard Time</code> is Windows' name for the UK time zone, "(UTC) Dublin, Edinburgh, Lisbon, London" [L21], and it follows British Summer Time.</p>
+<ol><li>Add <strong>Compose</strong>, rename it <strong>Received UK time</strong> (shown on the card):</li></ol>
+<p>``<code>text convertFromUtc(triggerOutputs()?['body/receivedDateTime'], 'GMT Standard Time', 'ddd d MMM yyyy, HH:mm') </code>``</p>
+<h4>1.3 Bank holidays</h4>
+<ol><li>Add <strong>Get items</strong> (SharePoint), rename it <strong>Get bank holidays</strong>. <strong>Site Address:</strong> <code>SiteUrl</code>. <strong>List Name:</strong> UK bank holidays. <strong>Top Count:</strong> 500. No filter is needed: the list holds about eight dates a year.</li><li>Add <strong>Select</strong> (Data Operation), rename it <strong>Holiday dates</strong>. <strong>From:</strong> the <code>value</code> of <strong>Get bank holidays</strong>. Switch <strong>Map</strong> to text mode and enter:</li></ol>
+<p>``<code>text convertFromUtc(item()?['HolidayDate'], 'GMT Standard Time', 'yyyy-MM-dd') </code>``</p>
+<p>The result is a plain list of dates such as <code>["2026-05-25", "2026-08-31"]</code>. Converting to UK time before keeping the date part gives the right calendar date whether SharePoint returns a date-only value as midnight UTC or as UK midnight expressed in UTC. Check the raw value in the first test run.</p>
+<h4>1.4 Next working day (the initiation date)</h4>
+<p>The published rule: "The complaints initiation date is the first working day after a complaint is received", and public holidays are not working days.</p>
+<ol><li>Add <strong>Initialize variable</strong>: <strong>Name</strong> <code>Candidate</code>, <strong>Type</strong> String, <strong>Value</strong> <code>outputs('Received_UK_date')</code>. Variables can only be declared at the top level of a flow, not inside loops or conditions [L8].</li><li>Add <strong>Do until</strong>, rename it <strong>Next working day</strong>. Power Automate runs the actions inside the loop first and then checks the condition [L7], which is exactly the rule: start from the day after receipt and keep going until the day is a working day.</li><li>Inside the loop add <strong>Compose</strong>, rename it <strong>Next date</strong>: <code>addDays(variables('Candidate'), 1, 'yyyy-MM-dd')</code></li><li>Then <strong>Set variable</strong>: <code>Candidate</code> = <code>outputs('Next_date')</code>. (Composing first keeps the Set variable value from referring to its own variable.)</li><li>Loop condition (advanced mode):</li></ol>
+<p>``<code>text @and( not(equals(dayOfWeek(variables('Candidate')), 0)), not(equals(dayOfWeek(variables('Candidate')), 6)), not(contains(body('Holiday_dates'), variables('Candidate'))) ) </code>``</p>
+<p><code>dayOfWeek()</code> returns 0 for Sunday and 6 for Saturday [L5]; <code>contains()</code> checks an array for a value [L5].</p>
+<ul><li>Leave <strong>Count</strong> at 60 and <strong>Timeout</strong> at PT1H, the defaults [L7]. The longest real run is five iterations (for example, received Thursday 24 December 2026: Christmas Day, the weekend and the substitute Boxing Day are skipped).</li><li>Add <strong>Compose</strong>, rename it <strong>Initiation date</strong>: <code>variables('Candidate')</code></li><li>Add <strong>Compose</strong>, rename it <strong>Clock starts</strong> (for the card): <code>formatDateTime(outputs('Initiation_date'), 'dddd d MMMM yyyy', 'en-GB')</code></li></ul>
+<p>Worked example (engine test "bank holiday Monday is skipped (Spring bank holiday 2026)"): received Friday 22 May 2026; Saturday, Sunday and Monday 25 May (bank holiday) are skipped; initiation date Tuesday 26 May 2026.</p>
+<h4>1.5 Suggested reading (phase 1 default)</h4>
+<ol><li>Add <strong>Initialize variable</strong>: <strong>Name</strong> <code>Suggestion</code>, <strong>Type</strong> Object, <strong>Value</strong>:</li></ol>
+<p>``<code>json { "type": "formal_complaint", "reason": "Phase 1 has no AI step. The suggestion is a formal complaint until a person decides otherwise.", "emergency": "Not assessed", "confidence": "Not assessed", "customerName": "", "development": "", "plot": "", "reservationDate": "", "completionDate": "", "issues": "" } </code>``</p>
+<p>Phase 2 (section 1.9) overwrites this object with the AI's reading. The card is the same in both phases.</p>
+<h4>1.6 Text for the card</h4>
+<p>Email text can contain quotation marks and line breaks, which would break the card's JSON. Each free-text value goes through the same escaping pattern before it reaches the card:</p>
+<pre><code>replace(replace(replace(replace(coalesce(VALUE, ''), '\', '\\'), '"', '\"'), decodeUriComponent('%0D'), ''), decodeUriComponent('%0A'), '\n')</code></pre>
+<ol><li>Add <strong>Compose</strong>, rename it <strong>Card text</strong>. Paste this object (use <strong>Peek code</strong> to confirm the input is stored as an object, not as text). Values marked <em>escaped</em> use the pattern above with the value shown in place of <code>VALUE</code>:</li></ol>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Key</th><th scope="col">Value</th></tr></thead><tbody><tr><td><code>from</code></td><td><em>escaped</em> <code>triggerOutputs()?['body/from']</code></td></tr><tr><td><code>subject</code></td><td><em>escaped</em> <code>triggerOutputs()?['body/subject']</code></td></tr><tr><td><code>receivedUk</code></td><td><code>outputs('Received_UK_time')</code></td></tr><tr><td><code>clockStarts</code></td><td><code>outputs('Clock_starts')</code></td></tr><tr><td><code>preview</code></td><td><em>escaped</em> <code>triggerOutputs()?['body/bodyPreview']</code></td></tr><tr><td><code>suggestedType</code></td><td><code>variables('Suggestion')?['type']</code></td></tr><tr><td><code>suggestedTypeLabel</code></td><td><code>if(equals(variables('Suggestion')?['type'], 'aftercare_item'), 'Aftercare item for the customer portal', if(equals(variables('Suggestion')?['type'], 'general_enquiry'), 'General enquiry', 'Formal complaint'))</code></td></tr><tr><td><code>emergency</code></td><td><code>variables('Suggestion')?['emergency']</code></td></tr><tr><td><code>confidence</code></td><td><code>variables('Suggestion')?['confidence']</code></td></tr><tr><td><code>reason</code></td><td><em>escaped</em> <code>variables('Suggestion')?['reason']</code></td></tr><tr><td><code>customerName</code>, <code>development</code>, <code>plot</code>, <code>issues</code></td><td><em>escaped</em> <code>variables('Suggestion')?['customerName']</code> and so on</td></tr><tr><td><code>reservationDate</code>, <code>completionDate</code></td><td><code>variables('Suggestion')?['reservationDate']</code> and so on</td></tr></tbody></table></div>
+<h4>1.7 Ask the coordinator</h4>
+<ol><li>Add <strong>Post adaptive card and wait for a response</strong> (Microsoft Teams), rename it <strong>Confirm card</strong> [L3].</li><li><strong>Post as:</strong> Flow bot. <strong>Post in:</strong> Chat with Flow bot. <strong>Recipient:</strong> <code>CoordinatorEmail</code> (or post in the Complaints Team channel so anyone on the team can answer).</li><li><strong>Message</strong> (the card box in Microsoft's walkthrough [L11]): paste <code>teams/confirm.card.json</code>. Each <code>@{...}</code> string in that file is a Power Automate expression; after pasting, check that each shows as an expression, and insert it with the expression editor if it shows as plain text. Microsoft's own walkthrough pastes card JSON into this box in the same way [L11].</li><li><strong>Update message:</strong> "Thank you. Your answer has been recorded in the Complaints register." Microsoft recommends an update message so that a card cannot be submitted twice; only the first submission is used [L10].</li><li><strong>Settings</strong> &gt; <strong>Timeout:</strong> <code>PT8H</code> (an ISO 8601 duration; asynchronous actions can wait up to 30 days [L9]). If nobody answers within eight hours, the timeout branch (step 22) logs the email as a complaint so the clock is never lost.</li><li>Add <strong>Compose</strong>, rename it <strong>Decision</strong>: the <code>decision</code> value from the card response (the button's <code>data</code>), for example <code>body('Confirm_card')?['data']?['decision']</code>. Microsoft documents this action's outputs as dynamic [L3]: confirm the path against the first test run.</li><li>Add <strong>Compose</strong>, rename it <strong>Chosen type</strong>: the <code>type</code> input from the card response, for example <code>body('Confirm_card')?['data']?['type']</code>.</li><li>Add <strong>Compose</strong>, rename it <strong>Type label</strong>:</li></ol>
+<p>``<code>text if(equals(outputs('Chosen_type'), 'aftercare_item'), 'Aftercare item for the portal', if(equals(outputs('Chosen_type'), 'general_enquiry'), 'General enquiry', 'Formal complaint')) </code>``</p>
+<p>Anything unexpected falls through to "Formal complaint", the safe side.</p>
+<h4>1.8 Log it, or record why not</h4>
+<ol><li>Add <strong>Condition</strong>, rename it <strong>Log it</strong>. Advanced mode:</li></ol>
+<p>``<code>text @or(equals(outputs('Decision'), 'confirm'), equals(outputs('Chosen_type'), 'formal_complaint')) </code>``</p>
+<p>"Not a complaint" only stops logging when the person has also changed the type away from "Formal complaint". If the two disagree, the email is logged.</p>
+<p><strong>If yes:</strong></p>
+<ol><li>Add these <strong>Compose</strong> actions:</li></ol>
+<ul><li><strong>Reservation:</strong> the <code>reservationDate</code> input from the card response, wrapped as <code>coalesce(..., '')</code></li><li><strong>Completion:</strong> the <code>completionDate</code> input, wrapped the same way</li><li><strong>Code version</strong> (which code applies, by reservation date, from Shanly Homes' published New Homes Quality Code page):</li></ul>
+<p>``<code>text if(empty(outputs('Reservation')), 'To confirm', if(less(outputs('Reservation'), '2023-08-02'), 'Consumer Code for Home Builders', if(less(outputs('Reservation'), '2026-03-02'), 'New Homes Quality Code, version 1', 'New Homes Quality Code, version 2'))) </code>``</p>
+<ul><li><strong>Window base</strong> (the later of reservation and legal completion; empty if neither is known):</li></ul>
+<p>``<code>text if(greater(outputs('Completion'), outputs('Reservation')), outputs('Completion'), outputs('Reservation')) </code>``</p>
+<ul><li><strong>Window end</strong> (two years on; blank, not guessed, when there is no date):</li></ul>
+<p>``<code>text if(empty(outputs('Window_base')), null, addToTime(if(empty(outputs('Window_base')), '2000-01-01', outputs('Window_base')), 2, 'Year', 'yyyy-MM-dd')) </code>``</p>
+<p><code>addToTime()</code> accepts <code>Year</code> as a unit [L5]. The engine moves 29 February to 28 February in a non-leap year; check that <code>addToTime('2024-02-29', 2, 'Year', 'yyyy-MM-dd')</code> returns <code>2026-02-28</code> in the test environment (week 2 check).</p>
+<ul><li><strong>Within window:</strong></li></ul>
+<p>``<code>text if(empty(outputs('Window_base')), 'unknown', if(lessOrEquals(outputs('Received_UK_date'), coalesce(outputs('Window_end'), '9999-12-31')), 'yes', 'no')) </code>``</p>
+<p>The flow records this; it never decides eligibility. A "no" is written to the activity log for the Complaints Team to consider.</p>
+<ol><li>Add <strong>Create item</strong> (SharePoint), rename it <strong>Create register item</strong>. <strong>List Name:</strong> Complaints register.</li></ol>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Column</th><th scope="col">Value</th></tr></thead><tbody><tr><td>Title</td><td><code>Pending reference</code> (replaced in step 20)</td></tr><tr><td>CustomerName, Development, Plot, IssuesRaised</td><td>the matching inputs from the card response</td></tr><tr><td>CustomerEmail</td><td><code>triggerOutputs()?['body/from']</code></td></tr><tr><td>ReceivedDate</td><td><code>triggerOutputs()?['body/receivedDateTime']</code></td></tr><tr><td>InitiationDate</td><td><code>outputs('Initiation_date')</code></td></tr><tr><td>ReservationDate</td><td><code>if(empty(outputs('Reservation')), null, outputs('Reservation'))</code></td></tr><tr><td>CompletionDate</td><td><code>if(empty(outputs('Completion')), null, outputs('Completion'))</code></td></tr><tr><td>CodeVersion Value</td><td><code>outputs('Code_version')</code></td></tr><tr><td>WindowEnd</td><td><code>outputs('Window_end')</code></td></tr><tr><td>Stage Value</td><td>Logged</td></tr><tr><td>SuggestedType Value</td><td><code>outputs('Type_label')</code></td></tr><tr><td>Owner Claims, ConfirmedBy Claims</td><td>the responder's email from the <strong>Confirm card</strong> dynamic content</td></tr><tr><td>ConfirmedOn</td><td><code>utcNow()</code></td></tr><tr><td>SourceEmailId</td><td><code>triggerOutputs()?['body/internetMessageId']</code></td></tr><tr><td>ActivityLog</td><td>see below</td></tr></tbody></table></div>
+<p>ActivityLog:</p>
+<p>``<code>text concat('Logged by the intake flow on ', convertFromUtc(utcNow(), 'GMT Standard Time', 'd MMM yyyy HH:mm'), '. Received ', outputs('Received_UK_time'), ' (UK time); initiation date ', outputs('Initiation_date'), ', the first working day after receipt. Type confirmed on the Teams card. Within the two-year window: ', outputs('Within_window'), '.') </code>``</p>
+<ol><li>Add <strong>Update item</strong>, rename it <strong>Set reference</strong>. <strong>Id:</strong> the ID from <strong>Create register item</strong>. <strong>Title:</strong></li></ol>
+<p>``<code>text concat('CMP-', formatDateTime(outputs('Initiation_date'), 'yyyy'), '-', string(body('Create_register_item')?['ID'])) </code>``</p>
+<p>If the Complaints Team already has a reference scheme, use theirs instead.</p>
+<ol><li>Add <strong>Post message in a chat or channel</strong> (Microsoft Teams) to the Complaints Team channel: the reference, the initiation date, the acknowledgement due date (<code>addDays(outputs('Initiation_date'), 5, 'yyyy-MM-dd')</code>) and, if <strong>Within window</strong> is "no" or <strong>Code version</strong> is "To confirm", a line asking the team to check.</li></ol>
+<p><strong>If no</strong> (the person chose an aftercare item or a general enquiry and pressed "Not a complaint"):</p>
+<ul><li>Add <strong>Post message in a chat or channel</strong> to the team channel: "Email from (sender) received (UK time) was marked as (type) by (responder) at (time). It stays in the mailbox. Nothing has been sent to the customer." The decision is visible to the whole team and can be reversed by logging the item by hand.</li></ul>
+<h4>1.9 Timeout and failure branch</h4>
+<ol><li>On <strong>Confirm card</strong>, add a parallel branch whose <strong>Configure run after</strong> is "has timed out" and "has failed" [L14]. In it, add <strong>Create item</strong> with the same mapping as step 19, except: SuggestedType "Formal complaint", Owner and ConfirmedBy blank, and ActivityLog "Logged automatically: no answer on the Teams card within 8 hours (or the card could not be posted). A person must confirm the type." Then post to the team channel. The clock starts either way.</li></ol>
+<h4>1.10 Phase 2 (optional): the AI reads the email first</h4>
+<p>Only after a data protection impact assessment and a licensing check (see <code>HANDOVER.md</code>). Insert between steps 11 and 12:</p>
+<ol><li><strong>Run a prompt</strong> (AI Builder). Since May 2025 this is the name of the action previously called "Create text with GPT using a prompt" [L16]. Choose the prompt built from <code>ai/triage-prompt.md</code> with inputs <code>email</code> (the trigger's <strong>Body</strong>) and <code>sender</code> (<strong>From</strong>).</li><li><strong>Parse JSON</strong>, rename it <strong>Parse triage</strong>. <strong>Content:</strong> the prompt's <strong>Text</strong> output. <strong>Schema:</strong> <code>ai/output-schema.json</code> (remove the <code>$schema</code> line if the designer will not accept it).</li><li><strong>Set variable</strong> <code>Suggestion</code> to the same object as step 11, with each value taken from <strong>Parse triage</strong> (for example <code>"type": "@{body('Parse_triage')?['type']}"</code>, <code>"emergency": "@{if(equals(body('Parse_triage')?['possible_emergency'], true), 'Yes: follow the emergency process now, do not wait for this card', 'No')}"</code>, <code>"issues": "@{join(body('Parse_triage')?['issues'], '; ')}"</code>).</li><li>On <strong>Parse triage</strong>, a branch with <strong>Configure run after</strong> "has failed" sets <code>Suggestion</code> back to the phase 1 defaults with the reason "The AI answer could not be read. Please read the email." The person still decides.</li></ol>
+<p>Licensing, as published by Microsoft (read 3 Nov 2026):</p>
+<ul><li>"A Power Automate flow that uses any AI Builder action is a premium flow. It requires Power Automate premium licensing." Running prompts in flows also consumes AI Builder credits or Copilot Credits; flows use AI Builder credits first, then Copilot Credits [L17].</li><li>From 1 November 2026, new or renewed Power Platform licences no longer include seeded AI Builder credits; existing seeded credits are honoured to the end of the contract term, and customers are invited to buy Copilot Credits [L18].</li><li>So phase 2 needs a premium licence for the flow and a Copilot Credits (or remaining AI Builder credits) allocation for the environment. Confirm both with the Group's licensing partner before building it. Phase 1 needs neither.</li></ul>
+<h3>Flow 2: Daily clock</h3>
+<p><strong>Goal:</strong> every weekday morning, find the next unsent commitment for each open complaint, remind its owner when it is due soon, escalate it when it is overdue, keep NextUpdateDue current and post a short message so that silence is noticed.</p>
+<h4>2.1 Trigger</h4>
+<ol><li><strong>New</strong> &gt; <strong>Automation</strong> &gt; <strong>Cloud flow</strong> &gt; <strong>Scheduled</strong>, named "Complaints daily clock". In the <strong>Recurrence</strong> trigger [L13]:</li><li><strong>Interval</strong> 1, <strong>Frequency</strong> Week.</li><li><strong>Time zone:</strong> the UK entry (Dublin, Edinburgh, Lisbon, London), so that 07:30 means UK time. Check the first run after the clocks change.</li><li><strong>On these days:</strong> Monday to Friday. <strong>At these hours:</strong> 7. <strong>At these minutes:</strong> 30.</li></ol>
+<p>The flow also runs on bank holidays. That is harmless: the counts stay true and the due-soon rule already counts working days.</p>
+<ol><li>Add <strong>Initialize variable</strong> twice: <code>DueSoonCount</code> (Integer, 0) and <code>OverdueCount</code> (Integer, 0). They go here, before the scope, because variables can only be declared at the top level of a flow, not inside scopes, conditions or loops [L8].</li><li>Add <strong>Scope</strong>, rename it <strong>Try</strong>. Everything in sections 2.2 and 2.3 and step 12 goes inside it.</li></ol>
+<h4>2.2 Today, and a working-day calendar built once</h4>
+<ol><li><strong>Compose</strong> <strong>Today</strong>: <code>convertFromUtc(utcNow(), 'GMT Standard Time', 'yyyy-MM-dd')</code></li><li><strong>Get bank holidays</strong> and <strong>Holiday dates</strong>: as Flow 1, steps 5 and 6.</li><li><strong>Select</strong>, rename it <strong>Calendar</strong>. <strong>From:</strong> <code>range(0, 31)</code>. <strong>Map</strong> (text mode): <code>addDays(outputs('Today'), sub(item(), 10), 'yyyy-MM-dd')</code>. This lists the 31 days from ten days ago to twenty days ahead.</li><li><strong>Filter array</strong>, rename it <strong>Working days</strong>. <strong>From:</strong> <code>body('Calendar')</code>. Condition (advanced mode):</li></ol>
+<p>``<code>text @and(not(equals(dayOfWeek(item()), 0)), not(equals(dayOfWeek(item()), 6)), not(contains(body('Holiday_dates'), item()))) </code>``</p>
+<ol><li><strong>Filter array</strong> <strong>Working days after today</strong>: from <code>body('Working_days')</code>, condition <code>@greater(item(), outputs('Today'))</code>.</li><li><strong>Compose</strong> <strong>Due soon cutoff</strong>: <code>body('Working_days_after_today')[2]</code>, the third working day after today.</li></ol>
+<p>Why this works: the engine calls a commitment "due soon" when its send-by date is no more than two working days away. The send-by date is the latest working day on or before the due date, so that test is the same as "the due date falls before the third working day after today". the pack validator (results in <code>CHECKS.md</code>) checks this equivalence against the engine for complaints received on every day from December 2025 to November 2028. Building the calendar once avoids a loop inside a loop.</p>
+<h4>2.3 Open complaints</h4>
+<ol><li><strong>Get items</strong>, rename it <strong>Open complaints</strong>. <strong>List Name:</strong> Complaints register. <strong>Filter Query:</strong></li></ol>
+<p>``<code>text Stage ne 'Concluded' and SuggestedType eq 'Formal complaint' </code>``</p>
+<p><strong>Top Count:</strong> 500.</p>
+<ol><li><strong>Apply to each</strong> over the <code>value</code> of <strong>Open complaints</strong>. In <strong>Settings</strong>, turn <strong>Concurrency control</strong> on and set <strong>Degree of parallelism</strong> to 1, so the counters behave predictably [L7]. Inside the loop, <code>items('Apply_to_each')</code> is the current complaint:</li></ol>
+<p>a. <strong>Condition</strong> <strong>Has a start date</strong>: <code>@not(equals(items('Apply_to_each')?['InitiationDate'], null))</code>. If no, post "(reference) has no initiation date" to the channel and do nothing else for this item. Steps b to j go in the yes branch.</p>
+<p>b. <strong>Compose</strong> <strong>Initiation</strong>: <code>convertFromUtc(items('Apply_to_each')?['InitiationDate'], 'GMT Standard Time', 'yyyy-MM-dd')</code></p>
+<p>c. <strong>Compose</strong> <strong>Next key</strong>, the first commitment not yet sent, in the published order:</p>
+<p>``<code>text if(equals(items('Apply_to_each')?['AckSent'], null), 'ack', if(equals(items('Apply_to_each')?['PathwaySent'], null), 'pathway', if(equals(items('Apply_to_each')?['AssessmentSent'], null), 'assessment', if(equals(items('Apply_to_each')?['NextStepsSent'], null), 'nextSteps', 'update')))) </code>``</p>
+<p>d. <strong>Compose</strong> <strong>Update base</strong>: the last update sent, otherwise the next steps letter, otherwise day 56:</p>
+<p>``<code>text if(equals(coalesce(items('Apply_to_each')?['LastUpdateSent'], items('Apply_to_each')?['NextStepsSent']), null), addDays(outputs('Initiation'), 56, 'yyyy-MM-dd'), convertFromUtc(coalesce(items('Apply_to_each')?['LastUpdateSent'], items('Apply_to_each')?['NextStepsSent'], utcNow()), 'GMT Standard Time', 'yyyy-MM-dd')) </code>``</p>
+<p>e. <strong>Compose</strong> <strong>Next update due</strong>: <code>addDays(outputs('Update_base'), 28, 'yyyy-MM-dd')</code>. This is the brief's rule, NextUpdateDue = (NextStepsSent or the day 56 date) + 28, carried forward by LastUpdateSent once updates go out.</p>
+<p>f. <strong>Compose</strong> <strong>Next due</strong>:</p>
+<p>``<code>text if(equals(outputs('Next_key'), 'ack'), addDays(outputs('Initiation'), 5, 'yyyy-MM-dd'), if(equals(outputs('Next_key'), 'pathway'), addDays(outputs('Initiation'), 10, 'yyyy-MM-dd'), if(equals(outputs('Next_key'), 'assessment'), addDays(outputs('Initiation'), 30, 'yyyy-MM-dd'), if(equals(outputs('Next_key'), 'nextSteps'), addDays(outputs('Initiation'), 56, 'yyyy-MM-dd'), outputs('Next_update_due'))))) </code>``</p>
+<p>The flow works from InitiationDate rather than reading the calculated columns, so it does not depend on how SharePoint serialises calculated values. The offsets are the same 5, 10, 30 and 56 days as the columns and the engine; the pack validator (results in <code>CHECKS.md</code>) checks all three agree.</p>
+<p>g. <strong>Filter array</strong> <strong>Working days to due</strong>: from <code>body('Working_days')</code>, condition <code>@lessOrEquals(item(), outputs('Next_due'))</code>. Then <strong>Compose</strong> <strong>Send by</strong>: <code>last(body('Working_days_to_due'))</code>. This is my suggested send-by date: a due date on a weekend or bank holiday moves to the working day before. It is only used when the commitment is due soon, and then it always falls inside the calendar.</p>
+<p>h. <strong>Compose</strong> <strong>Status</strong>:</p>
+<p>``<code>text if(greater(outputs('Today'), outputs('Next_due')), 'overdue', if(less(outputs('Next_due'), outputs('Due_soon_cutoff')), 'due-soon', 'on-track')) </code>``</p>
+<p>Overdue starts the day after the due date, as in the engine.</p>
+<p>i. <strong>Condition</strong> <strong>Next update changed</strong>: compare the item's NextUpdateDue (converted as in step b, or blank) with <code>outputs('Next_update_due')</code>. Only if different, <strong>Update item</strong> NextUpdateDue = <code>outputs('Next_update_due')</code> (pass Title back unchanged; SharePoint requires it). Writing only on change keeps the version history readable.</p>
+<p>j. <strong>Switch</strong> on <code>outputs('Status')</code>:</p>
+<ul><li><strong>due-soon:</strong> <strong>Increment variable</strong> <code>DueSoonCount</code>. <strong>Compose</strong> <strong>Reminder text</strong> (an object, escaped as in Flow 1 step 12 where marked):</li></ul>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Key</th><th scope="col">Value</th></tr></thead><tbody><tr><td><code>headline</code></td><td><code>concat(&lt;commitment name&gt;, ' due soon')</code></td></tr><tr><td><code>reference</code></td><td><em>escaped</em> <code>items('Apply_to_each')?['Title']</code></td></tr><tr><td><code>customer</code></td><td><em>escaped</em> <code>items('Apply_to_each')?['CustomerName']</code></td></tr><tr><td><code>developmentPlot</code></td><td><em>escaped</em> development and plot joined with ", plot "</td></tr><tr><td><code>commitment</code></td><td>the name for <code>outputs('Next_key')</code>: Acknowledgement; Proposed pathway to resolution; Full assessment; Next steps and timescales; Update (at least every 28 days)</td></tr><tr><td><code>dueDate</code></td><td><code>formatDateTime(outputs('Next_due'), 'dddd d MMMM yyyy', 'en-GB')</code></td></tr><tr><td><code>sendBy</code></td><td><code>formatDateTime(outputs('Send_by'), 'dddd d MMMM yyyy', 'en-GB')</code></td></tr><tr><td><code>status</code></td><td>Due soon</td></tr><tr><td><code>owner</code></td><td><em>escaped</em> the Owner's display name</td></tr><tr><td><code>link</code></td><td>the item's <strong>Link to item</strong> from the Get items dynamic content</td></tr></tbody></table></div>
+<p>Then <strong>Post card in a chat or channel</strong>: Post as Flow bot, Post in Chat with Flow bot, Recipient the Owner's email (or the team channel if Owner is blank), Adaptive Card <code>teams/reminder.card.json</code>. The reminder card has only an Open URL button, which works without waiting for a response [L10].</p>
+<ul><li><strong>overdue:</strong> <strong>Increment variable</strong> <code>OverdueCount</code>. The same <strong>Reminder text</strong> with headline <code>concat('Overdue: ', &lt;commitment name&gt;)</code> and status "Overdue", posted to <code>TeamLeadEmail</code> and to the Owner. This repeats each weekday while it stays overdue, deliberately.</li><li><strong>Default (on-track):</strong> nothing.</li></ul>
+<h4>2.4 Heartbeat and failure alert</h4>
+<ol><li>After the loop, still inside <strong>Try</strong>: <strong>Post message in a chat or channel</strong> to the team channel:</li></ol>
+<p>``<code>text concat('Complaints clock ran at 07:30 on ', formatDateTime(outputs('Today'), 'dddd d MMMM yyyy', 'en-GB'), ': ', string(length(body('Open_complaints')?['value'])), ' open, ', string(variables('DueSoonCount')), ' due soon, ', string(variables('OverdueCount')), ' overdue.') </code>``</p>
+<p>If this message is missing at 08:00, the clock did not run. The team lead checks the flow (see <code>HANDOVER.md</code>).</p>
+<ol><li>Add a second <strong>Scope</strong> after <strong>Try</strong>, rename it <strong>Catch</strong>, and set its <strong>Configure run after</strong> to "has failed" and "has timed out" on <strong>Try</strong> [L14]. Inside it, post to the team channel: "The complaints clock did not finish today. Reminders may be missing. Open the run: (link)". Build the link to the run from <code>workflow()</code> as Microsoft shows [L14]:</li></ol>
+<p>``<code>text concat('https://make.powerautomate.com/environments/', workflow()?['tags']?['environmentName'], '/flows/', workflow()?['tags']?['logicAppName'], '/runs/', workflow()?['run']?['name']) </code>``</p>
+<p>Check that the link opens the run in the test environment. Then add <strong>Terminate</strong> with status Failed so the run history shows the failure.</p>
+<ol><li>Turn on failure alerts in the flow's settings and add at least two co-owners. Microsoft sends a per-run failure email to owners and co-owners only for known, fixable problems (for example an expired connection), then waits 28 days before sending another for the same flow, and per-run alerts are not on for every flow by default; a weekly digest covers all failures [L15]. That is why the flow posts its own heartbeat and catch message rather than relying on email alerts.</li></ol>
+<h3>Flow 3: Letter approval</h3>
+<p><strong>Goal:</strong> a person drafts the letter (phase 1: Copilot in Outlook with <code>copilot/drafting-prompt.md</code>, or a template), the flow puts in the dates from the register, a named approver approves it, and only then is it sent from the shared mailbox and recorded.</p>
+<h4>3.1 Trigger</h4>
+<ol><li><strong>New</strong> &gt; <strong>Automation</strong> &gt; <strong>Cloud flow</strong> &gt; <strong>Automated</strong>, named "Complaints letter approval". Trigger <strong>When an item is created or modified</strong> (SharePoint) on the Complaints register [L2].</li><li>In the trigger's <strong>Settings</strong> &gt; <strong>Trigger conditions</strong>, add:</li></ol>
+<p>``<code>text @equals(triggerOutputs()?['body/LetterStatus/Value'], 'Ready for approval') </code>``</p>
+<p>The coordinator starts the flow by setting <strong>LetterToSend</strong> (which letter), pasting the draft into <strong>LetterDraft</strong> and setting <strong>LetterStatus</strong> to "Ready for approval". Edits by the other flows do not start it. The SharePoint "For a selected item" trigger is not used because Microsoft notes that the SharePoint menu lists only flows in the default environment for that trigger [L2], and these flows live in a non-default environment.</p>
+<h4>3.2 Claim the item and fill the dates</h4>
+<ol><li><strong>Get item</strong> (same ID) and a <strong>Condition</strong>: if LetterStatus is no longer "Ready for approval", <strong>Terminate</strong> (Cancelled). Otherwise <strong>Update item</strong> LetterStatus = "Awaiting approval". This stops a second run picking up the same letter.</li><li><strong>Compose</strong> <strong>Initiation</strong>: as Flow 2 step 11b, from the item.</li><li><strong>Compose</strong> <strong>Final letter</strong>: the draft with each placeholder replaced from the register, so that the dates in a letter always come from the register and never from AI:</li></ol>
+<p>``<code>text replace(replace(replace(replace(coalesce(triggerOutputs()?['body/LetterDraft'], ''), '[ACK_DUE]', formatDateTime(addDays(outputs('Initiation'), 5, 'yyyy-MM-dd'), 'dddd d MMMM yyyy', 'en-GB')), '[PATHWAY_DUE]', formatDateTime(addDays(outputs('Initiation'), 10, 'yyyy-MM-dd'), 'dddd d MMMM yyyy', 'en-GB')), '[ASSESSMENT_DUE]', formatDateTime(addDays(outputs('Initiation'), 30, 'yyyy-MM-dd'), 'dddd d MMMM yyyy', 'en-GB')), '[REFERENCE]', triggerOutputs()?['body/Title']) </code>``</p>
+<p><code>formatDateTime()</code> takes a locale, here <code>en-GB</code> [L5].</p>
+<ol><li><strong>Condition</strong> <strong>Still has a placeholder</strong>: <code>@contains(outputs('Final_letter'), '[')</code>. If yes, <strong>Update item</strong> LetterStatus = "Returned for changes", append to ActivityLog "Not sent: the letter still contains a placeholder in square brackets", notify the owner, and stop. The drafting prompt marks anything it cannot fill as <code>[TO CONFIRM: ...]</code>, so this catches it.</li></ol>
+<h4>3.3 Approval</h4>
+<ol><li><strong>Start and wait for an approval</strong> (Approvals) [L4]:</li><li><strong>Approval type:</strong> Approve/Reject, first to respond.</li><li><strong>Title:</strong> <code>concat('Approve ', triggerOutputs()?['body/LetterToSend/Value'], ' for ', triggerOutputs()?['body/Title'])</code></li><li><strong>Assigned to:</strong> <code>ApproverEmail</code> (one or more addresses separated by semicolons [L4]).</li><li><strong>Details:</strong> the final letter, then "Due: (date). Suggested send-by: (date)." Details support Markdown [L4].</li><li><strong>Item link:</strong> the register item. <strong>Item link description:</strong> "Open the complaint in the register".</li></ol>
+<p>Microsoft's own pattern for AI-drafted text puts a person's approval between the draft and any action, and offers <strong>Start and wait for an approval of text</strong>, which lets the approver edit the text before approving [L16]. Either action works here; the text variant is worth considering if approvers prefer to edit in place.</p>
+<h4>3.4 On approval: send, then record</h4>
+<ol><li><strong>Condition</strong>: <code>@equals(body('Start_and_wait_for_an_approval')?['outcome'], 'Approve')</code>. The response values "Approve" and "Reject" are case-sensitive [L4].</li></ol>
+<p><strong>If approved:</strong></p>
+<ol><li><strong>Send an email from a shared mailbox (V2)</strong> (Office 365 Outlook) [L1]:</li><li><strong>Original Mailbox Address:</strong> <code>ComplaintsMailbox</code>. <strong>To:</strong> the item's CustomerEmail.</li><li><strong>Subject:</strong> <code>concat('Your complaint ', triggerOutputs()?['body/Title'], ': ', triggerOutputs()?['body/LetterToSend/Value'])</code></li><li><strong>Body:</strong> the final letter as HTML: escape <code>&amp;</code>, <code>&lt;</code> and <code>&gt;</code> first, then turn line breaks into <code>&lt;br&gt;</code>:</li></ol>
+<p>``<code>text replace(replace(replace(replace(outputs('Final_letter'), '&amp;', '&amp;amp;'), '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;'), decodeUriComponent('%0A'), '&lt;br&gt;') </code>``</p>
+<ol><li><strong>Compose</strong> <strong>Sent at</strong>: <code>utcNow()</code>. Run after the send has succeeded only, so a failed send never writes a sent date.</li><li><strong>Compose</strong> <strong>Approved by</strong>: the approver's name, from the documented response field <code>responses.responder.displayName</code>, for example <code>first(body('Start_and_wait_for_an_approval')?['responses'])?['responder']?['displayName']</code>. <strong>Approved at</strong>: <code>convertFromUtc(first(body('Start_and_wait_for_an_approval')?['responses'])?['responseDate'], 'GMT Standard Time', 'd MMM yyyy HH:mm')</code>. Approvals timestamps are always UTC [L4].</li><li><strong>Switch</strong> on <code>triggerOutputs()?['body/LetterToSend/Value']</code>, each case one <strong>Update item</strong> (Title passed back unchanged):</li></ol>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">LetterToSend</th><th scope="col">Column written with <code>outputs('Sent_at')</code></th><th scope="col">Stage</th><th scope="col">Also</th></tr></thead><tbody><tr><td>Acknowledgement</td><td>AckSent</td><td>Acknowledged</td><td></td></tr><tr><td>Proposed pathway</td><td>PathwaySent</td><td>Pathway sent</td><td></td></tr><tr><td>Full assessment</td><td>AssessmentSent</td><td>Full assessment sent</td><td></td></tr><tr><td>Next steps</td><td>NextStepsSent</td><td>Next steps sent</td><td>NextUpdateDue = UK date of Sent at + 28 days</td></tr><tr><td>Update</td><td>LastUpdateSent</td><td>unchanged</td><td>NextUpdateDue = UK date of Sent at + 28 days</td></tr><tr><td>Concluding letter</td><td>ConcludedOn</td><td>Concluded</td><td></td></tr></tbody></table></div>
+<p>In every case also set LetterStatus "Sent", clear LetterToSend and LetterDraft, and write ActivityLog:</p>
+<p>``<code>text concat(triggerOutputs()?['body/LetterToSend/Value'], ' approved by ', outputs('Approved_by'), ' at ', outputs('Approved_at'), ' (UK time); sent from the shared mailbox at ', convertFromUtc(outputs('Sent_at'), 'GMT Standard Time', 'd MMM yyyy HH:mm'), '.') </code>``</p>
+<p>ActivityLog is append-only, so each entry is kept with its date in the item's history. SharePoint keeps appended text only when versioning is on for the list [L22].</p>
+<p><strong>If rejected:</strong> <strong>Update item</strong> LetterStatus "Returned for changes" and append "Returned by (name) at (time): (comments)" to ActivityLog (<code>responses.comments</code> [L4]); notify the owner in Teams.</p>
+<p><strong>If the send fails:</strong> on <strong>Send an email from a shared mailbox (V2)</strong>, a branch with <strong>Configure run after</strong> "has failed" sets LetterStatus "Returned for changes", appends "Approved but not sent: the email could not be sent at (time)" to ActivityLog and posts to the team channel. Nothing is recorded as sent.</p>
+<h3>Expression → engine function → test name</h3>
+<p>Each rule the flows and the list depend on, the function in <code>engine/clock.js</code> that implements the same rule, and the tests in <code>engine/clock.test.mjs</code> that pin it down. the pack validator (results in <code>CHECKS.md</code>) checks that every test named here exists and that every function named here is exported.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Rule</th><th scope="col">Flow or list expression</th><th scope="col">Engine function</th><th scope="col">Tests in clock.test.mjs</th></tr></thead><tbody><tr><td>UK date of receipt</td><td><code>convertFromUtc(receivedDateTime, 'GMT Standard Time', 'yyyy-MM-dd')</code> (Flow 1, step 3)</td><td>input to <code>initiationDate()</code> (the engine expects the UK calendar day)</td><td>none: the engine starts from a UK date; covered by the week 2 test-site check with an email sent at 00:30 BST</td></tr><tr><td>Weekday numbering</td><td><code>dayOfWeek()</code>, 0 = Sunday, 6 = Saturday</td><td><code>dayOfWeek()</code></td><td>"dayOfWeek uses the Power Automate numbering (0 = Sunday)"</td></tr><tr><td>Working day</td><td>not Saturday, not Sunday, not in <strong>Holiday dates</strong></td><td><code>isWorkingDay()</code></td><td>"bank holiday Monday is skipped (Spring bank holiday 2026)"; "Easter 2026: Good Friday and Easter Monday are skipped"; "Christmas 2026: 25 Dec and the substitute Boxing Day (28 Dec) are skipped"</td></tr><tr><td>Initiation date</td><td>Do until: <code>addDays(Candidate, 1)</code> until a working day (Flow 1, steps 7 to 9)</td><td><code>initiationDate()</code></td><td>"published example: received Monday, initiation Tuesday"; "published example: received Saturday, initiation the next Monday"; "received Sunday: initiation Monday"; "received Friday: initiation Monday"; "New Year 2027: received 31 Dec, 1 Jan is a bank holiday, initiation Monday 4 Jan"</td></tr><tr><td>Four due dates</td><td>list: <code>=IF(ISBLANK([InitiationDate]),"",[InitiationDate]+5)</code> and +10, +30, +56; flows: <code>addDays(Initiation, n)</code></td><td><code>schedule()</code> (uses <code>addDays()</code> and <code>STAGES</code>)</td><td>"all four stage dates from a Monday receipt"</td></tr><tr><td>Suggested send-by date</td><td><code>last(</code> working days on or before the due date <code>)</code> (Flow 2, step 11g)</td><td><code>sendBy()</code></td><td>"a promise due on a Sunday must go by the Friday before"; "a promise due on a working day can go that day"; "over Christmas: received 24 Dec, acknowledgement due Sun 3 Jan, send by Thu 31 Dec"</td></tr><tr><td>Updates every 28 days</td><td><code>addDays(LastUpdateSent, else NextStepsSent, else day 56, 28)</code> (Flow 2, steps 11d and 11e; Flow 3, step 12)</td><td><code>schedule()</code></td><td>"updates every 28 days after day 56, chained from the letter that actually went", "assess can list as many 28-day updates as the register needs"</td></tr><tr><td>Due soon and overdue</td><td>overdue if <code>Today &gt; Next due</code>; due soon if <code>Next due &lt; third working day after today</code> (Flow 2, steps 9 and 11h)</td><td><code>stageStatus()</code> and <code>workingDaysUntil()</code></td><td>"status: due soon inside two working days of the send-by date"; "status: overdue the day after the due date; met when sent on or before it"; "working days until: skips the weekend and counts down to zero"</td></tr><tr><td>Next commitment</td><td>first empty Sent column in order (Flow 2, step 11c)</td><td><code>assess()</code></td><td>"assess: one call returns the register row, the next promise and its status"</td></tr><tr><td>Which code applies</td><td>nested <code>less()</code> on the reservation date (Flow 1, step 18)</td><td><code>codeFor()</code></td><td>"code version: reserved 1 Aug 2023 is the Consumer Code for Home Builders"; "code version: reserved 2 Aug 2023 is NHQC version 1"; "code version: reserved 1 Mar 2026 is NHQC version 1"; "code version: reserved 2 Mar 2026 is NHQC version 2"; "code version: no reservation date means a person must confirm it"</td></tr><tr><td>Two-year window</td><td><code>addToTime(later of reservation and completion, 2, 'Year')</code> (Flow 1, step 18)</td><td><code>windowEnd()</code> and <code>addYears()</code></td><td>"two-year window runs from the later of reservation and completion"; "two-year window from 29 February ends on 28 February"</td></tr><tr><td>Inside the window</td><td><code>lessOrEquals(Received UK date, Window end)</code>; "unknown" when no dates</td><td><code>withinWindow()</code></td><td>"two-year window: the last day is inside, the day after is outside"; "no dates at all: window is unknown, not assumed"</td></tr><tr><td>Dates are refused, not guessed</td><td>Input.Date returns <code>yyyy-MM-dd</code>; in phase 2 Parse JSON rejects other formats (<code>ai/output-schema.json</code> pattern)</td><td><code>initiationDate()</code> (via its date check)</td><td>"bad input is refused rather than guessed"</td></tr><tr><td>Sent on time or late (list colour)</td><td>formatter: Sent if before <code>addDays([$InitiationDate], due + 1)</code>, else Sent late</td><td><code>stageStatus()</code> (met, met-late)</td><td>"status: overdue the day after the due date; met when sent on or before it"</td></tr></tbody></table></div>
+<p>One approximation, stated plainly: the list's own colour label shows "Due soon" from two <strong>calendar</strong> days before the due date, because column formatting has no bank-holiday calendar. The engine and Flow 2 use two <strong>working</strong> days before the send-by date. The Teams reminder from Flow 2 is the one to act on; the colour is a quick visual cue.</p>
+<h3>Connectors used</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Connector</th><th scope="col">Used for</th><th scope="col">Class in Power Automate</th><th scope="col">Phase</th></tr></thead><tbody><tr><td>Office 365 Outlook</td><td>shared mailbox trigger; send from the shared mailbox</td><td>Standard [L1]</td><td>1</td></tr><tr><td>SharePoint</td><td>get, create and update items; item trigger</td><td>Standard [L2]</td><td>1</td></tr><tr><td>Microsoft Teams</td><td>post card and wait; post card; post message</td><td>Standard [L3]</td><td>1</td></tr><tr><td>Approvals</td><td>start and wait for an approval</td><td>Standard [L4]</td><td>1</td></tr><tr><td>Built-in actions (Recurrence, Compose, Select, Filter array, Parse JSON, variables, Condition, Switch, Do until, Apply to each, Scope, Terminate)</td><td>logic</td><td>built in, no connection</td><td>1</td></tr><tr><td>AI Builder (Run a prompt)</td><td>phase 2 reading of the email</td><td>premium: "A Power Automate flow that uses any AI Builder action is a premium flow" [L17]</td><td>2 only</td></tr></tbody></table></div>
+<p>No HTTP connector and no custom connector is used. SharePoint, Microsoft Teams, Microsoft 365 Outlook and Approvals are on Microsoft's list of connectors that data policies cannot block; they can be classified as Business or Non-Business [L19]. Put all of them in the Business group.</p>
+<h3>Sources (all read 3 Nov 2026)</h3>
+<ul><li>[L1] Office 365 Outlook connector reference: <a href="https://learn.microsoft.com/en-us/connectors/office365/">https://learn.microsoft.com/en-us/connectors/office365/</a></li><li>[L2] SharePoint connector reference: <a href="https://learn.microsoft.com/en-us/connectors/sharepointonline/">https://learn.microsoft.com/en-us/connectors/sharepointonline/</a></li><li>[L3] Microsoft Teams connector reference: <a href="https://learn.microsoft.com/en-us/connectors/teams/">https://learn.microsoft.com/en-us/connectors/teams/</a></li><li>[L4] Approvals connector reference: <a href="https://learn.microsoft.com/en-us/connectors/approvals/">https://learn.microsoft.com/en-us/connectors/approvals/</a></li><li>[L5] Reference guide to workflow expression functions (used by Power Automate): <a href="https://learn.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference">https://learn.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference</a></li><li>[L6] Microsoft Graph message resource (receivedDateTime is UTC): <a href="https://learn.microsoft.com/en-us/graph/api/resources/message">https://learn.microsoft.com/en-us/graph/api/resources/message</a></li><li>[L7] Loops: Until runs its actions, then checks the condition; defaults 60 iterations and PT1H; sequential For each: <a href="https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-control-flow-loops">https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-control-flow-loops</a></li><li>[L8] Variables: declared at the top level only: <a href="https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-create-variables-store-values">https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-create-variables-store-values</a></li><li>[L9] Power Automate limits (30-day run duration, Until iterations): <a href="https://learn.microsoft.com/en-us/power-automate/limits-and-config">https://learn.microsoft.com/en-us/power-automate/limits-and-config</a></li><li>[L10] Overview of adaptive cards for Teams: <a href="https://learn.microsoft.com/en-us/power-automate/overview-adaptive-cards">https://learn.microsoft.com/en-us/power-automate/overview-adaptive-cards</a></li><li>[L11] Create flows that post adaptive cards to Microsoft Teams: <a href="https://learn.microsoft.com/en-us/power-automate/create-adaptive-cards">https://learn.microsoft.com/en-us/power-automate/create-adaptive-cards</a></li><li>[L12] Teams card reference (Adaptive Card versions supported, Teams limitations): <a href="https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-reference">https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-reference</a></li><li>[L13] Run a cloud flow on a schedule: <a href="https://learn.microsoft.com/en-us/power-automate/run-scheduled-tasks">https://learn.microsoft.com/en-us/power-automate/run-scheduled-tasks</a></li><li>[L14] Error handling in flows (Microsoft coding guidelines) (run after, scopes, run link): <a href="https://learn.microsoft.com/en-us/power-automate/guidance/coding-guidelines/error-handling">https://learn.microsoft.com/en-us/power-automate/guidance/coding-guidelines/error-handling</a></li><li>[L15] Understand flow failure notifications: <a href="https://learn.microsoft.com/en-us/power-automate/understand-flow-failure-notifications">https://learn.microsoft.com/en-us/power-automate/understand-flow-failure-notifications</a></li><li>[L16] Use your prompt in Power Automate (Run a prompt; human review): <a href="https://learn.microsoft.com/en-us/ai-builder/use-a-custom-prompt-in-flow">https://learn.microsoft.com/en-us/ai-builder/use-a-custom-prompt-in-flow</a></li><li>[L17] AI Builder licensing overview: <a href="https://learn.microsoft.com/en-us/ai-builder/administer-licensing">https://learn.microsoft.com/en-us/ai-builder/administer-licensing</a></li><li>[L18] End of AI Builder credits: <a href="https://learn.microsoft.com/en-us/ai-builder/endofaibcredits">https://learn.microsoft.com/en-us/ai-builder/endofaibcredits</a></li><li>[L19] Data policies, connector classification: <a href="https://learn.microsoft.com/en-us/power-platform/admin/dlp-connector-classification">https://learn.microsoft.com/en-us/power-platform/admin/dlp-connector-classification</a></li><li>[L20] Shared mailboxes in Exchange Online: <a href="https://learn.microsoft.com/en-us/exchange/collaboration-exo/shared-mailboxes">https://learn.microsoft.com/en-us/exchange/collaboration-exo/shared-mailboxes</a></li><li>[L21] Default time zones (United Kingdom: GMT Standard Time): <a href="https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones">https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones</a></li><li>[L22] Field element (AppendOnly applies when versioning is enabled): <a href="https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-field">https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-field</a></li><li>Shanly Homes' published rules: <a href="https://www.shanlyhomes.com/buying-with-us/customer-care">https://www.shanlyhomes.com/buying-with-us/customer-care</a> and <a href="https://www.shanlyhomes.com/buying-with-us/new-homes-quality-code">https://www.shanlyhomes.com/buying-with-us/new-homes-quality-code</a> (read 3 Nov 2026)</li></ul></div></details></div></section>
+<section class="section" id="copilot" aria-labelledby="copilot-h"><div class="wrap wrap--narrow stack"><h2 id="copilot-h">Copilot: the drafting prompt</h2><p class="lede">Phase one. The team drafts letters with Copilot from a saved prompt; the dates come from the register.</p><p><a href="pack/copilot/drafting-prompt.md">Download drafting-prompt.md</a></p><details class="more"><summary>Read drafting-prompt.md on this page</summary><div class="stack doc" data-plan><p>Status: written for Microsoft 365 Copilot in Outlook. It has not been run in the Group's tenant. Before the team uses it on real customer emails, IT and the data protection officer confirm that Copilot use for complaints correspondence is within the Group's policy (see <code>HANDOVER.md</code>).</p>
+<h3>What it is for</h3>
+<p>A saved prompt the Complaints Team runs in Outlook, with the customer's email thread open, to get a first draft of one of three letters:</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Letter</th><th scope="col">Published commitment it supports (calendar days from the initiation date)</th></tr></thead><tbody><tr><td>Acknowledgement</td><td>acknowledged within 5 days</td></tr><tr><td>Proposed pathway to resolution</td><td>a proposed pathway, with realistic timescales, within 10 days</td></tr><tr><td>Full assessment</td><td>a full assessment including the current position within 30 days</td></tr></tbody></table></div>
+<p>Copilot only reads and drafts. It never writes a date, never sends anything and never decides anything. A person checks every word, puts in the dates from the register, and the letter goes through the approval flow (<code>power-automate/FLOWS.md</code>, Flow 3) before it is sent.</p>
+<h3>How to use it</h3>
+<ol><li>Open the customer's email in Outlook and open Copilot Chat from the ribbon. Microsoft's training material describes Copilot Chat in Outlook reviewing the open thread and drafting a reply that you then check and edit (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/training/modules/manage-email-efficiently/4-create-replies">https://learn.microsoft.com/en-us/training/modules/manage-email-efficiently/4-create-replies</a>).</li><li>Run the saved prompt below. Fill in the two lines at the top: which letter, and your notes (what has been agreed internally: actions, who is doing them). Leave the notes as "none" for an acknowledgement if there is nothing to add.</li><li>Read the draft against the email and the register. Check every fact, name and issue. Remove anything you cannot stand behind.</li><li>Dates: leave <code>[ACK_DUE]</code>, <code>[PATHWAY_DUE]</code> and <code>[ASSESSMENT_DUE]</code> as they are, or replace them from the register's AckDue, PathwayDue and AssessmentDue columns. Either way the approval flow fills any that remain from the register, so the dates always come from the register's rules.</li><li>Replace every other placeholder in square brackets (<code>[NAME]</code>, <code>[ROLE]</code>, <code>[TIMESCALE: ...]</code>, <code>[TO CONFIRM: ...]</code>). The approval flow refuses a letter that still contains a square bracket.</li><li>Paste the letter into the register item's LetterDraft column, choose LetterToSend, and set LetterStatus to "Ready for approval".</li></ol>
+<h3>The prompt</h3>
+<p>Copy everything inside the box.</p>
+<pre><code>You are helping a member of the Complaints Team at a UK housebuilder draft one letter to a customer. Use the email thread that is open in Outlook and the notes below. A person will check, change and approve the letter before anything is sent. Do not send anything.
+
+LETTER: [ACKNOWLEDGEMENT or PROPOSED PATHWAY or FULL ASSESSMENT]
+NOTES FROM THE TEAM MEMBER: [paste notes, or write none]
+
+Rules that always apply:
+1. Never write a date, a day of the week or a number of days. Where the letter needs a date, use exactly one of these placeholders: [ACK_DUE], [PATHWAY_DUE], [ASSESSMENT_DUE]. Where it needs a timescale for an action, write [TIMESCALE: the action] for the team member to fill in.
+2. Use only facts that are in the email thread or in the notes. If something the letter needs is missing, write [TO CONFIRM: what is needed]. Do not guess names, plot numbers, developments or what has happened.
+3. Do not promise any outcome, repair, visit, refund, compensation or goodwill gesture. Do not admit liability or fault, do not speculate about causes, and do not give legal advice. You may acknowledge how the customer feels and thank them for explaining their concerns.
+4. Write in courteous, plain British English: British spelling, short sentences, a calm and respectful tone, no jargon, no exclamation marks. Address the customer by the name they use in their email.
+5. Do not repeat health, disability or other personal circumstances from the email, beyond a brief acknowledgement where the customer has raised them. Never include anyone else's personal details.
+6. Refer to the complaint as [REFERENCE]. Sign off with:
+   Yours sincerely,
+   [NAME]
+   [ROLE], The Complaints Team
+7. Keep the letter under 250 words.
+
+What each letter contains:
+- ACKNOWLEDGEMENT: thank the customer; confirm that their complaint has been received and logged under reference [REFERENCE]; list the issues as you understand them from the email, briefly, as bullet points, and invite the customer to say if anything is missing or wrong; explain that the team will write with a proposed pathway to resolution, including realistic timescales, by [PATHWAY_DUE], and with a full assessment of the complaint, including the current position, by [ASSESSMENT_DUE].
+- PROPOSED PATHWAY: thank the customer; restate the issues briefly; set out the proposed steps to resolve each issue, taken only from the notes, each with who will act and [TIMESCALE: the step]; explain that a full assessment, including the current position, will follow by [ASSESSMENT_DUE]; invite the customer to comment on the proposed steps.
+- FULL ASSESSMENT: thank the customer; for each issue, set out the current position, what has been done and what remains, taken only from the notes; give next steps with [TIMESCALE: the step]; say that the team will keep the customer updated while anything remains open.
+
+After the letter, add a short section headed "Notes for the team" (not part of the letter) that lists:
+- anything you marked [TO CONFIRM: ...] and why;
+- anything in the email that might be urgent for safety or for the home (for example water escaping, a smell of gas, no heating or hot water, an electrical danger, a door or window that will not lock), so a person can follow the emergency process at once;
+- anything the customer says that suggests they may need extra support, so a person can decide how to handle it.
+
+Output plain text only: the letter, then the notes.</code></pre>
+<h3>Saving the prompt and sharing it with the team</h3>
+<p>Microsoft's support article "Sharing prompts with a Team" (read 3 Nov 2026: <a href="https://support.microsoft.com/topic/2fa7a228-8645-4dc4-beec-d75d6d0bc752">https://support.microsoft.com/topic/2fa7a228-8645-4dc4-beec-d75d6d0bc752</a>) describes these steps:</p>
+<ol><li>Run the prompt once, then hover over it and select <strong>Save prompt</strong>.</li><li>Open the Copilot Prompt Gallery (available from Microsoft Copilot Chat, Teams or Outlook) and go to <strong>Your prompts</strong>.</li><li>Hover over the prompt, select <strong>Share prompt</strong>, then <strong>Share to team</strong>, and choose the Complaints Team.</li></ol>
+<p>The article does not state which licences the sharing feature needs; IT confirms which Copilot licence the team has before the trial. If sharing to a team is not available, save the prompt in a short Word document in the Complaints Team's Teams channel and copy it from there.</p>
+<h3>Changing the prompt</h3>
+<p>Treat the prompt as part of the process: one named owner in the Complaints Team, changes agreed with the team lead, and the date of each change noted at the top of this file. When a change affects what letters say about dates or commitments, check it against the published complaints process first. The Complaints Team's reading of the code governs over this prompt.</p></div></details></div></section>
+<section class="section" id="ai" aria-labelledby="ai-h"><div class="wrap wrap--narrow stack"><h2 id="ai-h">The AI step: triage prompt</h2><p class="lede">Phase two, after a data protection impact assessment and a licensing check: an AI Builder prompt pre-fills the coordinator&#x27;s card.</p><p><a href="pack/ai/triage-prompt.md">Download triage-prompt.md</a></p><details class="more"><summary>Read triage-prompt.md on this page</summary><div class="stack doc" data-plan><p>Where it runs: an AI Builder prompt (or a Copilot Studio agent flow) called by the intake flow, once per email. The email body and sender name are the only inputs. It is phase 2 of the trial: phase 1 runs the same register with a person filling the confirmation card by hand.</p>
+<p>What it may do: classify the email, pull out facts that are written in it, and draft a reply for a person to check. What it may never do: send anything, choose or write a date, decide the code version, close a complaint, promise an outcome, offer compensation or give legal advice. The intake flow posts its answer to a person in Teams, who confirms or corrects it before anything is logged.</p>
+<p>The rule that keeps it safe: <strong>when in doubt, it is a complaint.</strong> Starting the clock on an email that turns out to be an aftercare item costs a few minutes; missing a complaint costs a promise.</p>
+<h3>Prompt (paste into AI Builder; <code>{{email}}</code> and <code>{{sender}}</code> are the inputs)</h3>
+<p>You help the Complaints Team at a UK housebuilder sort incoming emails. You never send anything; a person reads your answer before anything happens.</p>
+<p>Read the email and return JSON only, in exactly the shape shown at the end of these instructions, with all twelve keys. No text before or after the JSON.</p>
+<p>How to classify <code>type</code>:</p>
+<ul><li><code>formal_complaint</code>: the customer is unhappy with how something has been handled. For example: they are dissatisfied with a resolution, a repair has not been done within the timescale they were given, they are unhappy with the customer service, they ask to make a complaint or escalate, or they mention the New Homes Ombudsman, the New Homes Quality Code or their warranty provider's dispute service.</li><li><code>aftercare_item</code>: the customer is reporting a defect or asking for a repair, and there is no sign they are unhappy with how it has been handled so far. These belong in the customer portal, not the complaints register.</li><li><code>general_enquiry</code>: anything else (a question about the home, documents, the development, a thank-you).</li><li>If you are unsure whether it is a complaint, choose <code>formal_complaint</code> and set <code>confidence</code> to <code>low</code>.</li></ul>
+<p>Set <code>possible_emergency</code> to true if the email describes a risk to safety or to the home that cannot wait: escaping water or flooding, no heating or no hot water, a smell of gas, an electrical danger, or a door or window that will not lock. Otherwise false. This is separate from <code>type</code>: an emergency can also be a complaint.</p>
+<p>Extract only what the email states. Use null when it is not stated.</p>
+<ul><li><code>customer_name</code>: the customer's name as they sign it.</li><li><code>development</code> and <code>plot</code>: as written, for example "Orchard Rise" and "Plot 14".</li><li><code>reservation_date</code> and <code>completion_date</code>: only when the email gives a full day, month and year for that event. Write them as YYYY-MM-DD. A month and year alone is null.</li><li><code>issues</code>: a short list of the problems raised, a few words each, in the customer's terms.</li><li><code>previous_reference</code>: a portal ticket number or earlier complaint reference, exactly as written.</li></ul>
+<p>Write <code>draft_reply</code> in plain, courteous British English, under 120 words, signed "The Complaints Team":</p>
+<ul><li>For <code>formal_complaint</code>: thank them, confirm the complaint has been received and logged, list the issues back briefly, and say the team will set out its proposed pathway to resolution by [PATHWAY_DUE]. Do not write any date yourself; use the placeholder exactly as shown.</li><li>For <code>aftercare_item</code>: thank them, explain that the quickest route for repairs is the online customer portal, where they can add photos and track progress, and say that the customer care team has been copied in.</li><li>For <code>general_enquiry</code>: thank them and say the right person will reply.</li><li>If <code>possible_emergency</code> is true, start the reply with: "If you have not already done so, please call our 24-hour customer care line now."</li><li>Never promise an outcome, a visit date, compensation or a timescale other than the placeholder. Never admit liability.</li></ul>
+<p><code>reason</code>: one sentence quoting the words in the email that decided the type. <code>confidence</code>: <code>high</code>, <code>medium</code> or <code>low</code>.</p>
+<p>Return exactly this shape (values are examples of the types only): {"type": "formal_complaint", "possible_emergency": false, "confidence": "high", "reason": "...", "customer_name": null, "development": null, "plot": null, "reservation_date": null, "completion_date": null, "issues": ["..."], "previous_reference": null, "draft_reply": "..."}</p>
+<p>Sender: {{sender}} Email: """ {{email}} """</p>
+<h3>Output contract</h3>
+<p>Version 2 of this prompt (3 Nov 2026). Version 1 told the model to match "the schema below" without listing three of the fields, so in the first smoke test no answer matched the schema; version 2 lists all twelve keys and shows the shape.</p>
+<p><code>output-schema.json</code> (JSON Schema, draft-07). The intake flow parses the answer with "Parse JSON" against this schema; anything that fails to parse goes to a person with the raw text.</p>
+<h3>How it is measured</h3>
+<p><code>eval/cases.jsonl</code> holds illustrative emails with the expected answer, written separately from this prompt. <code>eval/score.mjs</code> scores any model's answers. What matters most, in order:</p>
+<ol><li>every possible emergency flagged (target: all of them);</li><li>no formal complaint labelled as anything else (the dangerous error);</li><li>no date anywhere in a draft reply except the placeholder;</li><li>every answer valid against the schema;</li><li>type accuracy and date extraction overall.</li></ol></div></details></div></section>
+<section class="section" id="smoke" aria-labelledby="smoke-h"><div class="wrap wrap--narrow stack"><h2 id="smoke-h">Smoke-test results</h2><p class="lede">Illustrative emails, a stand-in model, and the two runs exactly as they came out.</p><p><a href="pack/ai/eval/RESULTS.md">Download RESULTS.md</a></p><details class="more"><summary>Read RESULTS.md on this page</summary><div class="stack doc" data-illustrative><p><strong>What this is:</strong> a smoke test, not a measure of accuracy. The emails are illustrative and were written for this test, so the numbers show whether the prompt behaves safely and returns usable answers, not how it would perform on real complaints. In the pilot, the same cases are re-run in AI Builder's prompt test (testing a prompt there is free) and then on a sample of real, anonymised emails agreed with the Complaints Team.</p>
+<p><strong>How it was run</strong></p>
+<ul><li><code>cases.jsonl</code>: 24 illustrative emails (E01 to E24), written separately from the prompt, so the test was blind, with the expected answer for each: 11 formal complaints, 9 aftercare items, 4 general enquiries, 5 possible emergencies across those types, and deliberately hard cases (a polite complaint about a third missed repair, an angry first defect report, a passing mention of the Ombudsman, a door that will not lock described casually).</li><li><code>demo-cases.jsonl</code>: the four emails used in the mock-up (D1 to D4), scored separately.</li><li>The model: Claude Haiku, standing in for the Copilot or AI Builder step, run in four batches of seven emails. The runs saw only the prompt and the emails, never the expected answers.</li><li><code>score.mjs</code> (no dependencies) checks every answer against the output contract and the expected labels: <code>node score.mjs cases.jsonl runs/&lt;outputs&gt;.jsonl</code>.</li></ul>
+<h3>Run 1: prompt version 1</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Measure</th><th scope="col">Result</th></tr></thead><tbody><tr><td>Answers valid against the schema</td><td>0 of 28</td></tr><tr><td>Possible emergencies flagged</td><td>5 of 5</td></tr><tr><td>Formal complaints caught</td><td>13 of 13</td></tr><tr><td>Drafts containing a date the AI wrote itself</td><td>0 of 28</td></tr><tr><td>Type correct overall</td><td>27 of 28</td></tr></tbody></table></div>
+<p><strong>What it found:</strong> version 1 told the model to match "the schema below" but never listed three of the fields (customer name, development, plot), so no answer matched the contract. The safety behaviour was already right. Version 2 lists all twelve keys and shows the shape. One demo email of my own (D1) was also reworded, because a mention of water marks could fairly be read as a possible leak; the blind set was not changed. Full output: <code>runs/run1-haiku-outputs.jsonl</code>, <code>runs/run1-RESULTS.md</code>.</p>
+<h3>Run 2: prompt version 2, blind set (E01 to E24)</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Measure</th><th scope="col">Result</th></tr></thead><tbody><tr><td>Answers valid against the schema</td><td>24 of 24</td></tr><tr><td>Possible emergencies flagged</td><td>5 of 5</td></tr><tr><td>Formal complaints caught (the dangerous miss)</td><td>11 of 11</td></tr><tr><td>Drafts containing a date the AI wrote itself</td><td>0 of 24</td></tr><tr><td>Type correct overall</td><td>23 of 24</td></tr><tr><td>Non-complaints sent to the register to be safe</td><td>1</td></tr><tr><td>False emergency flags</td><td>0</td></tr><tr><td>Reservation and completion dates exactly right</td><td>24 of 24</td></tr><tr><td>Plot number exactly right</td><td>24 of 24</td></tr></tbody></table></div>
+<p>The one difference: E02, an angry first report of a defect, was read as a formal complaint with low confidence. That is the rule working as designed ("when in doubt, it is a complaint"): a person sees the low confidence and moves it to the customer portal route in a few seconds. Full output: <code>runs/run2-haiku-outputs.jsonl</code>, <code>runs/run2-RESULTS-blind.md</code>.</p>
+<h3>Run 2: the four demo emails (D1 to D4)</h3>
+<p>All four correct on type, dates and plot; no dates in the drafts; both complaint drafts use the <code>[PATHWAY_DUE]</code> placeholder. The mock-up shows these answers unchanged (<code>assets/pilot-data.js</code> is generated from <code>runs/run2-haiku-outputs.jsonl</code>). <code>runs/run2-RESULTS-demo.md</code>.</p>
+<h3>What this does and does not show</h3>
+<ul><li>It shows the prompt keeps to its boundaries on these emails: every emergency flagged, no complaint missed, no date invented, every answer machine-readable.</li><li>It does not show accuracy on real complaints, on Microsoft's models, or at volume. Those are week 2 and the shadow run in the trial plan.</li></ul></div></details></div></section>
+<section class="section" id="handover" aria-labelledby="handover-h"><div class="wrap wrap--narrow stack"><h2 id="handover-h">Handover note for IT</h2><p class="lede">Ownership, permissions, data, failure modes and how to switch it off.</p><p><a href="pack/HANDOVER.md">Download HANDOVER.md</a></p><details class="more"><summary>Read HANDOVER.md on this page</summary><div class="stack doc" data-plan><p>Status: a design for Microsoft 365, with the date logic built and tested (<code>engine/</code>, 29 tests) and every JSON file validated against Microsoft's published schemas (<code>CHECKS.md</code>). Nothing has been imported into a tenant and no flow has been run. This note is written so that IT, or an external partner, can review the design, run it in a test site, support it and switch it off.</p>
+<p>The Complaints Team's reading of the code governs over this tool. Where the tool and the team's judgement differ, the team is right and the tool is changed.</p>
+<h3>What each part does</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Part</th><th scope="col">File</th><th scope="col">What it does</th><th scope="col">Who touches it</th></tr></thead><tbody><tr><td>Complaints register</td><td><code>sharepoint/complaints-register.site-script.json</code></td><td>A SharePoint list with one row per complaint: dates received and started, code version, two-year window, the four published due dates (calculated columns), when each letter was sent, owner, an append-only activity log</td><td>The Complaints Team, daily</td></tr><tr><td>Due-date labels</td><td><code>sharepoint/due-date.*.column-format.json</code></td><td>Shows each due date with a text label and colour: On track, Due soon, Overdue, Sent, Sent late, Not needed</td><td>Nobody: display only</td></tr><tr><td>Bank holidays</td><td>same site script, "UK bank holidays" list</td><td>England and Wales bank holidays, used to find working days</td><td>One named person, once a year</td></tr><tr><td>Optional regional settings</td><td><code>sharepoint/uk-regional-settings.site-script.json</code></td><td>Sets the site to UK time, English (United Kingdom) and 24-hour time</td><td>IT, once, only if the site is not already set</td></tr><tr><td>Intake flow</td><td><code>power-automate/FLOWS.md</code>, Flow 1</td><td>New email in the shared mailbox: works out the initiation date, asks a coordinator in Teams to confirm the type, logs it</td><td>Runs by itself; the coordinator answers the card</td></tr><tr><td>Daily clock</td><td>Flow 2</td><td>07:30 each weekday: reminders, escalation, next update date, a "clock ran" message</td><td>Runs by itself</td></tr><tr><td>Letter approval</td><td>Flow 3</td><td>A letter marked "Ready for approval" gets its dates from the register, a named approval, then is sent from the shared mailbox and recorded</td><td>The coordinator starts it; the approver approves</td></tr><tr><td>Teams cards</td><td><code>teams/confirm.card.json</code>, <code>teams/reminder.card.json</code></td><td>The confirmation question and the reminder</td><td>Nobody: used by the flows</td></tr><tr><td>Drafting prompt</td><td><code>copilot/drafting-prompt.md</code></td><td>Phase 1: Copilot in Outlook drafts a letter with date placeholders; a person checks it</td><td>The Complaints Team</td></tr><tr><td>AI triage (phase 2, optional)</td><td><code>ai/triage-prompt.md</code>, <code>ai/output-schema.json</code></td><td>An AI Builder prompt that pre-fills the confirmation card</td><td>Only after a DPIA and a licensing decision</td></tr><tr><td>Date rules</td><td><code>engine/clock.js</code>, <code>engine/clock.test.mjs</code></td><td>The published rules as tested code: the reference the flows were checked against</td><td>IT or a partner, when a rule changes</td></tr></tbody></table></div>
+<p>Phase 1 uses only the Office 365 Outlook, SharePoint, Microsoft Teams and Approvals connectors, all classed as Standard in Power Automate (connector references, read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/connectors/office365/">https://learn.microsoft.com/en-us/connectors/office365/</a>, <a href="https://learn.microsoft.com/en-us/connectors/sharepointonline/">https://learn.microsoft.com/en-us/connectors/sharepointonline/</a>, <a href="https://learn.microsoft.com/en-us/connectors/teams/">https://learn.microsoft.com/en-us/connectors/teams/</a>, <a href="https://learn.microsoft.com/en-us/connectors/approvals/">https://learn.microsoft.com/en-us/connectors/approvals/</a>).</p>
+<h3>Ownership</h3>
+<ul><li><strong>Service account.</strong> All connections use a service account, not a person's account, so the flows keep working when people change roles. Exchange Online needs Full Access and Send As on the complaints shared mailbox for that account; Microsoft's Exchange documentation describes both and says both are needed for normal shared mailbox use (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/exchange/collaboration-exo/shared-mailboxes">https://learn.microsoft.com/en-us/exchange/collaboration-exo/shared-mailboxes</a>). The Office 365 Outlook connector reference notes that new permissions can take about two hours to replicate.</li><li><strong>At least two co-owners</strong> on each flow (for example the IT Manager and the Complaints Team lead). Microsoft sends per-run failure alerts to owners and co-owners, never to environment or tenant admins (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-automate/understand-flow-failure-notifications">https://learn.microsoft.com/en-us/power-automate/understand-flow-failure-notifications</a>).</li><li><strong>A solution in a non-default environment.</strong> The three flows, their connection references and environment variables (site URL, mailbox, coordinator, team lead, approver, Teams channel) live in one solution, in an environment created for this purpose, so they can be moved from test to production as a unit and kept apart from personal flows.</li><li><strong>Managed environment, if licensed.</strong> Microsoft describes Managed Environments as a suite of premium governance capabilities (data policies, sharing limits, usage insights, solution checker and more), included as an entitlement with standalone Power Apps, Power Automate, Copilot Studio, Power Pages and Dynamics 365 licences (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-platform/admin/managed-environment-overview">https://learn.microsoft.com/en-us/power-platform/admin/managed-environment-overview</a>). If the Group already has those licences, use one; phase 1 does not otherwise need them. Confirm with the licensing partner.</li><li><strong>Idle flows.</strong> Microsoft notes that a cloud flow not triggered for 90 days might be turned off, with owners and co-owners notified 30 days before (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-automate/limits-and-config">https://learn.microsoft.com/en-us/power-automate/limits-and-config</a>). The daily clock runs every weekday; the intake and approval flows run whenever there is work, so this matters only if the mailbox goes quiet for three months.</li></ul>
+<h3>Data policies (DLP)</h3>
+<ul><li>Create a data policy for the environment with Office 365 Outlook (listed as Microsoft 365 Outlook), SharePoint, Microsoft Teams and Approvals in the <strong>Business</strong> group. Connectors in different groups cannot be used together in one flow; these four are on Microsoft's list of connectors that data policies cannot block, and can be classified as Business or Non-Business (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-platform/admin/dlp-connector-classification">https://learn.microsoft.com/en-us/power-platform/admin/dlp-connector-classification</a>).</li><li>No HTTP connector, custom connector or third-party connector is needed. Leave them out of the Business group or block them.</li><li>Microsoft notes that policy changes usually take effect within an hour and can take up to 24 hours (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-platform/admin/wp-data-loss-prevention">https://learn.microsoft.com/en-us/power-platform/admin/wp-data-loss-prevention</a>).</li></ul>
+<h3>Permissions</h3>
+<ul><li><strong>Register:</strong> on a Complaints Team site, or with permissions on the list restricted to a "Complaints Team" SharePoint group. The service account has Edit. Nobody outside the team needs access; IT holds Owner for support.</li><li><strong>Bank holidays list:</strong> read for the team; edit for the person who does the yearly refresh and for the service account.</li><li><strong>Shared mailbox:</strong> Full Access and Send As for the service account; the team keeps the access it has today.</li><li><strong>Teams:</strong> the confirmation card goes to the coordinator's chat with the Flow bot (or to the team channel if the team prefers); reminders go to the complaint's owner; escalations go to the team lead. The Workflows app must be allowed in the Teams admin centre (Microsoft Teams connector reference, read 3 Nov 2026).</li></ul>
+<h3>Personal data and retention</h3>
+<ul><li>Complaints can contain health, disability or vulnerability details, as well as names, addresses and contact details. The register keeps only what the process needs: identity and contact, development and plot, dates, a short note of the issues, and the activity log. The emails themselves stay in the shared mailbox.</li><li>The Teams cards carry the start of the email and the customer's name. Keep them to the coordinator, owner and team lead rather than wide channels, and apply the Group's Teams retention settings to them.</li><li>Flow run history keeps the inputs and outputs of each run for 30 days (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-automate/limits-and-config">https://learn.microsoft.com/en-us/power-automate/limits-and-config</a>). Turn on <strong>Secure inputs</strong> and <strong>Secure outputs</strong> on the actions that handle email text, so it is not visible in run history or audit logs (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-automate/guidance/coding-guidelines/use-secure-inputs-outputs-triggers">https://learn.microsoft.com/en-us/power-automate/guidance/coding-guidelines/use-secure-inputs-outputs-triggers</a>).</li><li><strong>Retention.</strong> Microsoft documents applying retention labels to SharePoint list items, and default labels for libraries, folders and document sets (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/purview/create-apply-retention-labels">https://learn.microsoft.com/en-us/purview/create-apply-retention-labels</a>). Choose with the DPO whether register items get a retention label or are covered by a retention policy on the site. The period should match the records the code requires the Group to keep: agree the period with the Complaints Team and the DPO rather than taking a number from this note.</li><li><strong>Versioning.</strong> The activity log column is append-only. SharePoint applies append-only only when versioning is enabled on the list (Field element reference, read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-field">https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-field</a>). The site script cannot switch versioning on; check List settings &gt; Versioning settings after import.</li></ul>
+<h3>Before any AI step</h3>
+<ul><li><strong>Phase 1 (Copilot in Outlook drafting):</strong> the team uses Copilot on customer emails. IT and the DPO confirm this is within the Group's Copilot policy and its data protection records before the trial starts.</li><li><strong>Phase 2 (AI Builder prompt in the intake flow):</strong> a data protection impact assessment comes first, then a licensing decision. Microsoft states that "a Power Automate flow that uses any AI Builder action is a premium flow" needing Power Automate premium licensing, and that prompts consume AI Builder credits or Copilot Credits (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/ai-builder/administer-licensing">https://learn.microsoft.com/en-us/ai-builder/administer-licensing</a>). From 1 November 2026 new or renewed licences no longer include seeded AI Builder credits (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/ai-builder/endofaibcredits">https://learn.microsoft.com/en-us/ai-builder/endofaibcredits</a>).</li><li>Neither phase lets AI set a date, send a message or decide that an email is not a complaint.</li></ul>
+<h3>When something goes wrong</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">What happens</th><th scope="col">How you notice</th><th scope="col">What to do</th></tr></thead><tbody><tr><td>A flow fails</td><td>The daily clock's "Catch" message in the team channel, or no "clock ran" message by 08:00; per-run failure email for known problems such as an expired connection (Microsoft sends these only for known, fixable causes, then not again for the same flow for 28 days, and they are not on for every flow by default)</td><td>Open the run from the link, fix the cause and run the flow again. Check the register for anything due today by hand.</td></tr><tr><td>The service account's connection expires (for example after a password or MFA change)</td><td>Per-run failure email; flows fail at the first connector step</td><td>Re-authenticate the connection reference in the solution.</td></tr><tr><td>Nobody answers the confirmation card</td><td>The intake flow logs the email as a complaint after 8 hours and says so in the channel</td><td>A person confirms or corrects the type in the register.</td></tr><tr><td>The bank-holiday list is not refreshed for the new year</td><td>The "Upcoming" view is empty or ends early</td><td>Refresh it (next section). A missing holiday makes the flows treat that day as a working day, so dates come out a day early, never late.</td></tr><tr><td>The code or the published timescales change</td><td>Notice from the New Homes Quality Board or a change to the published process</td><td>Change <code>engine/clock.js</code> and its tests first, then the CodeVersion choices, the calculated columns, the formatters and the flow expressions; run <code>node --test engine/clock.test.mjs</code> and the pack validator (see <code>CHECKS.md</code>), which checks that they agree with the engine.</td></tr><tr><td>A mailbox rule moves mail out of the Inbox before the flow sees it</td><td>Complaints in the mailbox with no register row</td><td>Agree that no rule moves complaints mail, or point the trigger at the folder the rule uses. During the trial, compare mailbox and register counts weekly.</td></tr><tr><td>The same email is logged twice</td><td>Two rows with the same SourceEmailId</td><td>The intake flow's duplicate check prevents this; if it happens, delete the newer row and check the check.</td></tr><tr><td>A letter is approved but the email fails to send</td><td>LetterStatus "Returned for changes" and a channel message</td><td>Nothing was recorded as sent. Fix the cause and set LetterStatus to "Ready for approval" again.</td></tr></tbody></table></div>
+<h3>Yearly bank-holiday refresh</h3>
+<ul><li><strong>When:</strong> each autumn, for the year after next; one named owner with a calendar reminder.</li><li><strong>Source:</strong> <a href="https://www.gov.uk/bank-holidays.json">https://www.gov.uk/bank-holidays.json</a> (the "england-and-wales" section). GOV.UK content is available under the Open Government Licence v3.0 (gov.uk/bank-holidays, read 3 Nov 2026).</li><li><strong>How:</strong> copy the new dates into the "UK bank holidays" list by hand or in grid view (Title: the holiday name; HolidayDate: the date). No connector, flow or premium licence is involved. Refresh <code>engine/bank-holidays-england-wales.json</code> at the same time and run the engine tests.</li><li><strong>Coverage now:</strong> the list ships empty; load the dates from the engine file, which runs to the end of 2028. It covers England and Wales only. If any team or development works to another UK nation's holidays, the Complaints Team decides which list applies.</li></ul>
+<h3>Applying the SharePoint script</h3>
+<ol><li>In a test site first. Optional: run <code>uk-regional-settings.site-script.json</code> before the register script if the site is not already on UK settings (time zone ID 2, the GMT zone in Microsoft's example; locale 2057, English (United Kingdom); sort order 25, General; 24-hour time).</li><li>Register the script with <code>Add-SPOSiteScript</code> and a site template with <code>Add-SPOSiteDesign</code>, then apply it with <code>Add-SPOSiteDesignTask</code> or <strong>Settings</strong> &gt; <strong>Apply a site template</strong>. Do not use <code>Invoke-SPOSiteDesign</code>: Microsoft limits it to 30 actions, and this script has 46; asynchronous application allows 300 actions or 100,000 characters (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview">https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview</a>).</li><li>After it runs: rename the Title column to "Reference" (List settings), check versioning is on, check the four views and the due-date labels, and load the bank holidays.</li><li>Rerunning the script is safe: field IDs are fixed, and Microsoft describes reruns as updating the existing list rather than duplicating it (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-json-schema">https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-json-schema</a>).</li><li>Any new view that shows a due-date column must also include InitiationDate, Stage and the matching Sent column: SharePoint passes only the view's fields to a column formatter (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/formatting-syntax-reference">https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/formatting-syntax-reference</a>). the pack validator (see <code>CHECKS.md</code>) checks this for the views in the script.</li></ol>
+<h3>How to switch it off</h3>
+<ol><li>Turn off the three flows. Microsoft notes that no new runs start once a flow is off, and runs already in progress continue until they finish (read 3 Nov 2026: <a href="https://learn.microsoft.com/en-us/power-automate/limits-and-config">https://learn.microsoft.com/en-us/power-automate/limits-and-config</a>). Cancel any waiting approvals or cards in run history if needed.</li><li>The register stays as it is, as a record of what was logged and sent. Nothing else depends on it.</li><li>The Complaints Team works by hand exactly as before: the mailbox, letters and process are unchanged by switching off.</li><li>Later, if the pilot is not kept: export the register, apply the agreed retention, then remove the lists and the solution.</li></ol>
+<h3>Contacts (to complete in week 2)</h3>
+<ul><li>Business owner: Complaints Team lead, [name]</li><li>Technical owner: IT Manager, [name]; external partner, [name]</li><li>Flow co-owners: [names]</li><li>Bank-holiday refresh owner: [name]</li></ul></div></details></div></section>
+<section class="section" id="checks" aria-labelledby="checks-h"><div class="wrap wrap--narrow stack"><h2 id="checks-h">Automated checks</h2><p class="lede">What was checked by machine, and what still needs a test site.</p><p><a href="pack/CHECKS.md">Download CHECKS.md</a></p><details class="more"><summary>Read CHECKS.md on this page</summary><div class="stack doc" data-plan><p>Run on 3 November 2026 by the validator kept with the source files (Node, with ajv and Microsoft's published JSON schemas). Every check passed. Status: validated against Microsoft's published schemas; not yet imported into a tenant.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Result</th><th scope="col">Check</th><th scope="col">Detail</th></tr></thead><tbody><tr><td>PASS</td><td>schema</td><td>sharepoint/complaints-register.site-script.json vs site-design-script-actions.schema.json</td></tr><tr><td>PASS</td><td>limits</td><td>complaints-register.site-script.json: 46 actions and subactions, 27004 characters</td></tr><tr><td>PASS</td><td>schema</td><td>sharepoint/uk-regional-settings.site-script.json vs site-design-script-actions.schema.json</td></tr><tr><td>PASS</td><td>limits</td><td>uk-regional-settings.site-script.json: 1 actions and subactions, 203 characters</td></tr><tr><td>PASS</td><td>schema</td><td>sharepoint/due-date.ack.column-format.json vs column-formatting.schema.json (v2)</td></tr><tr><td>PASS</td><td>schema</td><td>sharepoint/due-date.assessment.column-format.json vs column-formatting.schema.json (v2)</td></tr><tr><td>PASS</td><td>schema</td><td>sharepoint/due-date.nextsteps.column-format.json vs column-formatting.schema.json (v2)</td></tr><tr><td>PASS</td><td>schema</td><td>sharepoint/due-date.pathway.column-format.json vs column-formatting.schema.json (v2)</td></tr><tr><td>PASS</td><td>register</td><td>"UK bank holidays": 1 columns, 1 views, field XML, GUIDs, CAML and view fields</td></tr><tr><td>PASS</td><td>register</td><td>"Complaints register": 32 columns, 4 views, field XML, GUIDs, CAML and view fields</td></tr><tr><td>PASS</td><td>engine</td><td>register offsets (5, 10, 30, 56), formatter offsets and code labels match engine/clock.js</td></tr><tr><td>PASS</td><td>a11y</td><td>formatters: brackets balanced; every state has a text label; text contrast &gt;= 4.5:1 and dot contrast &gt;= 3:1 (WCAG 2.2)</td></tr><tr><td>PASS</td><td>schema</td><td>teams/confirm.card.json vs adaptive-card.json (template, placeholders as written, formats not checked)</td></tr><tr><td>PASS</td><td>schema</td><td>teams/confirm.card.json vs adaptive-card.json (placeholders replaced with sample values, formats checked)</td></tr><tr><td>PASS</td><td>teams</td><td>teams/confirm.card.json: version 1.4 features only, Teams limits, labelled inputs, 3200 bytes</td></tr><tr><td>PASS</td><td>schema</td><td>teams/reminder.card.json vs adaptive-card.json (template, placeholders as written, formats not checked)</td></tr><tr><td>PASS</td><td>schema</td><td>teams/reminder.card.json vs adaptive-card.json (placeholders replaced with sample values, formats checked)</td></tr><tr><td>PASS</td><td>teams</td><td>teams/reminder.card.json: version 1.4 features only, Teams limits, labelled inputs, 1410 bytes</td></tr><tr><td>PASS</td><td>schema</td><td>ai/output-schema.json is a valid draft-07 JSON Schema (strict mode)</td></tr><tr><td>PASS</td><td>schema</td><td>output contract accepts a well-formed answer and rejects a date written as 14/03/2026</td></tr><tr><td>PASS</td><td>mapping</td><td>power-automate/FLOWS.md: 14 rows, 29 of 29 engine tests cited, all names exact</td></tr><tr><td>PASS</td><td>engine</td><td>node --test clock.test.mjs: 29 pass, 0 fail</td></tr><tr><td>PASS</td><td>rules</td><td>flow logic modelled in JavaScript matches the engine for every receipt date from 1 December 2025 to 30 November 2028 and at each code boundary (initiation, due dates, due soon, overdue, send-by, 28-day updates, code version)</td></tr><tr><td>PASS</td><td>copy</td><td>13 pack files: no en or em dashes, no exclamation marks, house-style word list, Learn links dated</td></tr></tbody></table></div>
+<p>What these checks cannot show: how SharePoint, Teams and Power Automate behave after import (calculated columns, card response paths, date formats). <code>HANDOVER.md</code> lists each item to confirm in a test site.</p></div></details></div></section>
+<section class="section" id="trial" aria-labelledby="trial-h"><div class="wrap wrap--narrow stack"><h2 id="trial-h">Trial plan</h2><p class="lede">If you choose this as a first project.</p><p><a href="pack/TRIAL_PLAN.md">Download TRIAL_PLAN.md</a></p><details class="more"><summary>Read TRIAL_PLAN.md on this page</summary><div class="stack doc" data-plan><p>This is a plan for a small, reversible trial, written for the case where the Deputy Chairman and the Complaints Team decide this process is worth trying. It assumes nothing about the Group's priorities: if another process matters more, the same seven weeks and the same method apply to that one instead.</p>
+<p>What I do not know yet, and would find out in week 1: how complaints are logged today (a spreadsheet, mailbox folders, Clixifix or another system), how many arrive each month, who drafts and who signs letters, and whether a register already exists. If the team already tracks these dates well, the trial stops at week 1 with a short note, and that is a good outcome.</p>
+<h3>Seven weeks</h3>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Week</th><th scope="col">With</th><th scope="col">What happens</th><th scope="col">What comes out</th></tr></thead><tbody><tr><td>1</td><td>The Complaints Team</td><td>Sit with the team. Map today's process from email to concluding letter: who does what, where dates are kept, how reminders happen, where time goes. Count volumes and timings from the last few months, with the team's help and without copying personal data. Agree the measures below.</td><td>A one-page map of today's process, the volumes, the agreed measures, and a go or no-go for week 2</td></tr><tr><td>2</td><td>IT (and the external partner, if IT wishes)</td><td>Build in a test site and a non-default environment: run the site script, load bank holidays, build the three flows in a solution with the service account, set up the data policy, retention and permissions in <code>HANDOVER.md</code>. Run the checks listed under "What has not been verified" in <code>README.md</code> (for example an email sent at 00:30 BST, the leap-day window, the card response paths and the calculated column values). DPO decision on using real emails in the shadow run.</td><td>A working test set-up, IT's review notes, the DPO's decision</td></tr><tr><td>3 to 6</td><td>The Complaints Team</td><td>Shadow run alongside the current process. Intake logs and the daily clock run; the team keeps working exactly as today. <strong>No letters are sent by the tool</strong>: Flow 3's send step is switched off and replaced with a note to the approver. Weekly 20-minute check-in: compare the register with the team's own record, note every difference and its cause. Usability test with five people in week 4. Fix what the team finds.</td><td>A weekly log of differences and fixes, the usability findings, a short list of changes</td></tr><tr><td>7</td><td>The Deputy Chairman, Complaints Team lead and IT Manager</td><td>Review the measures against the targets agreed in week 1, the team's view and IT's view. Decide: keep (move the solution to production, with the owners in <code>HANDOVER.md</code>), change (agree what and re-run a shorter shadow period) or stop (switch off as <code>HANDOVER.md</code> describes; the register stays as a record).</td><td>A decision and, if kept, a handover date</td></tr></tbody></table></div>
+<p>If the DPO prefers not to use real emails in the shadow run, weeks 3 to 6 run on illustrative emails written with the team, and the measures that need real volumes move to a later, approved period.</p>
+<h3>Measures to agree in week 1</h3>
+<p>These are targets for the team to set, not results. None has been measured.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Table"><table class="table"><thead><tr><th scope="col">Measure</th><th scope="col">How it is counted</th><th scope="col">Example target to discuss</th></tr></thead><tbody><tr><td>Every complaint is in the register</td><td>Complaints received in the shadow period against register rows, weekly</td><td>All of them, with any gap explained</td></tr><tr><td>Initiation dates agree</td><td>Tool's initiation date against the team's, for every complaint</td><td>All agree, or the difference is explained and fixed</td></tr><tr><td>Reminders come in time</td><td>Reminder posted before each send-by date</td><td>Every commitment in the period</td></tr><tr><td>Nothing goes overdue unnoticed</td><td>Overdue commitments that the team did not already know about</td><td>None</td></tr><tr><td>Time on date-keeping</td><td>Minutes per complaint spent logging and checking dates, from the week 1 baseline</td><td>A reduction the team agrees is worth having</td></tr><tr><td>Letters through approval</td><td>Drafts approved first time, and why others were returned</td><td>Agreed with the team lead</td></tr><tr><td>Reliability</td><td>Weekdays with a "clock ran" message</td><td>Every weekday</td></tr><tr><td>The team's view</td><td>Five-person usability test, and the week 7 question "would you keep it?"</td><td>A majority would keep it, with their changes</td></tr></tbody></table></div>
+<h3>Five-person usability test (week 4)</h3>
+<p>Why five: Jakob Nielsen's article "Why You Only Need to Test with 5 Users" (Nielsen Norman Group, 18 March 2000, <a href="https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/">https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/</a>, read 3 Nov 2026) argues that testing with about five people finds most usability problems, and that several small rounds of testing are better than one large one. So: five people now, fix, and test again if the trial is kept.</p>
+<p><strong>Who:</strong> five people who would use it: coordinators, complaint handlers and the team lead. Thirty minutes each, one at a time, at their own desk with Outlook and Teams open.</p>
+<p><strong>Material:</strong> the test site with illustrative complaints only (fictional customers and developments). No real customer data.</p>
+<p><strong>How:</strong> I read each task aloud and say nothing else. I ask the person to think aloud. I note what they do, not what I hoped they would do.</p>
+<h4>Tasks</h4>
+<ol><li>"An email has just arrived in the complaints mailbox. Deal with it in Teams." (The illustrative email arrived on the Friday before a bank holiday Monday.)</li><li>"When must this complaint be acknowledged, and has it been?" (In the register.)</li><li>"You have a reminder in Teams. Find the complaint it is about."</li><li>"Draft the acknowledgement for this complaint and send it for approval." (Using the saved Copilot prompt and the register.)</li><li>"This email is a new defect report for the customer portal, not a complaint. Deal with it."</li><li>"Which complaints need something from the team this week?"</li></ol>
+<h4>What to observe</h4>
+<ul><li>Time to finish each task, and whether it was finished without help.</li><li>Where people hesitate, what they read twice, and what they miss on the Teams cards.</li><li>Whether they check the initiation date and the due dates or accept them without looking, and whether they understand why a bank holiday moved the start.</li><li>How they read the labels: in particular whether "Due soon" (two calendar days in the list) and the reminder (two working days) cause confusion.</li><li>Whether "Not a complaint" feels safe to press, and whether anyone presses it by mistake.</li><li>Any placeholder left in a draft, and whether the approval step catches it.</li></ul>
+<h4>Questions afterwards</h4>
+<ol><li>What was the most confusing moment?</li><li>What would you change first?</li><li>How does this compare with how you keep these dates today?</li><li>Is there anything here you would not trust, and why?</li><li>What would stop you using this every day?</li><li>If we kept only one part, which should it be?</li></ol>
+<p>Findings are written up the same day as a short list: problem, how many of the five hit it, the change proposed. The Complaints Team lead decides which changes are made before week 7.</p></div></details></div></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Shanly Group. Independent and illustrative; uses public information only.</p>
+      <p>Hemanth Vallamkonda, London. <a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a>, <a href="tel:+447553909828">+44 7553 909828</a>. Right to work in the UK; no sponsorship required. Bank holidays from GOV.UK under the Open Government Licence v3.0.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "fallbackText": "A complaint commitment is due soon or overdue. Please open the Complaints register.",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "@{outputs('Reminder_text')?['headline']}",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "Reference", "value": "@{outputs('Reminder_text')?['reference']}" },
+        { "title": "Customer", "value": "@{outputs('Reminder_text')?['customer']}" },
+        { "title": "Development and plot", "value": "@{outputs('Reminder_text')?['developmentPlot']}" },
+        { "title": "Commitment", "value": "@{outputs('Reminder_text')?['commitment']}" },
+        { "title": "Due date", "value": "@{outputs('Reminder_text')?['dueDate']}" },
+        { "title": "Suggested send-by date", "value": "@{outputs('Reminder_text')?['sendBy']}" },
+        { "title": "Status", "value": "@{outputs('Reminder_text')?['status']}" },
+        { "title": "Owner", "value": "@{outputs('Reminder_text')?['owner']}" }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "The due date is calendar days from the initiation date, as published. The send-by date is a suggestion: a due date on a weekend or bank holiday moves to the working day before. The Complaints Team's reading of the code governs over this reminder.",
+      "isSubtle": true,
+      "size": "Small",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "id": "openItem",
+      "title": "Open in the register",
+      "url": "@{outputs('Reminder_text')?['link']}"
+    }
+  ]
+}

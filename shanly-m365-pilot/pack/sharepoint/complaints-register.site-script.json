@@ -1,0 +1,542 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/site-design-script-actions.schema.json",
+  "actions": [
+    {
+      "verb": "createSPList",
+      "listName": "UK bank holidays",
+      "templateType": 100,
+      "subactions": [
+        {
+          "verb": "setDescription",
+          "description": "England and Wales bank holidays used by the complaints flows to find working days. Refresh once a year from GOV.UK (Open Government Licence v3.0)."
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{ecb01c83-da3e-5f5d-9b60-ba9745433f9f}\" Type=\"DateTime\" Name=\"HolidayDate\" StaticName=\"HolidayDate\" DisplayName=\"HolidayDate\" Description=\"Bank holiday date (England and Wales), copied from https://www.gov.uk/bank-holidays.json once a year. Put the holiday name in Title.\" Required=\"TRUE\" Format=\"DateOnly\" Indexed=\"TRUE\" EnforceUniqueValues=\"TRUE\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPView",
+          "name": "Upcoming",
+          "viewFields": [
+            "LinkTitle",
+            "HolidayDate"
+          ],
+          "query": "<OrderBy><FieldRef Name=\"HolidayDate\" Ascending=\"TRUE\" /></OrderBy><Where><Geq><FieldRef Name=\"HolidayDate\" /><Value Type=\"DateTime\"><Today /></Value></Geq></Where>",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": false,
+          "replaceViewFields": true
+        }
+      ]
+    },
+    {
+      "verb": "createSPList",
+      "listName": "Complaints register",
+      "templateType": 100,
+      "subactions": [
+        {
+          "verb": "setDescription",
+          "description": "Formal complaints register for the pilot: one row per complaint. Due dates are calendar days from the initiation date (5, 10, 30, 56, then updates at least every 28 days). Title holds the complaint reference."
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{18b3c56e-4e02-5e6b-ad41-d955554d005f}\" Type=\"Text\" Name=\"CustomerName\" StaticName=\"CustomerName\" DisplayName=\"CustomerName\" Description=\"Customer name as it appears in the email or letter.\" Required=\"FALSE\" MaxLength=\"255\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{bd5b3ef2-b651-5b2e-af62-0ea973b409ab}\" Type=\"Text\" Name=\"CustomerEmail\" StaticName=\"CustomerEmail\" DisplayName=\"CustomerEmail\" Description=\"Address the acknowledgement and later letters go to.\" Required=\"FALSE\" MaxLength=\"255\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{53dcdf37-23f5-5877-959d-ae33fccb7c36}\" Type=\"Text\" Name=\"Development\" StaticName=\"Development\" DisplayName=\"Development\" Description=\"Development name.\" Required=\"FALSE\" MaxLength=\"255\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{6a382b91-885a-5927-ade4-f88bfac47eaa}\" Type=\"Text\" Name=\"Plot\" StaticName=\"Plot\" DisplayName=\"Plot\" Description=\"Plot number, if given.\" Required=\"FALSE\" MaxLength=\"255\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{c7a18d74-7d20-5ac8-b366-1ce0b4e7139b}\" Type=\"DateTime\" Name=\"ReceivedDate\" StaticName=\"ReceivedDate\" DisplayName=\"ReceivedDate\" Description=\"Date and time the complaint arrived (stored in UTC by SharePoint, shown in the site time zone).\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{e1a5da62-2943-563e-9064-c471f4ad8982}\" Type=\"DateTime\" Name=\"InitiationDate\" StaticName=\"InitiationDate\" DisplayName=\"InitiationDate\" Description=\"Complaint initiation date: the first working day after the complaint was received. Set by the intake flow; check it if entered by hand.\" Required=\"FALSE\" Format=\"DateOnly\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{862c8c8e-ace6-5c11-a552-fa561341b7a0}\" Type=\"DateTime\" Name=\"ReservationDate\" StaticName=\"ReservationDate\" DisplayName=\"ReservationDate\" Description=\"Date of reservation, if known. Decides which code applies.\" Required=\"FALSE\" Format=\"DateOnly\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{98fbaa5d-30a9-5149-af21-e228b150de26}\" Type=\"DateTime\" Name=\"CompletionDate\" StaticName=\"CompletionDate\" DisplayName=\"CompletionDate\" Description=\"Date of legal completion, if known.\" Required=\"FALSE\" Format=\"DateOnly\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{b206ddd5-320d-569d-bad3-7cc7fee858c6}\" Type=\"Choice\" Name=\"CodeVersion\" StaticName=\"CodeVersion\" DisplayName=\"CodeVersion\" Description=\"Which code applies, by reservation date. The Complaints Team confirms it.\" Required=\"FALSE\" Format=\"Dropdown\" FillInChoice=\"FALSE\"><Default>To confirm</Default><CHOICES><CHOICE>Consumer Code for Home Builders</CHOICE><CHOICE>New Homes Quality Code, version 1</CHOICE><CHOICE>New Homes Quality Code, version 2</CHOICE><CHOICE>To confirm</CHOICE></CHOICES></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{a475a109-0f4c-5336-be0b-ec5cd67a0e7c}\" Type=\"DateTime\" Name=\"WindowEnd\" StaticName=\"WindowEnd\" DisplayName=\"WindowEnd\" Description=\"Last day a formal complaint can be raised: two years from the later of reservation and completion.\" Required=\"FALSE\" Format=\"DateOnly\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{6ee32812-fd1c-5e0c-8090-af4aeb176657}\" Type=\"Note\" Name=\"IssuesRaised\" StaticName=\"IssuesRaised\" DisplayName=\"IssuesRaised\" Description=\"The issues raised, in short, in the customer's terms.\" Required=\"FALSE\" RichText=\"FALSE\" NumLines=\"6\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{71ce89ab-b7b1-5b4c-8eaa-494ced97bfd9}\" Type=\"Choice\" Name=\"Stage\" StaticName=\"Stage\" DisplayName=\"Stage\" Description=\"Where the complaint is in the published process.\" Required=\"FALSE\" Format=\"Dropdown\" FillInChoice=\"FALSE\"><Default>Logged</Default><CHOICES><CHOICE>Logged</CHOICE><CHOICE>Acknowledged</CHOICE><CHOICE>Pathway sent</CHOICE><CHOICE>Full assessment sent</CHOICE><CHOICE>Next steps sent</CHOICE><CHOICE>Concluded</CHOICE></CHOICES></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{ef06677a-2a61-52a5-ab16-809c59a2de6e}\" Type=\"Calculated\" Name=\"AckDue\" StaticName=\"AckDue\" DisplayName=\"AckDue\" Description=\"Acknowledgement due: initiation date plus 5 calendar days.\" Required=\"FALSE\" ResultType=\"DateTime\" Format=\"DateOnly\" ReadOnly=\"TRUE\"><Formula>=IF(ISBLANK([InitiationDate]),&quot;&quot;,[InitiationDate]+5)</Formula><FieldRefs><FieldRef Name=\"InitiationDate\" /></FieldRefs></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{33cef8ea-7774-5d36-8120-7b7bd88754c1}\" Type=\"DateTime\" Name=\"AckSent\" StaticName=\"AckSent\" DisplayName=\"AckSent\" Description=\"When the acknowledgement was sent. Written by the letter approval flow.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{5aa18679-16b3-5406-a58e-016f95b2a10d}\" Type=\"Calculated\" Name=\"PathwayDue\" StaticName=\"PathwayDue\" DisplayName=\"PathwayDue\" Description=\"Proposed pathway due: initiation date plus 10 calendar days.\" Required=\"FALSE\" ResultType=\"DateTime\" Format=\"DateOnly\" ReadOnly=\"TRUE\"><Formula>=IF(ISBLANK([InitiationDate]),&quot;&quot;,[InitiationDate]+10)</Formula><FieldRefs><FieldRef Name=\"InitiationDate\" /></FieldRefs></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{0bb03228-7fae-524e-8845-a6deb6bad25b}\" Type=\"DateTime\" Name=\"PathwaySent\" StaticName=\"PathwaySent\" DisplayName=\"PathwaySent\" Description=\"When the proposed pathway to resolution was sent.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{fdfef2f1-3e56-5476-ad47-540d375fadd4}\" Type=\"Calculated\" Name=\"AssessmentDue\" StaticName=\"AssessmentDue\" DisplayName=\"AssessmentDue\" Description=\"Full assessment due: initiation date plus 30 calendar days.\" Required=\"FALSE\" ResultType=\"DateTime\" Format=\"DateOnly\" ReadOnly=\"TRUE\"><Formula>=IF(ISBLANK([InitiationDate]),&quot;&quot;,[InitiationDate]+30)</Formula><FieldRefs><FieldRef Name=\"InitiationDate\" /></FieldRefs></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{023d5357-0d89-512d-b22f-ce584a7825a9}\" Type=\"DateTime\" Name=\"AssessmentSent\" StaticName=\"AssessmentSent\" DisplayName=\"AssessmentSent\" Description=\"When the full assessment was sent.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{efd0ed2f-20f4-52fe-bd52-f184f17ce414}\" Type=\"Calculated\" Name=\"NextStepsDue\" StaticName=\"NextStepsDue\" DisplayName=\"NextStepsDue\" Description=\"If unresolved, next steps and timescales due: initiation date plus 56 calendar days.\" Required=\"FALSE\" ResultType=\"DateTime\" Format=\"DateOnly\" ReadOnly=\"TRUE\"><Formula>=IF(ISBLANK([InitiationDate]),&quot;&quot;,[InitiationDate]+56)</Formula><FieldRefs><FieldRef Name=\"InitiationDate\" /></FieldRefs></Field>",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{fe8f8b3d-ed33-5602-9653-f8233e30a373}\" Type=\"DateTime\" Name=\"NextStepsSent\" StaticName=\"NextStepsSent\" DisplayName=\"NextStepsSent\" Description=\"When the next steps letter was sent.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{de7af875-cb22-57b3-b717-f8be21cccecc}\" Type=\"DateTime\" Name=\"LastUpdateSent\" StaticName=\"LastUpdateSent\" DisplayName=\"LastUpdateSent\" Description=\"When the most recent 28-day update was sent.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{28fb8974-c46e-5ea0-adba-0ddd6acdb7cc}\" Type=\"DateTime\" Name=\"NextUpdateDue\" StaticName=\"NextUpdateDue\" DisplayName=\"NextUpdateDue\" Description=\"Next update due: 28 days after the next steps letter or the last update (or after day 56 if not yet sent). Set by the daily clock flow.\" Required=\"FALSE\" Format=\"DateOnly\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{461ba094-0411-511f-a6bc-f2c152bac083}\" Type=\"DateTime\" Name=\"ConcludedOn\" StaticName=\"ConcludedOn\" DisplayName=\"ConcludedOn\" Description=\"When the concluding letter was sent.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{ff716a72-5122-56f2-bd83-daf81011ed32}\" Type=\"User\" Name=\"Owner\" StaticName=\"Owner\" DisplayName=\"Owner\" Description=\"Person in the Complaints Team who owns this complaint.\" Required=\"FALSE\" UserSelectionMode=\"0\" Mult=\"FALSE\" />",
+          "addToDefaultView": true
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{3feb5ca7-a9f4-5fc3-bba9-6b84518b034e}\" Type=\"Choice\" Name=\"SuggestedType\" StaticName=\"SuggestedType\" DisplayName=\"SuggestedType\" Description=\"Type confirmed by a person at intake. Anything that might be a complaint is logged.\" Required=\"FALSE\" Format=\"Dropdown\" FillInChoice=\"FALSE\"><Default>Formal complaint</Default><CHOICES><CHOICE>Formal complaint</CHOICE><CHOICE>Aftercare item for the portal</CHOICE><CHOICE>General enquiry</CHOICE></CHOICES></Field>",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{c055bb2d-9dc4-557a-a879-47b4684eb744}\" Type=\"User\" Name=\"ConfirmedBy\" StaticName=\"ConfirmedBy\" DisplayName=\"ConfirmedBy\" Description=\"Person who confirmed the type on the Teams card.\" Required=\"FALSE\" UserSelectionMode=\"0\" Mult=\"FALSE\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{82b9bb0a-694b-55e9-80d0-c53716f8221f}\" Type=\"DateTime\" Name=\"ConfirmedOn\" StaticName=\"ConfirmedOn\" DisplayName=\"ConfirmedOn\" Description=\"When the type was confirmed.\" Required=\"FALSE\" Format=\"DateTime\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{6610d19d-3337-5ef2-84ef-b84019638aac}\" Type=\"Note\" Name=\"ActivityLog\" StaticName=\"ActivityLog\" DisplayName=\"ActivityLog\" Description=\"Append-only log of what happened and who did it. Needs versioning on the list.\" Required=\"FALSE\" RichText=\"FALSE\" NumLines=\"6\" AppendOnly=\"TRUE\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{27580dcd-a510-5dac-9bb1-f63369d6c188}\" Type=\"Choice\" Name=\"LetterToSend\" StaticName=\"LetterToSend\" DisplayName=\"LetterToSend\" Description=\"The letter to send next. Set with LetterStatus to start the approval flow.\" Required=\"FALSE\" Format=\"Dropdown\" FillInChoice=\"FALSE\"><CHOICES><CHOICE>Acknowledgement</CHOICE><CHOICE>Proposed pathway</CHOICE><CHOICE>Full assessment</CHOICE><CHOICE>Next steps</CHOICE><CHOICE>Update</CHOICE><CHOICE>Concluding letter</CHOICE></CHOICES></Field>",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{bb47c3c5-8b09-5134-937e-4748747709d7}\" Type=\"Note\" Name=\"LetterDraft\" StaticName=\"LetterDraft\" DisplayName=\"LetterDraft\" Description=\"Letter text for approval. Leave [ACK_DUE], [PATHWAY_DUE] or [ASSESSMENT_DUE] in place if you wish: the approval flow fills them from this register.\" Required=\"FALSE\" RichText=\"FALSE\" NumLines=\"6\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{1e96b59b-141d-5e18-846a-b07d03538270}\" Type=\"Choice\" Name=\"LetterStatus\" StaticName=\"LetterStatus\" DisplayName=\"LetterStatus\" Description=\"Set to &quot;Ready for approval&quot; to send LetterDraft for approval.\" Required=\"FALSE\" Format=\"Dropdown\" FillInChoice=\"FALSE\"><CHOICES><CHOICE>Ready for approval</CHOICE><CHOICE>Awaiting approval</CHOICE><CHOICE>Sent</CHOICE><CHOICE>Returned for changes</CHOICE></CHOICES></Field>",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "addSPFieldXml",
+          "schemaXml": "<Field ID=\"{6cd504b2-ffbe-50b6-82c5-a82b06c109cd}\" Type=\"Text\" Name=\"SourceEmailId\" StaticName=\"SourceEmailId\" DisplayName=\"SourceEmailId\" Description=\"Internet message ID of the original email. It stays the same if the email is moved, so the intake flow uses it to avoid logging the same email twice.\" Required=\"FALSE\" MaxLength=\"255\" />",
+          "addToDefaultView": false
+        },
+        {
+          "verb": "setSPFieldCustomFormatter",
+          "fieldDisplayName": "AckDue",
+          "formatterJSON": {
+            "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+            "elmType": "div",
+            "style": {
+              "display": "flex",
+              "align-items": "center",
+              "flex-wrap": "wrap"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "style": {
+                  "margin-right": "6px",
+                  "white-space": "nowrap"
+                },
+                "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 5)))"
+              },
+              {
+                "elmType": "span",
+                "attributes": {
+                  "title": "Acknowledgement: due 5 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+                },
+                "style": {
+                  "display": "inline-flex",
+                  "align-items": "center",
+                  "padding": "1px 8px",
+                  "border-radius": "10px",
+                  "font-size": "12px",
+                  "font-weight": "600",
+                  "white-space": "nowrap",
+                  "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#0B5A0B', if(length([$AckSent]) > 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now >= addDays([$InitiationDate], 6), '#8E1F25', if(@now >= addDays([$InitiationDate], 3), '#5C4300', '#004578'))))))",
+                  "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#DFF6DD', if(length([$AckSent]) > 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now >= addDays([$InitiationDate], 6), '#FDE7E9', if(@now >= addDays([$InitiationDate], 3), '#FFF4CE', '#EFF6FC'))))))"
+                },
+                "children": [
+                  {
+                    "elmType": "span",
+                    "attributes": {
+                      "aria-hidden": "true"
+                    },
+                    "style": {
+                      "display": "inline-block",
+                      "width": "8px",
+                      "height": "8px",
+                      "border-radius": "50%",
+                      "margin-right": "5px",
+                      "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), '#107C10', if(length([$AckSent]) > 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now >= addDays([$InitiationDate], 6), '#A4262C', if(@now >= addDays([$InitiationDate], 3), '#8A6400', '#0067B8'))))))"
+                    }
+                  },
+                  {
+                    "elmType": "span",
+                    "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$AckSent]) > 0 && [$AckSent] < addDays([$InitiationDate], 6), 'Sent', if(length([$AckSent]) > 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now >= addDays([$InitiationDate], 6), 'Overdue', if(@now >= addDays([$InitiationDate], 3), 'Due soon', 'On track'))))))"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "verb": "setSPFieldCustomFormatter",
+          "fieldDisplayName": "PathwayDue",
+          "formatterJSON": {
+            "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+            "elmType": "div",
+            "style": {
+              "display": "flex",
+              "align-items": "center",
+              "flex-wrap": "wrap"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "style": {
+                  "margin-right": "6px",
+                  "white-space": "nowrap"
+                },
+                "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 10)))"
+              },
+              {
+                "elmType": "span",
+                "attributes": {
+                  "title": "Proposed pathway to resolution: due 10 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+                },
+                "style": {
+                  "display": "inline-flex",
+                  "align-items": "center",
+                  "padding": "1px 8px",
+                  "border-radius": "10px",
+                  "font-size": "12px",
+                  "font-weight": "600",
+                  "white-space": "nowrap",
+                  "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$PathwaySent]) > 0 && [$PathwaySent] < addDays([$InitiationDate], 11), '#0B5A0B', if(length([$PathwaySent]) > 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now >= addDays([$InitiationDate], 11), '#8E1F25', if(@now >= addDays([$InitiationDate], 8), '#5C4300', '#004578'))))))",
+                  "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$PathwaySent]) > 0 && [$PathwaySent] < addDays([$InitiationDate], 11), '#DFF6DD', if(length([$PathwaySent]) > 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now >= addDays([$InitiationDate], 11), '#FDE7E9', if(@now >= addDays([$InitiationDate], 8), '#FFF4CE', '#EFF6FC'))))))"
+                },
+                "children": [
+                  {
+                    "elmType": "span",
+                    "attributes": {
+                      "aria-hidden": "true"
+                    },
+                    "style": {
+                      "display": "inline-block",
+                      "width": "8px",
+                      "height": "8px",
+                      "border-radius": "50%",
+                      "margin-right": "5px",
+                      "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$PathwaySent]) > 0 && [$PathwaySent] < addDays([$InitiationDate], 11), '#107C10', if(length([$PathwaySent]) > 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now >= addDays([$InitiationDate], 11), '#A4262C', if(@now >= addDays([$InitiationDate], 8), '#8A6400', '#0067B8'))))))"
+                    }
+                  },
+                  {
+                    "elmType": "span",
+                    "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$PathwaySent]) > 0 && [$PathwaySent] < addDays([$InitiationDate], 11), 'Sent', if(length([$PathwaySent]) > 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now >= addDays([$InitiationDate], 11), 'Overdue', if(@now >= addDays([$InitiationDate], 8), 'Due soon', 'On track'))))))"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "verb": "setSPFieldCustomFormatter",
+          "fieldDisplayName": "AssessmentDue",
+          "formatterJSON": {
+            "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+            "elmType": "div",
+            "style": {
+              "display": "flex",
+              "align-items": "center",
+              "flex-wrap": "wrap"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "style": {
+                  "margin-right": "6px",
+                  "white-space": "nowrap"
+                },
+                "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 30)))"
+              },
+              {
+                "elmType": "span",
+                "attributes": {
+                  "title": "Full assessment: due 30 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+                },
+                "style": {
+                  "display": "inline-flex",
+                  "align-items": "center",
+                  "padding": "1px 8px",
+                  "border-radius": "10px",
+                  "font-size": "12px",
+                  "font-weight": "600",
+                  "white-space": "nowrap",
+                  "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$AssessmentSent]) > 0 && [$AssessmentSent] < addDays([$InitiationDate], 31), '#0B5A0B', if(length([$AssessmentSent]) > 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now >= addDays([$InitiationDate], 31), '#8E1F25', if(@now >= addDays([$InitiationDate], 28), '#5C4300', '#004578'))))))",
+                  "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$AssessmentSent]) > 0 && [$AssessmentSent] < addDays([$InitiationDate], 31), '#DFF6DD', if(length([$AssessmentSent]) > 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now >= addDays([$InitiationDate], 31), '#FDE7E9', if(@now >= addDays([$InitiationDate], 28), '#FFF4CE', '#EFF6FC'))))))"
+                },
+                "children": [
+                  {
+                    "elmType": "span",
+                    "attributes": {
+                      "aria-hidden": "true"
+                    },
+                    "style": {
+                      "display": "inline-block",
+                      "width": "8px",
+                      "height": "8px",
+                      "border-radius": "50%",
+                      "margin-right": "5px",
+                      "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$AssessmentSent]) > 0 && [$AssessmentSent] < addDays([$InitiationDate], 31), '#107C10', if(length([$AssessmentSent]) > 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now >= addDays([$InitiationDate], 31), '#A4262C', if(@now >= addDays([$InitiationDate], 28), '#8A6400', '#0067B8'))))))"
+                    }
+                  },
+                  {
+                    "elmType": "span",
+                    "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$AssessmentSent]) > 0 && [$AssessmentSent] < addDays([$InitiationDate], 31), 'Sent', if(length([$AssessmentSent]) > 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now >= addDays([$InitiationDate], 31), 'Overdue', if(@now >= addDays([$InitiationDate], 28), 'Due soon', 'On track'))))))"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "verb": "setSPFieldCustomFormatter",
+          "fieldDisplayName": "NextStepsDue",
+          "formatterJSON": {
+            "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+            "elmType": "div",
+            "style": {
+              "display": "flex",
+              "align-items": "center",
+              "flex-wrap": "wrap"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "style": {
+                  "margin-right": "6px",
+                  "white-space": "nowrap"
+                },
+                "txtContent": "=if(length([$InitiationDate]) == 0, '', toLocaleDateString(addDays([$InitiationDate], 56)))"
+              },
+              {
+                "elmType": "span",
+                "attributes": {
+                  "title": "Next steps and timescales: due 56 calendar days after the initiation date. \"Due soon\" means within 2 calendar days of the due date; the daily reminder flow uses working days and bank holidays."
+                },
+                "style": {
+                  "display": "inline-flex",
+                  "align-items": "center",
+                  "padding": "1px 8px",
+                  "border-radius": "10px",
+                  "font-size": "12px",
+                  "font-weight": "600",
+                  "white-space": "nowrap",
+                  "color": "=if(length([$InitiationDate]) == 0, '#3B3A39', if(length([$NextStepsSent]) > 0 && [$NextStepsSent] < addDays([$InitiationDate], 57), '#0B5A0B', if(length([$NextStepsSent]) > 0, '#7A3105', if([$Stage] == 'Concluded', '#3B3A39', if(@now >= addDays([$InitiationDate], 57), '#8E1F25', if(@now >= addDays([$InitiationDate], 54), '#5C4300', '#004578'))))))",
+                  "background-color": "=if(length([$InitiationDate]) == 0, '#F3F2F1', if(length([$NextStepsSent]) > 0 && [$NextStepsSent] < addDays([$InitiationDate], 57), '#DFF6DD', if(length([$NextStepsSent]) > 0, '#FDE7D9', if([$Stage] == 'Concluded', '#F3F2F1', if(@now >= addDays([$InitiationDate], 57), '#FDE7E9', if(@now >= addDays([$InitiationDate], 54), '#FFF4CE', '#EFF6FC'))))))"
+                },
+                "children": [
+                  {
+                    "elmType": "span",
+                    "attributes": {
+                      "aria-hidden": "true"
+                    },
+                    "style": {
+                      "display": "inline-block",
+                      "width": "8px",
+                      "height": "8px",
+                      "border-radius": "50%",
+                      "margin-right": "5px",
+                      "background-color": "=if(length([$InitiationDate]) == 0, '#605E5C', if(length([$NextStepsSent]) > 0 && [$NextStepsSent] < addDays([$InitiationDate], 57), '#107C10', if(length([$NextStepsSent]) > 0, '#B84500', if([$Stage] == 'Concluded', '#605E5C', if(@now >= addDays([$InitiationDate], 57), '#A4262C', if(@now >= addDays([$InitiationDate], 54), '#8A6400', '#0067B8'))))))"
+                    }
+                  },
+                  {
+                    "elmType": "span",
+                    "txtContent": "=if(length([$InitiationDate]) == 0, 'No start date', if(length([$NextStepsSent]) > 0 && [$NextStepsSent] < addDays([$InitiationDate], 57), 'Sent', if(length([$NextStepsSent]) > 0, 'Sent late', if([$Stage] == 'Concluded', 'Not needed', if(@now >= addDays([$InitiationDate], 57), 'Overdue', if(@now >= addDays([$InitiationDate], 54), 'Due soon', 'On track'))))))"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "verb": "addSPView",
+          "name": "Open complaints",
+          "viewFields": [
+            "LinkTitle",
+            "CustomerName",
+            "Development",
+            "Plot",
+            "Stage",
+            "Owner",
+            "InitiationDate",
+            "AckDue",
+            "AckSent",
+            "PathwayDue",
+            "PathwaySent",
+            "AssessmentDue",
+            "AssessmentSent",
+            "NextStepsDue",
+            "NextStepsSent",
+            "NextUpdateDue",
+            "CodeVersion",
+            "WindowEnd"
+          ],
+          "query": "<OrderBy><FieldRef Name=\"AckDue\" Ascending=\"TRUE\" /></OrderBy><Where><Neq><FieldRef Name=\"Stage\" /><Value Type=\"Choice\">Concluded</Value></Neq></Where>",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": true,
+          "replaceViewFields": true
+        },
+        {
+          "verb": "addSPView",
+          "name": "Due this week",
+          "viewFields": [
+            "LinkTitle",
+            "CustomerName",
+            "Development",
+            "Plot",
+            "Stage",
+            "Owner",
+            "InitiationDate",
+            "AckDue",
+            "AckSent",
+            "PathwayDue",
+            "PathwaySent",
+            "AssessmentDue",
+            "AssessmentSent",
+            "NextStepsDue",
+            "NextStepsSent",
+            "NextUpdateDue",
+            "CodeVersion",
+            "WindowEnd"
+          ],
+          "query": "<OrderBy><FieldRef Name=\"AckDue\" /></OrderBy><Where><And><Neq><FieldRef Name=\"Stage\" /><Value Type=\"Choice\">Concluded</Value></Neq><Or><Or><Or><Or><And><IsNull><FieldRef Name=\"AckSent\" /></IsNull><Leq><FieldRef Name=\"AckDue\" /><Value Type=\"DateTime\"><Today OffsetDays=\"7\" /></Value></Leq></And><And><IsNull><FieldRef Name=\"PathwaySent\" /></IsNull><Leq><FieldRef Name=\"PathwayDue\" /><Value Type=\"DateTime\"><Today OffsetDays=\"7\" /></Value></Leq></And></Or><And><IsNull><FieldRef Name=\"AssessmentSent\" /></IsNull><Leq><FieldRef Name=\"AssessmentDue\" /><Value Type=\"DateTime\"><Today OffsetDays=\"7\" /></Value></Leq></And></Or><And><IsNull><FieldRef Name=\"NextStepsSent\" /></IsNull><Leq><FieldRef Name=\"NextStepsDue\" /><Value Type=\"DateTime\"><Today OffsetDays=\"7\" /></Value></Leq></And></Or><Leq><FieldRef Name=\"NextUpdateDue\" /><Value Type=\"DateTime\"><Today OffsetDays=\"7\" /></Value></Leq></Or></And></Where>",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": false,
+          "replaceViewFields": true
+        },
+        {
+          "verb": "addSPView",
+          "name": "Letters for approval",
+          "viewFields": [
+            "LinkTitle",
+            "CustomerName",
+            "Development",
+            "Plot",
+            "LetterToSend",
+            "LetterStatus",
+            "Owner",
+            "Modified"
+          ],
+          "query": "<OrderBy><FieldRef Name=\"Modified\" Ascending=\"FALSE\" /></OrderBy><Where><Or><Eq><FieldRef Name=\"LetterStatus\" /><Value Type=\"Choice\">Ready for approval</Value></Eq><Eq><FieldRef Name=\"LetterStatus\" /><Value Type=\"Choice\">Awaiting approval</Value></Eq></Or></Where>",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": false,
+          "replaceViewFields": true
+        },
+        {
+          "verb": "addSPView",
+          "name": "Concluded",
+          "viewFields": [
+            "LinkTitle",
+            "CustomerName",
+            "Development",
+            "Plot",
+            "Stage",
+            "InitiationDate",
+            "ConcludedOn",
+            "CodeVersion",
+            "Owner"
+          ],
+          "query": "<OrderBy><FieldRef Name=\"ConcludedOn\" Ascending=\"FALSE\" /></OrderBy><Where><Eq><FieldRef Name=\"Stage\" /><Value Type=\"Choice\">Concluded</Value></Eq></Where>",
+          "rowLimit": 100,
+          "isPaged": true,
+          "makeDefault": false,
+          "replaceViewFields": true
+        }
+      ]
+    }
+  ]
+}
