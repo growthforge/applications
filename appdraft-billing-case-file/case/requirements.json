@@ -1,0 +1,576 @@
+[
+ {
+  "id": "REQ-01",
+  "title": "Repairs are invoiced when the job is completed",
+  "actor": "Operations",
+  "trigger": "Job marked complete",
+  "rule": "One DRAFT invoice is created in Xero for the final amount of the job, not the quote.",
+  "plain": "Repairs are invoiced when the job is finished, for the final amount, not when the deal is won.",
+  "sources": [
+   "L07",
+   "L10",
+   "L11"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a repair opportunity is Closed Won and the job is not complete",
+    "when": "nothing changes",
+    "then": "no invoice is created"
+   },
+   {
+    "given": "the job is marked complete with a final amount",
+    "when": "the sync runs",
+    "then": "one DRAFT invoice for the final amount exists in Xero"
+   }
+  ],
+  "gaps": [
+   "G-02"
+  ]
+ },
+ {
+  "id": "REQ-02",
+  "title": "Deposits on large repairs",
+  "actor": "Sales",
+  "trigger": "Repair won with a deposit percentage",
+  "rule": "The deposit is a share of the quote and is invoiced when the deal is won. The balance is the final amount less the deposit and is invoiced on completion, so the two add up to the final amount to the penny. If the final amount is below the deposit, finance is told that a credit is due.",
+  "plain": "Large repairs can be billed as a deposit first (usually half, set per job) and a balance on completion.",
+  "sources": [
+   "L08"
+  ],
+  "priority": "Should",
+  "status": "assumption",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "a repair of 1,001.01 with a 50 percent deposit",
+    "when": "the invoices are created",
+    "then": "the deposit is 500.51 and the balance is 500.50"
+   },
+   {
+    "given": "a repair quoted at 1,001.01 with a 50 percent deposit, completed at a final amount of 1,200",
+    "when": "the balance invoice is created",
+    "then": "the deposit is 500.51 and the balance is 699.49, which add up to the final amount"
+   },
+   {
+    "given": "a repair quoted at 1,000 with a 50 percent deposit, completed at a final amount of 400",
+    "when": "the balance is worked out",
+    "then": "the balance is minus 100 and finance is told that a credit is due"
+   }
+  ],
+  "gaps": [
+   "G-02"
+  ]
+ },
+ {
+  "id": "REQ-03",
+  "title": "Monthly invoices for planned maintenance",
+  "actor": "Finance",
+  "trigger": "Contract won",
+  "rule": "A billing schedule is created at Closed Won. One DRAFT invoice per month is created in advance, from the start date, for the term, on the contract's own day of the month (pending G-17). The annual April uplift is applied from the first April after the contract starts. Every invoice has its own code: the job number, then the billing month.",
+  "plain": "Planned maintenance contracts are invoiced monthly in advance for the whole term, with the April price rise applied.",
+  "sources": [
+   "L05",
+   "L06",
+   "L03"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a 12 month contract starting 31 January at 500 a month with a 3.4 percent uplift from April",
+    "when": "the schedule is created",
+    "then": "the dates are 31 Jan, 28 Feb, 31 Mar, 30 Apr and so on, and the amount is 517 from April"
+   }
+  ],
+  "gaps": [
+   "G-01",
+   "G-03",
+   "G-17"
+  ]
+ },
+ {
+  "id": "REQ-04",
+  "title": "Account code by type of work",
+  "actor": "Finance",
+  "trigger": "Invoice line created",
+  "rule": "Planned maintenance lines carry account 200 and repairs 210. Finance can change a code before approving.",
+  "plain": "The right account code is filled in for you.",
+  "sources": [
+   "L13"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a planned maintenance line",
+    "when": "the invoice is drafted",
+    "then": "the account code is 200"
+   }
+  ],
+  "gaps": []
+ },
+ {
+  "id": "REQ-05",
+  "title": "VAT treatment",
+  "actor": "Finance",
+  "trigger": "Invoice line created",
+  "rule": "Each job has a VAT treatment: Standard, Zero rated, Exempt or No VAT, mapped to the Xero tax types OUTPUT2, ZERORATEDOUTPUT, EXEMPTOUTPUT and NONE. It defaults to Standard. Anything marked reverse charge is held for review and never guessed.",
+  "plain": "The right VAT is set on each invoice, and anything unusual is held for finance to decide.",
+  "sources": [
+   "L16",
+   "L17"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a job with no VAT treatment",
+    "when": "the invoice is drafted",
+    "then": "the tax type is OUTPUT2"
+   },
+   {
+    "given": "a job marked reverse charge",
+    "when": "the sync runs",
+    "then": "no invoice is created and finance is asked"
+   }
+  ],
+  "gaps": [
+   "G-05"
+  ]
+ },
+ {
+  "id": "REQ-06",
+  "title": "Regional split",
+  "actor": "Finance",
+  "trigger": "Invoice line created",
+  "rule": "Every line carries the Region of the customer (North or South) as the Xero tracking category. A customer with no Region is held, not guessed.",
+  "plain": "Income is split by North and South for the board pack.",
+  "sources": [
+   "L18",
+   "L19",
+   "L20"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "a South customer",
+    "when": "the invoice is drafted",
+    "then": "the Region tracking option is South"
+   },
+   {
+    "given": "a customer with no Region",
+    "when": "the sync runs",
+    "then": "no invoice is created and the reason is logged"
+   }
+  ],
+  "gaps": [
+   "G-10"
+  ]
+ },
+ {
+  "id": "REQ-07",
+  "title": "Purchase order number, and who is billed",
+  "actor": "Finance",
+  "trigger": "Invoice drafted",
+  "rule": "When the customer quotes a purchase order, the invoice Reference starts with it, followed by the invoice's own code in brackets. A customer marked as needing a PO (the housing associations) with no PO on the job is held, not drafted, because they send the invoice straight back. The invoice goes to the billing contact when there is one, otherwise to the customer.",
+  "plain": "Invoices show the customer's PO number and go to the right person, and an invoice for a customer who needs a PO is held if there is none.",
+  "sources": [
+   "L27"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a job with PO HA-7781 and job number OPP-2210",
+    "when": "the invoice is drafted",
+    "then": "the Reference reads PO HA-7781 (OPP-2210:FINAL)"
+   },
+   {
+    "given": "a housing association that needs a PO and a job with none",
+    "when": "the sync runs",
+    "then": "no invoice is created and finance is asked for the PO"
+   }
+  ],
+  "gaps": [
+   "G-06"
+  ]
+ },
+ {
+  "id": "REQ-08",
+  "title": "Payment terms by customer",
+  "actor": "Finance",
+  "trigger": "Invoice drafted",
+  "rule": "The due date is the invoice date plus the customer's terms: 30 days unless the customer has 45 or 60.",
+  "plain": "Each customer's own payment terms are used.",
+  "sources": [
+   "L29"
+  ],
+  "priority": "Should",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a customer on 45 day terms",
+    "when": "an invoice is dated 1 February 2027",
+    "then": "the due date is 18 March 2027"
+   }
+  ],
+  "gaps": [
+   "G-07"
+  ]
+ },
+ {
+  "id": "REQ-09",
+  "title": "Finance approves every invoice",
+  "actor": "Finance manager",
+  "trigger": "Invoice drafted",
+  "rule": "The sync only ever creates DRAFT invoices and never approves one. Approval happens in Xero by the finance manager.",
+  "plain": "Nothing goes to a customer without finance seeing it.",
+  "sources": [
+   "L22"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "any invoice created by the sync",
+    "when": "it appears in Xero",
+    "then": "its status is DRAFT"
+   },
+   {
+    "given": "the sync tries to approve an invoice",
+    "when": "it runs",
+    "then": "it is refused"
+   }
+  ],
+  "gaps": [
+   "G-15",
+   "G-16"
+  ]
+ },
+ {
+  "id": "REQ-10",
+  "title": "Cover when the finance manager is away",
+  "actor": "MD",
+  "trigger": "Last week of the month",
+  "rule": "A named deputy has approval rights in Xero. If the finance manager is away and no deputy is named, finance is told before drafts pile up.",
+  "plain": "Someone else can approve when the finance manager is off.",
+  "sources": [
+   "L22"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "the finance manager is away and a deputy is named",
+    "when": "an invoice needs approval",
+    "then": "the deputy is the approver"
+   },
+   {
+    "given": "the finance manager is away and no deputy is named",
+    "when": "an invoice needs approval",
+    "then": "a warning is raised"
+   }
+  ],
+  "gaps": [
+   "G-04",
+   "G-16"
+  ]
+ },
+ {
+  "id": "REQ-11",
+  "title": "Drafts appear by the end of the working day",
+  "actor": "MD",
+  "trigger": "Trigger",
+  "rule": "A draft invoice appears by 17:00 on the day of the trigger, or by 17:00 on the next working day if the trigger falls outside working hours (09:00 to 17:00, Monday to Friday, bank holidays excluded). If the client wants a tighter target, the number changes and this check follows.",
+  "plain": "A draft invoice appears by the end of the working day it was triggered, as the managing director asked.",
+  "sources": [
+   "L23",
+   "L24",
+   "L25"
+  ],
+  "priority": "Should",
+  "status": "assumption",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "a trigger at 11:00 on a Wednesday",
+    "when": "the draft is created at 16:00 the same day",
+    "then": "the target is met"
+   },
+   {
+    "given": "a trigger at 18:00 on a Friday",
+    "when": "the draft is created at 09:30 on the Monday",
+    "then": "the target is met"
+   },
+   {
+    "given": "a trigger at 11:00 on a Wednesday",
+    "when": "the draft is created at 09:00 on the Thursday",
+    "then": "the target is missed"
+   }
+  ],
+  "gaps": [
+   "G-13"
+  ]
+ },
+ {
+  "id": "REQ-12",
+  "title": "Changes after an invoice exists",
+  "actor": "Sales",
+  "trigger": "Amount edited on a won deal",
+  "rule": "While the invoice is a draft, the draft is updated. After that the deal is locked in Salesforce, no second invoice is ever created, and a task goes to finance. If the invoice has been paid, finance raises a credit note in Xero.",
+  "plain": "If the amount changes after an invoice has gone out, finance is told and no second invoice is made.",
+  "sources": [
+   "L30",
+   "L31",
+   "L32"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "an invoice is AUTHORISED",
+    "when": "someone changes the deal amount",
+    "then": "a task is created for finance and no second invoice is made"
+   }
+  ],
+  "gaps": [
+   "G-14"
+  ]
+ },
+ {
+  "id": "REQ-13",
+  "title": "Payment status in Salesforce",
+  "actor": "Sales",
+  "trigger": "Payment recorded in Xero",
+  "rule": "Salesforce shows Unpaid, Part paid, Paid or Overdue for each invoice, worked out from the amounts paid and due (Xero shows an invoice as approved and awaiting payment even when part paid). It says when it was last updated, because payments appear only after bank matching.",
+  "plain": "Sales can see whether a customer has paid, including part payments, before sending a new quote.",
+  "sources": [
+   "L33",
+   "L34",
+   "L35"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "an invoice of 1,200 with 600 paid and not yet due",
+    "when": "the status is worked out",
+    "then": "it is Part paid"
+   }
+  ],
+  "gaps": [
+   "G-08"
+  ]
+ },
+ {
+  "id": "REQ-14",
+  "title": "Credit notes and voided invoices are visible",
+  "actor": "Sales",
+  "trigger": "Credit note or void recorded in Xero",
+  "rule": "Credit notes and voids raised in Xero show against the job in Salesforce. A void on a won deal with no replacement creates a task for finance.",
+  "plain": "Sales can see credit notes and voids against the job.",
+  "sources": [
+   "L36",
+   "L37",
+   "L38",
+   "L39"
+  ],
+  "priority": "Should",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "an invoice of 1,200 with a 200 credit note allocated",
+    "when": "the invoice is shown",
+    "then": "the net is 1,000"
+   }
+  ],
+  "gaps": []
+ },
+ {
+  "id": "REQ-15",
+  "title": "No duplicate customers, no duplicate invoices",
+  "actor": "Finance",
+  "trigger": "Invoice needs a customer, or a retry",
+  "rule": "The customer is matched by the stored Xero ID, then by exact email. If several customers match, or a name is only similar, the invoice is held for finance to choose. A retry never creates a second invoice: every invoice has its own code (the job number, then which invoice it is: the billing month, the deposit or the balance), written at the end of the Reference. Before anything is created, Xero is searched for exactly that code. A deposit does not stand in for a balance, and one month does not stand in for the next.",
+  "plain": "The system stops and asks rather than guess, and never bills twice.",
+  "sources": [
+   "L32",
+   "L40",
+   "L41"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a customer whose name is similar to an existing Xero customer",
+    "when": "the invoice is drafted",
+    "then": "it is held for finance"
+   },
+   {
+    "given": "a retry after a timeout where Xero already holds the invoice",
+    "when": "the sync runs again",
+    "then": "the existing invoice is adopted and no second one is created"
+   },
+   {
+    "given": "a job whose deposit invoice is already in Xero",
+    "when": "the balance invoice is created",
+    "then": "it is created as a separate invoice and the deposit is not adopted in its place"
+   }
+  ],
+  "gaps": [
+   "G-09"
+  ]
+ },
+ {
+  "id": "REQ-16",
+  "title": "A list of failures and a morning email",
+  "actor": "Finance manager",
+  "trigger": "Sync attempt",
+  "rule": "Every attempt is logged (record, direction, result, message, time). Finance has a list of failures. One email goes each morning if anything failed in the last 24 hours, and none when nothing did.",
+  "plain": "Finance finds out about a failure the next morning, never at month end.",
+  "sources": [
+   "L43",
+   "L44",
+   "L45"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "two failures in the last 24 hours",
+    "when": "it is 8am",
+    "then": "one email is sent with a count of two"
+   }
+  ],
+  "gaps": []
+ },
+ {
+  "id": "REQ-17",
+  "title": "Who sees what",
+  "actor": "Finance",
+  "trigger": "User opens the data",
+  "rule": "Finance sees payment status, the log and can re-run a failed sync. Sales sees payment status only.",
+  "plain": "Sales see payment status but never the technical errors.",
+  "sources": [
+   "L52"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a sales user",
+    "when": "they open an invoice",
+    "then": "they see the payment status but not the log"
+   }
+  ],
+  "gaps": []
+ },
+ {
+  "id": "REQ-18",
+  "title": "A clean start",
+  "actor": "Finance manager",
+  "trigger": "Go-live",
+  "rule": "Nothing dated before the chosen start month is created. A contract already running at go-live starts its schedule from the start month, not from its original start date. Every existing Xero customer is linked to a Salesforce account first, with the doubles resolved. A full rehearsal in the sandbox against the Xero demo company passes before go-live.",
+  "plain": "We pick a month, stop typing from then, and nothing is billed twice.",
+  "sources": [
+   "L46",
+   "L47",
+   "L41"
+  ],
+  "priority": "Must",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "acceptance": [
+   {
+    "given": "a start month of February 2027",
+    "when": "an invoice dated 28 January 2027 is considered",
+    "then": "it is not created"
+   },
+   {
+    "given": "a 12 month contract that started on 15 November 2026 and a start month of February 2027",
+    "when": "its schedule is loaded",
+    "then": "the first draft is dated 15 February 2027 and the remaining months follow the term"
+   }
+  ],
+  "gaps": [
+   "G-09",
+   "G-12"
+  ]
+ },
+ {
+  "id": "REQ-19",
+  "title": "Nothing goes missing",
+  "actor": "Finance manager",
+  "trigger": "End of each working day",
+  "rule": "Every deal won and every job completed that day ends up as a draft invoice, a scheduled invoice or an item on the failures list. A daily count reconciles them, and anything in none of those places is listed as missing.",
+  "plain": "Nothing is lost silently: every won deal or completed job is accounted for each day.",
+  "sources": [
+   "L43",
+   "L45"
+  ],
+  "priority": "Must",
+  "status": "confirmed",
+  "decider": "MD",
+  "acceptance": [
+   {
+    "given": "3 deals were won today and 2 of them became drafts and 1 is on the failures list",
+    "when": "the daily count runs",
+    "then": "all 3 are accounted for and nothing is listed as missing"
+   },
+   {
+    "given": "a won deal that is in none of those places",
+    "when": "the daily count runs",
+    "then": "it is listed as missing for the finance manager"
+   }
+  ],
+  "gaps": []
+ },
+ {
+  "id": "REQ-20",
+  "title": "Month end closes with every invoice approved",
+  "actor": "Finance",
+  "trigger": "The working day before the books close on the third working day",
+  "rule": "On the working day before the close (the third working day after month end), and on the close itself, any invoice dated in the month that is still a draft or awaiting approval is listed and finance and the named deputy are told. After the close, the same list is marked late.",
+  "plain": "The books close on the third working day, so finance is warned if any of the month's invoices is still waiting for approval the working day before.",
+  "sources": [
+   "L03",
+   "L22"
+  ],
+  "priority": "Should",
+  "status": "assumption",
+  "decider": "Finance manager",
+  "gaps": [
+   "G-18"
+  ],
+  "acceptance": [
+   {
+    "given": "an invoice dated 15 January 2027 that is still a draft",
+    "when": "it is 2 February 2027",
+    "then": "the close is 3 February 2027 and a warning names the invoice"
+   },
+   {
+    "given": "all of January's invoices are approved",
+    "when": "it is 2 February 2027",
+    "then": "no warning is raised"
+   }
+  ]
+ }
+]

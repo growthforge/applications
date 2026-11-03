@@ -1,0 +1,152 @@
+/*
+  Build Studio design tokens
+  ---------------------------------------------------------------------------
+  Load order: tokens.css, components.css, print.css (print last so it wins).
+
+  Per deliverable you normally set ONE variable, the brand accent:
+      :root { --brand: #1d5c8a; }
+  The light theme uses it as is (white text sits on it, so pick a colour with
+  at least 4.5:1 against white). The dark theme derives a lighter tint from it
+  automatically. Optional fine-tuning, only if axe flags contrast:
+      :root { --brand-dark: #9cc3e0; --brand-ink: #ffffff; --brand-ink-dark: #0d1117; }
+
+  Themes: follows prefers-color-scheme, and [data-theme="light"|"dark"] on
+  <html> overrides it. Print always renders light (see print.css).
+
+  Font families: at most two. --font-sans (system UI stack) for body and UI,
+  --font-display (system serif stack) for headings. A deliverable that wants a
+  single family sets  :root { --font-display: var(--font-sans); }
+*/
+
+:root {
+  /* ---- Brand hook (the only thing most deliverables change) ---- */
+  --brand: #1d5c8a;
+
+  /* ---- Type families (two at most) ---- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+
+  /* ---- Fluid type scale (ratio about 1.2 at small sizes, 1.25 at large) ---- */
+  --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --step--1: clamp(0.84rem, 0.81rem + 0.15vw, 0.92rem);
+  --step-0:  clamp(1.00rem, 0.96rem + 0.20vw, 1.10rem);
+  --step-1:  clamp(1.18rem, 1.10rem + 0.40vw, 1.38rem);
+  --step-2:  clamp(1.40rem, 1.26rem + 0.70vw, 1.75rem);
+  --step-3:  clamp(1.66rem, 1.44rem + 1.10vw, 2.25rem);
+  --step-4:  clamp(1.98rem, 1.62rem + 1.80vw, 2.90rem);
+  --step-5:  clamp(2.30rem, 1.80rem + 2.50vw, 3.60rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.6;
+  --measure: 68ch;
+  --weight-regular: 400;
+  --weight-medium: 550;
+  --weight-bold: 700;
+  --tracking-caps: 0.06em;
+
+  /* ---- Spacing: a 4 / 8 px scale ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --gutter: var(--space-4);          /* 16px side gutter on phones */
+  --content-max: 1120px;
+  --content-narrow: 760px;
+
+  /* ---- Radius and elevation ---- */
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* ---- Motion ---- */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Light theme colour roles (default) ---- */
+  color-scheme: light;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --surface-2: #f2f0ec;
+  --text: #1b1d21;
+  --text-muted: #53575e;
+  --border: #dcd8d1;
+  --border-strong: #8a867f;          /* 3:1 on bg, for control outlines */
+  --accent: var(--brand);
+  --accent-ink: var(--brand-ink, #ffffff);
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --focus: #b45309;
+
+  /* Work-allocation roles. -ink is text or fill, -bg is the tint behind it.
+     Every ink meets 4.5:1 on its own -bg, on --surface and on --bg. */
+  --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+  --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+  --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+  --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+
+  --shadow-1: 0 1px 2px rgb(20 22 26 / 0.06), 0 1px 1px rgb(20 22 26 / 0.04);
+  --shadow-2: 0 6px 18px rgb(20 22 26 / 0.08), 0 2px 4px rgb(20 22 26 / 0.05);
+}
+
+/* Dark theme, applied two ways: system preference (unless the page forces
+   light) and an explicit [data-theme="dark"] override. Keep both blocks equal. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121417;
+    --surface: #1a1d21;
+    --surface-2: #23272c;
+    --text: #ecebe7;
+    --text-muted: #a8acb2;
+    --border: #343a41;
+    --border-strong: #7d848c;
+    --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+    --accent-ink: var(--brand-ink-dark, #0d1117);
+    --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    --focus: #f5b84a;
+    --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+    --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+    --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+    --escalate: #f4a397;    --escalate-bg: #3d1d19;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121417;
+  --surface: #1a1d21;
+  --surface-2: #23272c;
+  --text: #ecebe7;
+  --text-muted: #a8acb2;
+  --border: #343a41;
+  --border-strong: #7d848c;
+  --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+  --accent-ink: var(--brand-ink-dark, #0d1117);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --focus: #f5b84a;
+  --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+  --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+  --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+  --escalate: #f4a397;    --escalate-bg: #3d1d19;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; }
+}

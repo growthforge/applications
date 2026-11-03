@@ -1,0 +1,217 @@
+[
+ {
+  "id": "G-01",
+  "question": "Where does the monthly billing schedule live?",
+  "why": "A won deal is a single event. A 12 or 24 month contract needs somewhere that holds the start date, the term and the monthly amount, and today the contract is a PDF and the start date is in the notes. This is the biggest design decision in the project.",
+  "default": "Create a billing schedule in Salesforce when a contract is won, and let it generate the monthly drafts. Whether Xero repeating invoices could carry it instead is something to check before we commit.",
+  "decider": "Finance manager and us",
+  "blocks": "REQ-03",
+  "sources": [
+   "L05",
+   "L06"
+  ]
+ },
+ {
+  "id": "G-02",
+  "question": "What is a completed repair, where does the job live, and where does the final amount come from?",
+  "why": "Repairs are invoiced on completion for a final amount that differs from the quote. That is a job, not a sales stage. Whether jobs stay as opportunities or become something else (for example Field Service work orders) changes the build.",
+  "default": "A completion date and a final amount entered by operations on the record, for now.",
+  "decider": "MD and finance manager",
+  "blocks": "REQ-01, REQ-02",
+  "sources": [
+   "L07",
+   "L10",
+   "L11"
+  ]
+ },
+ {
+  "id": "G-03",
+  "question": "How is the April price rise applied, and who signs it off?",
+  "why": "The uplift is 'whatever the index says' each April, so it is not a fixed number and it compounds. We need to know who decides the percentage and when.",
+  "default": "Finance sets the percentage once a year and the schedule applies it from April.",
+  "decider": "Finance manager",
+  "blocks": "REQ-03",
+  "sources": [
+   "L06"
+  ]
+ },
+ {
+  "id": "G-04",
+  "question": "Who approves invoices in the last week of the month?",
+  "why": "The finance manager is away that week. Without a named deputy, drafts wait.",
+  "default": "A named deputy with approval rights in Xero.",
+  "decider": "MD",
+  "blocks": "REQ-10",
+  "sources": [
+   "L22"
+  ]
+ },
+ {
+  "id": "G-05",
+  "question": "Which work is zero rated, exempt or reverse charge, and who decides?",
+  "why": "The wrong VAT on an invoice is expensive to unpick. Reverse charge was mentioned and has not been confirmed. Reverse charge on construction work can also sit on the purchase bill rather than the sales invoice, depending on who is supplying whom, so the accountant must say which side it touches.",
+  "default": "Standard unless finance sets another treatment. Reverse charge is held for review. Please confirm with your accountant.",
+  "decider": "Finance manager and the accountant",
+  "blocks": "REQ-05",
+  "sources": [
+   "L16",
+   "L17"
+  ]
+ },
+ {
+  "id": "G-06",
+  "question": "Which customers must quote a purchase order, and who receives the invoice?",
+  "why": "Housing associations return invoices without a PO, so an invoice for them should be held rather than sent. The invoice goes to the managing agent, not the landlord who is the customer in Salesforce, and it is not yet clear who the contact is in Xero when the agent is billed, which affects the aged debt report.",
+  "default": "A PO number on the job and a requires-a-PO flag on the customer. A billing contact on the customer, with the paying party kept as the Xero contact until finance decides otherwise. An invoice for a customer that needs a PO is held if there is none.",
+  "decider": "Finance manager",
+  "blocks": "REQ-07",
+  "sources": [
+   "L27"
+  ]
+ },
+ {
+  "id": "G-07",
+  "question": "How is each customer's payment term recorded?",
+  "why": "Thirty days for most, 45 for the housing associations, 60 for one customer.",
+  "default": "A payment terms field on the customer.",
+  "decider": "Finance manager",
+  "blocks": "REQ-08",
+  "sources": [
+   "L29"
+  ]
+ },
+ {
+  "id": "G-08",
+  "question": "How fresh does payment status need to be, and what does a customer being behind mean?",
+  "why": "Payments appear in Xero only after bank matching, so a status can be days old whatever we build. Sales also asked to see whether a customer is behind before quoting. That needs a view on the customer, not only on each invoice, and it has to decide what to do with debt from before the start month.",
+  "default": "Refresh hourly and show 'last updated' so nobody is misled. Behind means any invoice overdue, shown on the customer as a count and an amount. Debt from before the start month is loaded as one opening balance, or left out until finance decides.",
+  "decider": "Finance manager",
+  "blocks": "REQ-13",
+  "sources": [
+   "L34"
+  ]
+ },
+ {
+  "id": "G-09",
+  "question": "Which month do we stop typing, and who links the existing customers?",
+  "why": "About 400 customers are already in Xero, around 30 of them doubles. Starting without linking them creates more doubles.",
+  "default": "Start at a month boundary after a sandbox rehearsal. We produce a matching report; finance decides each double.",
+  "decider": "Finance manager",
+  "blocks": "REQ-15, REQ-18",
+  "sources": [
+   "L41",
+   "L46",
+   "L47"
+  ]
+ },
+ {
+  "id": "G-10",
+  "question": "Is the second Xero tracking category (job type) still used?",
+  "why": "Xero allows two. Region is confirmed. The second one is not used by finance today.",
+  "default": "Region only.",
+  "decider": "Finance manager",
+  "blocks": "REQ-06",
+  "sources": [
+   "L19"
+  ]
+ },
+ {
+  "id": "G-11",
+  "question": "The euro customer: in scope or not?",
+  "why": "Handling one customer in euros means multi-currency in both systems, which is hard to undo once switched on.",
+  "default": "Out of scope. GBP only. That customer stays manual.",
+  "decider": "MD",
+  "blocks": "none (decision)",
+  "sources": [
+   "L42"
+  ]
+ },
+ {
+  "id": "G-12",
+  "question": "What does the rehearsal look like, given the Xero demo company resets?",
+  "why": "The test needs realistic data in a place that keeps it, and a demo company is reported to reset periodically (about every 28 days).",
+  "default": "Rehearse in the sandbox against a demo company within one working week, and keep the test data as a file so it can be reloaded.",
+  "decider": "Us",
+  "blocks": "REQ-18",
+  "sources": [
+   "L47"
+  ]
+ },
+ {
+  "id": "G-13",
+  "question": "What counts as quick enough for a draft to appear?",
+  "why": "The managing director said \"Not days. Before the end of the day, ideally.\" The finance manager did not say. A number is needed before it can be tested, and it should be the one the client chooses.",
+  "default": "By the end of the working day it was triggered, and by the end of the next working day for anything triggered out of hours. If the client wants it quicker, the target tightens and the check follows.",
+  "decider": "MD",
+  "blocks": "REQ-11",
+  "sources": [
+   "L23",
+   "L24",
+   "L25"
+  ]
+ },
+ {
+  "id": "G-14",
+  "question": "When an amount changes after an invoice has gone out, who is told and what do they do?",
+  "why": "The finance manager wants to be told and to deal with it in Xero. Nobody has said whether the deal in Salesforce should be locked, or what happens once the invoice has been paid.",
+  "default": "Lock the amount in Salesforce once the invoice is no longer a draft. Create a task for finance. If it has been paid, finance raises a credit note in Xero. Check in Xero whether a paid invoice can be voided without removing its payments first.",
+  "decider": "Finance manager",
+  "blocks": "REQ-12",
+  "sources": [
+   "L30",
+   "L31",
+   "L32"
+  ]
+ },
+ {
+  "id": "G-15",
+  "question": "Must every invoice be approved one at a time?",
+  "why": "At about 600 invoices a month, approving each one individually is real work, and the finance manager said they want to see every one. The identical monthly planned maintenance invoices may not need the same attention as a one-off repair.",
+  "default": "Approve one at a time while the system is new. After the rehearsal, consider approving the identical monthly invoices as a batch and keep one-by-one approval for repairs.",
+  "decider": "Finance manager",
+  "blocks": "REQ-09",
+  "sources": [
+   "L02",
+   "L22"
+  ]
+ },
+ {
+  "id": "G-16",
+  "question": "Who is Owen, and who enters the invoices as against who approves them?",
+  "why": "Owen is named as the person who types invoices into Xero, as the person who knows when a repair is done and as the VAT expert. The finance manager is the one who wants to see every invoice before it goes out. The call never says they are the same person. If they are two people, the person who enters and the person who approves are separate, and the cover when the finance manager is away changes. If they are one person, nobody else checks the invoice.",
+  "default": "Treat Owen as the person who enters and the finance manager as the approver until told otherwise, and set the permissions so that either arrangement can be used.",
+  "decider": "Managing director",
+  "blocks": "REQ-09, REQ-10, REQ-17",
+  "sources": [
+   "L02",
+   "L10",
+   "L17",
+   "L22"
+  ]
+ },
+ {
+  "id": "G-17",
+  "question": "Which day is each monthly invoice dated, and which April is the first price rise?",
+  "why": "The finance manager described a pile of planned maintenance invoices all at once at month end, which suggests one run rather than each contract's own day. The rise is \"whatever the index says\" each April, so a contract that starts in March could be uplifted a month later or could wait a year.",
+  "default": "Date each invoice on the contract's own day (the rule the checks use) and apply the first rise in the first April after the contract starts, until the client says otherwise. A single run day is simpler and the checks would follow.",
+  "decider": "Finance manager",
+  "blocks": "REQ-03",
+  "sources": [
+   "L03",
+   "L05",
+   "L06"
+  ]
+ },
+ {
+  "id": "G-18",
+  "question": "What has to be finished by the close on the third working day?",
+  "why": "The books close on the third working day, and the finance manager is away in the last week of the month, when the pile of monthly invoices arrives. Nobody said whether every invoice dated in the month must be approved by the close.",
+  "default": "Every invoice dated in the month is approved by the close, and a warning goes to the finance manager and the deputy the working day before.",
+  "decider": "Finance manager",
+  "blocks": "REQ-20",
+  "sources": [
+   "L03",
+   "L22"
+  ]
+ }
+]

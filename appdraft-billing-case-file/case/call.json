@@ -1,0 +1,272 @@
+{
+ "client": "Marlowe Row Maintenance (illustrative client)",
+ "about": "A fourteen-person UK property maintenance company. Planned maintenance contracts billed monthly in advance; one-off repairs invoiced on completion. Deals in Salesforce Sales Cloud; invoices in Xero; the finance manager re-keys won deals by hand.",
+ "extract": "Extract from an illustrative call of about an hour, with the small talk and tangents left in.",
+ "lines": [
+  {
+   "id": "L01",
+   "speaker": "Consultant",
+   "text": "Thanks for making the time, and sorry about the screen share dropping earlier. I would like to understand how a job turns into an invoice, from the very start. Who touches it?"
+  },
+  {
+   "id": "L02",
+   "speaker": "MD",
+   "text": "Right. So a deal gets won in Salesforce, the sales team mark it Closed Won, and then Owen types it all into Xero. We do about six hundred invoices a month, give or take."
+  },
+  {
+   "id": "L03",
+   "speaker": "Finance manager",
+   "text": "Give or take is right. Month end is the worst. We get a pile of the planned maintenance ones all at once. We close on the third working day."
+  },
+  {
+   "id": "L04",
+   "speaker": "Consultant",
+   "text": "Tell me about planned maintenance compared with repairs."
+  },
+  {
+   "id": "L05",
+   "speaker": "MD",
+   "text": "Planned maintenance is a contract. Twelve or twenty four months, billed monthly in advance, the same amount each month. The contract itself is a PDF on the shared drive, and the start date goes in the opportunity notes. Sometimes."
+  },
+  {
+   "id": "L06",
+   "speaker": "Finance manager",
+   "text": "Not sometimes. Usually. But then every April we put the price up by whatever the index says, so it is not always the same amount."
+  },
+  {
+   "id": "L07",
+   "speaker": "MD",
+   "text": "Repairs are one off and we invoice when the job is finished."
+  },
+  {
+   "id": "L08",
+   "speaker": "Finance manager",
+   "text": "Although for the big repairs we bill a deposit up front. Half, usually. Not always half."
+  },
+  {
+   "id": "L09",
+   "speaker": "Consultant",
+   "text": "So the invoice goes out when the deal is won?"
+  },
+  {
+   "id": "L10",
+   "speaker": "MD",
+   "text": "Yes. Well, for repairs it is when the job is done, not when it is won. Owen knows."
+  },
+  {
+   "id": "L11",
+   "speaker": "Finance manager",
+   "text": "It depends. I check with the engineers. The final amount is often different from the quote, because of parts."
+  },
+  {
+   "id": "L12",
+   "speaker": "Consultant",
+   "text": "What goes on the invoice lines?"
+  },
+  {
+   "id": "L13",
+   "speaker": "Finance manager",
+   "text": "A description, a quantity and a price. Planned maintenance goes to account two hundred, repairs to two ten. I have to pick the right one every time, and I get it wrong when I am rushed."
+  },
+  {
+   "id": "L14",
+   "speaker": "MD",
+   "text": "Can we talk about the vans at some point? The fuel cards are a mess. Sorry. Carry on."
+  },
+  {
+   "id": "L15",
+   "speaker": "Consultant",
+   "text": "And VAT?"
+  },
+  {
+   "id": "L16",
+   "speaker": "Finance manager",
+   "text": "Most of it is twenty percent. Some new build work is zero rated, and a couple of the housing associations are exempt, I think. And some of the subcontractor work might be reverse charge, I would need to ask our accountant."
+  },
+  {
+   "id": "L17",
+   "speaker": "MD",
+   "text": "We just need the right VAT on it. Owen is the expert."
+  },
+  {
+   "id": "L18",
+   "speaker": "Consultant",
+   "text": "Do you split income by anything in Xero?"
+  },
+  {
+   "id": "L19",
+   "speaker": "Finance manager",
+   "text": "Region. North and South. It is a tracking category. There is a second one for job type, I think, that someone set up years ago. I do not use it."
+  },
+  {
+   "id": "L20",
+   "speaker": "MD",
+   "text": "I want the regional numbers every month. For the board pack."
+  },
+  {
+   "id": "L21",
+   "speaker": "Consultant",
+   "text": "When the invoice is created, who approves it?"
+  },
+  {
+   "id": "L22",
+   "speaker": "Finance manager",
+   "text": "Me. I want to look at every one before it goes to the customer. Nothing should go out without me seeing it. Although I am off the last week of every month at the moment, school run, so someone else would have to."
+  },
+  {
+   "id": "L23",
+   "speaker": "MD",
+   "text": "Fine, but it should not slow things down. The sync should be quick."
+  },
+  {
+   "id": "L24",
+   "speaker": "Consultant",
+   "text": "What does quick mean to you?"
+  },
+  {
+   "id": "L25",
+   "speaker": "MD",
+   "text": "I do not know. Not days. Before the end of the day, ideally."
+  },
+  {
+   "id": "L26",
+   "speaker": "Consultant",
+   "text": "What do the housing associations need on an invoice?"
+  },
+  {
+   "id": "L27",
+   "speaker": "Finance manager",
+   "text": "A purchase order number. They send it straight back if it is missing. And the invoice goes to the managing agent, not the landlord, even though the landlord is the customer in Salesforce."
+  },
+  {
+   "id": "L28",
+   "speaker": "Consultant",
+   "text": "And payment terms?"
+  },
+  {
+   "id": "L29",
+   "speaker": "Finance manager",
+   "text": "Thirty days, mostly. Forty five for the housing associations. Sixty for one of them, they will not move."
+  },
+  {
+   "id": "L30",
+   "speaker": "Consultant",
+   "text": "What happens if the amount changes after the invoice has gone to the customer?"
+  },
+  {
+   "id": "L31",
+   "speaker": "Finance manager",
+   "text": "It does happen. Sales renegotiate. Honestly I would just want to know about it, and I would sort it out in Xero."
+  },
+  {
+   "id": "L32",
+   "speaker": "MD",
+   "text": "Do not let it create a second invoice. That would be a disaster. Last time it happened with the old tool we had to apologise to a customer."
+  },
+  {
+   "id": "L33",
+   "speaker": "Consultant",
+   "text": "What about customers paying in parts?"
+  },
+  {
+   "id": "L34",
+   "speaker": "Finance manager",
+   "text": "All the time. Housing associations especially. They pay half, then the rest weeks later. Xero still shows it as awaiting payment, which confuses the sales team. And the payment only shows up once I have matched it to the bank feed, so it can be days."
+  },
+  {
+   "id": "L35",
+   "speaker": "MD",
+   "text": "The sales team want to see in Salesforce whether a customer is behind before they send a new quote."
+  },
+  {
+   "id": "L36",
+   "speaker": "Consultant",
+   "text": "And credit notes?"
+  },
+  {
+   "id": "L37",
+   "speaker": "Finance manager",
+   "text": "When there is a dispute. I raise them in Xero. I would like sales to be able to see them against the job."
+  },
+  {
+   "id": "L38",
+   "speaker": "Consultant",
+   "text": "Does anything get voided?"
+  },
+  {
+   "id": "L39",
+   "speaker": "Finance manager",
+   "text": "Occasionally, if I made a mistake. I void it and redo it."
+  },
+  {
+   "id": "L40",
+   "speaker": "Consultant",
+   "text": "Do customers ever appear twice in Xero?"
+  },
+  {
+   "id": "L41",
+   "speaker": "Finance manager",
+   "text": "Yes, unfortunately. The same company with slightly different names, from before my time. About four hundred contacts altogether, and I would say thirty of them are doubles. I would rather it stopped and asked me than guessed."
+  },
+  {
+   "id": "L42",
+   "speaker": "MD",
+   "text": "And one customer pays in euros. One. I do not want to spend money on that."
+  },
+  {
+   "id": "L43",
+   "speaker": "Consultant",
+   "text": "If something fails to go across, how would you want to find out?"
+  },
+  {
+   "id": "L44",
+   "speaker": "Finance manager",
+   "text": "Not at month end. I want a list I can look at, and an email in the morning if anything failed. The MD does not need to see it."
+  },
+  {
+   "id": "L45",
+   "speaker": "MD",
+   "text": "I do not care how it works as long as nothing goes missing."
+  },
+  {
+   "id": "L46",
+   "speaker": "Consultant",
+   "text": "What happens at the start? Last year's invoices are all in Xero already."
+  },
+  {
+   "id": "L47",
+   "speaker": "Finance manager",
+   "text": "Yes. We would have to pick a month and stop typing them. I am nervous about doing it twice."
+  },
+  {
+   "id": "L48",
+   "speaker": "Consultant",
+   "text": "How do you chase late payers today?"
+  },
+  {
+   "id": "L49",
+   "speaker": "Finance manager",
+   "text": "Mondays. I go through the aged debtors report in Xero and email people one by one. It takes most of the morning. I did not know Xero could send reminders by itself."
+  },
+  {
+   "id": "L50",
+   "speaker": "MD",
+   "text": "If we could stop doing that by hand, that would be worth something. And the engineers keep asking me for job sheets. That is a separate headache."
+  },
+  {
+   "id": "L51",
+   "speaker": "Consultant",
+   "text": "Who should be able to see all this in Salesforce?"
+  },
+  {
+   "id": "L52",
+   "speaker": "Finance manager",
+   "text": "Finance, and me. Sales should see the payment status but not the sync errors."
+  },
+  {
+   "id": "L53",
+   "speaker": "Consultant",
+   "text": "Thank you. I will write this up as one page and a list of questions, so you can tell me what I have got wrong."
+  }
+ ]
+}

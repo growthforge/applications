@@ -1,0 +1,2058 @@
+[
+ {
+  "id": "TC-01",
+  "title": "A repair is invoiced when the job is done",
+  "requirements": [
+   "REQ-01"
+  ],
+  "steps": [
+   "In Salesforce, open a won repair job that has not been completed. Check Xero: there should be no invoice for it.",
+   "Mark the job complete and enter the final amount. Check Xero a little later: there is one draft invoice for the final amount."
+  ],
+  "expected": "No invoice before completion. One draft after, for the final amount, not the quote.",
+  "fn": "shouldInvoice",
+  "cases": [
+   {
+    "name": "won, not completed",
+    "input": {
+     "stage": "Closed Won",
+     "billingType": "Repairs",
+     "quote": 1800
+    },
+    "expect": {
+     "create": false,
+     "reason": "job-not-completed"
+    }
+   },
+   {
+    "name": "completed, final amount differs from the quote",
+    "input": {
+     "stage": "Closed Won",
+     "billingType": "Repairs",
+     "quote": 1800,
+     "finalAmount": 2150,
+     "jobCompletedDate": "2027-02-02"
+    },
+    "expect": {
+     "create": true,
+     "amount": 2150
+    }
+   },
+   {
+    "name": "a planned maintenance contract uses its schedule",
+    "input": {
+     "stage": "Closed Won",
+     "billingType": "Planned maintenance"
+    },
+    "expect": {
+     "create": false,
+     "reason": "use-schedule"
+    }
+   },
+   {
+    "name": "an open deal does nothing",
+    "input": {
+     "stage": "Negotiation",
+     "billingType": "Repairs"
+    },
+    "expect": {
+     "create": false,
+     "reason": "not-won"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-02",
+  "title": "The deposit and the balance add up to the penny",
+  "requirements": [
+   "REQ-02"
+  ],
+  "steps": [
+   "Win a repair worth 1,001.01 with a 50 percent deposit and complete it at 1,200. Compare the deposit and balance invoices in Xero with the final amount.",
+   "Win a repair worth 1,000 with a 50 percent deposit and complete it at 400."
+  ],
+  "expected": "Deposit 500.51 on the quote and balance 699.49 on completion, which add up to the final amount of 1,200. When the job comes in below the deposit, finance is told a credit is due.",
+  "fn": "splitDeposit",
+  "cases": [
+   {
+    "name": "an odd penny",
+    "input": {
+     "total": 1001.01,
+     "percent": 50
+    },
+    "expect": {
+     "deposit": 500.51,
+     "balance": 500.5,
+     "total": 1001.01
+    }
+   },
+   {
+    "name": "the final amount is higher than the quote",
+    "input": {
+     "total": 1001.01,
+     "percent": 50,
+     "final": 1200
+    },
+    "expect": {
+     "deposit": 500.51,
+     "balance": 699.49,
+     "total": 1200
+    }
+   },
+   {
+    "name": "the final amount is lower than the deposit",
+    "input": {
+     "total": 1000,
+     "percent": 50,
+     "final": 400
+    },
+    "expect": {
+     "deposit": 500,
+     "balance": -100,
+     "total": 400,
+     "creditNeeded": true
+    }
+   },
+   {
+    "name": "a third, roughly",
+    "input": {
+     "total": 999.99,
+     "percent": 33.3
+    },
+    "expect": {
+     "deposit": 333,
+     "balance": 666.99
+    }
+   },
+   {
+    "name": "all of it up front",
+    "input": {
+     "total": 1200,
+     "percent": 100
+    },
+    "expect": {
+     "deposit": 1200,
+     "balance": 0
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-03",
+  "title": "The monthly schedule and the April price rise",
+  "requirements": [
+   "REQ-03"
+  ],
+  "steps": [
+   "Win a 12 month contract starting 31 January at 500 a month with a 3.4 percent rise from April.",
+   "Look at the schedule in Salesforce: dates, then amounts."
+  ],
+  "expected": "Each month on the same day (or the last day of a short month), 500 until March and 517 from April. Each month is its own line, so each becomes its own invoice.",
+  "fn": "scheduleAmounts",
+  "cases": [
+   {
+    "name": "dates in short months and the first rise",
+    "input": {
+     "start": "2027-01-31",
+     "months": 4,
+     "monthly": 500,
+     "upliftMonth": 4,
+     "upliftPercent": 3.4
+    },
+    "expect": {
+     "length": 4,
+     "[1].date": "2027-02-28",
+     "[1].line": "2027-02",
+     "[3].date": "2027-04-30",
+     "[0].amount": 500,
+     "[3].amount": 517
+    }
+   },
+   {
+    "name": "leap year",
+    "input": {
+     "start": "2028-01-31",
+     "months": 2,
+     "monthly": 500,
+     "upliftMonth": 4,
+     "upliftPercent": 3.4
+    },
+    "expect": {
+     "[1].date": "2028-02-29"
+    }
+   },
+   {
+    "name": "the rise rounds to the penny",
+    "input": {
+     "start": "2028-03-15",
+     "months": 2,
+     "monthly": 333.33,
+     "upliftMonth": 4,
+     "upliftPercent": 3.4
+    },
+    "expect": {
+     "[0].amount": 333.33,
+     "[1].amount": 344.66
+    }
+   },
+   {
+    "name": "a start after April waits for next April",
+    "input": {
+     "start": "2027-05-15",
+     "months": 12,
+     "monthly": 500,
+     "upliftMonth": 4,
+     "upliftPercent": 3.4
+    },
+    "expect": {
+     "[10].amount": 500,
+     "[11].amount": 517
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-04",
+  "title": "The right account code",
+  "requirements": [
+   "REQ-04"
+  ],
+  "steps": [
+   "Draft one planned maintenance invoice and one repair invoice.",
+   "Look at the account code on each line."
+  ],
+  "expected": "200 for planned maintenance and 210 for repairs. A code finance changes is kept.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "repairs",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].AccountCode": "210"
+    }
+   },
+   {
+    "name": "planned maintenance",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Planned maintenance",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Monthly service",
+        "qty": 1,
+        "unit": 500,
+        "family": "Planned maintenance"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].AccountCode": "200"
+    }
+   },
+   {
+    "name": "finance overrides a code",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs",
+        "accountCodeOverride": "215"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].AccountCode": "215"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-05",
+  "title": "The right VAT, and nothing guessed",
+  "requirements": [
+   "REQ-05"
+  ],
+  "steps": [
+   "Draft invoices for a standard job, a zero rated job, an exempt job and a job with no VAT.",
+   "Mark one job as reverse charge."
+  ],
+  "expected": "20 percent, zero rated, exempt and no VAT map to the matching Xero tax types; no treatment means 20 percent; reverse charge is held for finance.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "standard",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].TaxType": "OUTPUT2"
+    }
+   },
+   {
+    "name": "zero rated",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Zero rated",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].TaxType": "ZERORATEDOUTPUT"
+    }
+   },
+   {
+    "name": "exempt",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Exempt",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].TaxType": "EXEMPTOUTPUT"
+    }
+   },
+   {
+    "name": "no VAT",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "No VAT",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].TaxType": "NONE"
+    }
+   },
+   {
+    "name": "nothing set defaults to standard",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].TaxType": "OUTPUT2"
+    }
+   },
+   {
+    "name": "reverse charge is held",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Reverse charge",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "ok": false,
+     "reason": "needs-review"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-06",
+  "title": "Income is split North and South",
+  "requirements": [
+   "REQ-06"
+  ],
+  "steps": [
+   "Draft an invoice for a South customer.",
+   "Draft one for a customer that has no Region."
+  ],
+  "expected": "The South invoice carries the Region South. The customer with no Region is held and the reason is logged.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "a South customer",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "South",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.LineItems[0].Tracking[0].Name": "Region",
+     "payload.LineItems[0].Tracking[0].Option": "South"
+    }
+   },
+   {
+    "name": "no Region",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": null,
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "ok": false,
+     "reason": "missing-region"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-07",
+  "title": "The PO number and the right person",
+  "requirements": [
+   "REQ-07"
+  ],
+  "steps": [
+   "Draft an invoice for a housing association job with PO HA-7781.",
+   "Check the Reference and who it is addressed to.",
+   "Draft one for a housing association that needs a PO, on a job with none."
+  ],
+  "expected": "The Reference starts with the PO number and ends with the invoice's own code in brackets, for example PO HA-7781 (OPP-2210:FINAL). The invoice goes to the billing contact, the managing agent. The invoice with no PO is held and finance is asked for it.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "PO and billing contact",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ],
+      "po": "HA-7781"
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30,
+      "billingContactId": "xc-agent"
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.Reference": "PO HA-7781 (OPP-2210:FINAL)",
+     "payload.Contact.ContactID": "xc-agent"
+    }
+   },
+   {
+    "name": "no PO, no billing contact",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.Reference": "OPP-2210:FINAL",
+     "payload.Contact.ContactID": "xc-100"
+    }
+   },
+   {
+    "name": "a PO is needed and missing",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30,
+      "poRequired": true
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "ok": false,
+     "reason": "po-required"
+    }
+   },
+   {
+    "name": "a PO is needed and given",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ],
+      "po": "HA-7781"
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30,
+      "poRequired": true
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "ok": true
+    }
+   },
+   {
+    "name": "a monthly invoice carries its month",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ],
+      "po": "HA-7781"
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01",
+     "line": "2027-03"
+    },
+    "expect": {
+     "payload.Reference": "PO HA-7781 (OPP-2210:2027-03)",
+     "key": "OPP-2210:2027-03"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-08",
+  "title": "Each customer's payment terms",
+  "requirements": [
+   "REQ-08"
+  ],
+  "steps": [
+   "Draft invoices dated 1 February 2027 for a customer on 30, 45 and 60 days.",
+   "Read the due dates."
+  ],
+  "expected": "3 March, 18 March and 2 April 2027.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "30 days",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.DueDate": "2027-03-03"
+    }
+   },
+   {
+    "name": "45 days",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 45
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.DueDate": "2027-03-18"
+    }
+   },
+   {
+    "name": "60 days",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 60
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.DueDate": "2027-04-02"
+    }
+   },
+   {
+    "name": "no terms recorded",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": null
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.DueDate": "2027-03-03"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-09",
+  "title": "The sync never approves an invoice",
+  "requirements": [
+   "REQ-09"
+  ],
+  "steps": [
+   "Let the sync create an invoice.",
+   "Try to make the sync approve it."
+  ],
+  "expected": "An attempt to approve it is refused.",
+  "fn": "authorise",
+  "cases": [
+   {
+    "name": "approval is refused",
+    "input": {},
+    "expect": {
+     "allowed": false,
+     "reason": "finance-approves-in-xero"
+    }
+   }
+  ],
+  "runBy": "us"
+ },
+ {
+  "id": "TC-10",
+  "title": "Every invoice arrives as a draft",
+  "requirements": [
+   "REQ-09"
+  ],
+  "steps": [
+   "Create an invoice through the sync.",
+   "Check its status in Xero."
+  ],
+  "expected": "The status is DRAFT and nothing has been sent to the customer.",
+  "fn": "buildInvoice",
+  "cases": [
+   {
+    "name": "draft status",
+    "input": {
+     "opp": {
+      "number": "OPP-2210",
+      "stage": "Closed Won",
+      "billingType": "Repairs",
+      "vat": "Standard",
+      "lines": [
+       {
+        "description": "Boiler repair",
+        "qty": 1,
+        "unit": 1800,
+        "family": "Repairs"
+       }
+      ]
+     },
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100",
+      "region": "North",
+      "termsDays": 30
+     },
+     "today": "2027-02-01"
+    },
+    "expect": {
+     "payload.Status": "DRAFT",
+     "payload.LineAmountTypes": "Exclusive"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-11",
+  "title": "Someone can approve when the finance manager is away",
+  "requirements": [
+   "REQ-10"
+  ],
+  "steps": [
+   "Mark the finance manager as away with a named deputy.",
+   "Mark them away with no deputy."
+  ],
+  "expected": "The deputy approves. With no deputy, a warning is raised before drafts pile up.",
+  "fn": "approver",
+  "cases": [
+   {
+    "name": "away with a deputy",
+    "input": {
+     "financeManagerAway": true,
+     "deputy": "Sam"
+    },
+    "expect": {
+     "ok": true,
+     "approver": "deputy"
+    }
+   },
+   {
+    "name": "away with no deputy",
+    "input": {
+     "financeManagerAway": true
+    },
+    "expect": {
+     "ok": false,
+     "reason": "no-approver"
+    }
+   },
+   {
+    "name": "in the office",
+    "input": {
+     "financeManagerAway": false
+    },
+    "expect": {
+     "approver": "finance-manager"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-12",
+  "title": "Drafts appear by the end of the working day",
+  "requirements": [
+   "REQ-11"
+  ],
+  "steps": [
+   "Win a repair at 11:00 on a Wednesday and note when the draft appears.",
+   "Repeat at 18:00 on a Friday."
+  ],
+  "expected": "By 17:00 the same day. When the trigger is after hours, by 17:00 on the next working day.",
+  "fn": "slaMet",
+  "cases": [
+   {
+    "name": "in hours, drafted that afternoon",
+    "input": {
+     "trigger": "2027-02-03T11:00:00",
+     "drafted": "2027-02-03T16:00:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": true
+    }
+   },
+   {
+    "name": "in hours, drafted the next morning",
+    "input": {
+     "trigger": "2027-02-03T11:00:00",
+     "drafted": "2027-02-04T09:00:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": false
+    }
+   },
+   {
+    "name": "Friday evening, drafted on Monday",
+    "input": {
+     "trigger": "2027-02-05T18:00:00",
+     "drafted": "2027-02-08T09:30:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": true
+    }
+   },
+   {
+    "name": "Friday evening, drafted on Tuesday",
+    "input": {
+     "trigger": "2027-02-05T18:00:00",
+     "drafted": "2027-02-09T09:00:00",
+     "holidays": []
+    },
+    "expect": {
+     "met": false
+    }
+   },
+   {
+    "name": "Friday evening before a Monday bank holiday",
+    "input": {
+     "trigger": "2027-02-05T18:00:00",
+     "drafted": "2027-02-09T12:00:00",
+     "holidays": [
+      "2027-02-08"
+     ]
+    },
+    "expect": {
+     "met": true
+    }
+   }
+  ],
+  "runBy": "us"
+ },
+ {
+  "id": "TC-13",
+  "title": "A changed amount never creates a second invoice",
+  "requirements": [
+   "REQ-12"
+  ],
+  "steps": [
+   "Change the amount on a deal whose invoice is a draft, then on one that has been approved, then on one that has been paid.",
+   "Check Xero and the finance task list."
+  ],
+  "expected": "The draft is updated. The approved and paid ones are locked, no second invoice appears, and finance gets a task. For the paid one the task is to raise a credit note.",
+  "fn": "onAmountChange",
+  "cases": [
+   {
+    "name": "no invoice yet",
+    "input": {},
+    "expect": {
+     "action": "nothing-to-update",
+     "createsInvoice": false
+    }
+   },
+   {
+    "name": "a draft",
+    "input": {
+     "invoiceStatus": "DRAFT",
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "update-draft",
+     "editsInvoice": true,
+     "createsInvoice": false
+    }
+   },
+   {
+    "name": "approved",
+    "input": {
+     "invoiceStatus": "AUTHORISED",
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "finance-task",
+     "locked": true,
+     "createsInvoice": false,
+     "editsInvoice": false
+    }
+   },
+   {
+    "name": "paid",
+    "input": {
+     "invoiceStatus": "PAID",
+     "oldAmount": 1000,
+     "newAmount": 1100
+    },
+    "expect": {
+     "action": "finance-task",
+     "how": "credit-note",
+     "createsInvoice": false
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-14",
+  "title": "Payment status, including part payments",
+  "requirements": [
+   "REQ-13"
+  ],
+  "steps": [
+   "Look at the payment status in Salesforce for an unpaid invoice, a part paid one, a paid one and an overdue one.",
+   "Pay half of one in Xero and check it again after the bank is matched."
+  ],
+  "expected": "Unpaid, Part paid, Paid and Overdue are each shown correctly. Part paid does not show as Unpaid.",
+  "fn": "paymentStatus",
+  "cases": [
+   {
+    "name": "unpaid",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "AUTHORISED",
+      "total": 1200,
+      "amountPaid": 0,
+      "amountDue": 1200,
+      "dueDate": "2027-03-31"
+     }
+    },
+    "expect": {
+     "status": "Unpaid"
+    }
+   },
+   {
+    "name": "part paid",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "AUTHORISED",
+      "total": 1200,
+      "amountPaid": 600,
+      "amountDue": 600,
+      "dueDate": "2027-03-31"
+     }
+    },
+    "expect": {
+     "status": "Part paid"
+    }
+   },
+   {
+    "name": "paid",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "PAID",
+      "total": 1200,
+      "amountPaid": 1200,
+      "amountDue": 0,
+      "dueDate": "2027-03-31"
+     }
+    },
+    "expect": {
+     "status": "Paid"
+    }
+   },
+   {
+    "name": "overdue, nothing paid",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "AUTHORISED",
+      "total": 1200,
+      "amountPaid": 0,
+      "amountDue": 1200,
+      "dueDate": "2027-03-01"
+     }
+    },
+    "expect": {
+     "status": "Overdue",
+     "partPaid": false
+    }
+   },
+   {
+    "name": "overdue, part paid",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "AUTHORISED",
+      "total": 1200,
+      "amountPaid": 600,
+      "amountDue": 600,
+      "dueDate": "2027-03-01"
+     }
+    },
+    "expect": {
+     "status": "Overdue",
+     "partPaid": true
+    }
+   },
+   {
+    "name": "voided",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "VOIDED",
+      "total": 1200,
+      "amountPaid": 0,
+      "amountDue": 0,
+      "dueDate": "2027-03-01"
+     }
+    },
+    "expect": {
+     "status": "Void"
+    }
+   },
+   {
+    "name": "still a draft",
+    "input": {
+     "today": "2027-03-10",
+     "invoice": {
+      "status": "DRAFT",
+      "total": 1200,
+      "amountPaid": 0,
+      "amountDue": 1200,
+      "dueDate": "2027-03-31"
+     }
+    },
+    "expect": {
+     "status": "Draft"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-15",
+  "title": "Credit notes show against the job",
+  "requirements": [
+   "REQ-14"
+  ],
+  "steps": [
+   "Raise a 200 credit note against a 1,200 invoice in Xero.",
+   "Open the job in Salesforce."
+  ],
+  "expected": "The credit of 200 shows and the net is 1,000.",
+  "fn": "creditSummary",
+  "cases": [
+   {
+    "name": "one credit note",
+    "input": {
+     "invoice": {
+      "total": 1200
+     },
+     "notes": [
+      {
+       "allocated": 200
+      }
+     ]
+    },
+    "expect": {
+     "credited": 200,
+     "net": 1000
+    }
+   },
+   {
+    "name": "two credit notes",
+    "input": {
+     "invoice": {
+      "total": 1200
+     },
+     "notes": [
+      {
+       "allocated": 200
+      },
+      {
+       "allocated": 150.55
+      }
+     ]
+    },
+    "expect": {
+     "credited": 350.55,
+     "net": 849.45
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-16",
+  "title": "A voided invoice is visible, and a missing replacement is chased",
+  "requirements": [
+   "REQ-14"
+  ],
+  "steps": [
+   "Void an invoice in Xero for a won job and do not replace it.",
+   "Void another and raise a replacement."
+  ],
+  "expected": "Both show as Void. Only the one with no replacement creates a task for finance.",
+  "fn": "voidHandling",
+  "cases": [
+   {
+    "name": "no replacement",
+    "input": {
+     "oppStage": "Closed Won",
+     "hasReplacement": false
+    },
+    "expect": {
+     "paymentStatus": "Void",
+     "createTask": true
+    }
+   },
+   {
+    "name": "with a replacement",
+    "input": {
+     "oppStage": "Closed Won",
+     "hasReplacement": true
+    },
+    "expect": {
+     "createTask": false
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-17",
+  "title": "Customers are matched, or the sync asks",
+  "requirements": [
+   "REQ-15"
+  ],
+  "steps": [
+   "Raise invoices for a customer already linked, one matched by email, one with two matching emails, one with a similar name and a brand new one.",
+   "Check which are drafted and which are held."
+  ],
+  "expected": "Linked and email matches proceed. Two matches or a similar name are held for finance. A new customer is created.",
+  "fn": "matchContact",
+  "cases": [
+   {
+    "name": "linked",
+    "input": {
+     "account": {
+      "name": "Brightwater Estates",
+      "xeroContactId": "xc-100"
+     },
+     "xeroContacts": [
+      {
+       "id": "xc-100",
+       "name": "Brightwater Estates Ltd"
+      }
+     ]
+    },
+    "expect": {
+     "action": "use",
+     "by": "stored-id"
+    }
+   },
+   {
+    "name": "one email match",
+    "input": {
+     "account": {
+      "name": "Brightwater Estates",
+      "email": "accounts@brightwater.example"
+     },
+     "xeroContacts": [
+      {
+       "id": "xc-100",
+       "name": "Brightwater",
+       "email": "Accounts@Brightwater.example"
+      }
+     ]
+    },
+    "expect": {
+     "action": "use",
+     "by": "email",
+     "contactId": "xc-100"
+    }
+   },
+   {
+    "name": "two with the same email",
+    "input": {
+     "account": {
+      "name": "Brightwater Estates",
+      "email": "a@b.example"
+     },
+     "xeroContacts": [
+      {
+       "id": "1",
+       "name": "One",
+       "email": "a@b.example"
+      },
+      {
+       "id": "2",
+       "name": "Two",
+       "email": "a@b.example"
+      }
+     ]
+    },
+    "expect": {
+     "action": "review",
+     "reason": "several-with-same-email"
+    }
+   },
+   {
+    "name": "similar name",
+    "input": {
+     "account": {
+      "name": "Harbour Housing Association"
+     },
+     "xeroContacts": [
+      {
+       "id": "9",
+       "name": "Harbour Housing Assoc Ltd"
+      }
+     ]
+    },
+    "expect": {
+     "action": "review",
+     "reason": "similar-name"
+    }
+   },
+   {
+    "name": "brand new",
+    "input": {
+     "account": {
+      "name": "Pennant Lettings"
+     },
+     "xeroContacts": [
+      {
+       "id": "9",
+       "name": "Harbour Housing Assoc Ltd"
+      }
+     ]
+    },
+    "expect": {
+     "action": "create"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-18",
+  "title": "A retry never bills twice",
+  "requirements": [
+   "REQ-15"
+  ],
+  "steps": [
+   "Stop the connection just after Xero has created an invoice, so Salesforce never hears back.",
+   "Let the sync retry.",
+   "Do the same for a job that has a deposit and a balance, and for a contract with several months."
+  ],
+  "expected": "The existing invoice is adopted and no second one appears. A deposit is never taken for the balance, and one month is never taken for the next.",
+  "fn": "resolveCreate",
+  "cases": [
+   {
+    "name": "already linked",
+    "input": {
+     "record": {
+      "xeroInvoiceId": "inv-1"
+     },
+     "key": "OPP-2210:FINAL",
+     "xeroInvoices": []
+    },
+    "expect": {
+     "action": "skip"
+    }
+   },
+   {
+    "name": "found by its own code after a timeout",
+    "input": {
+     "record": {},
+     "key": "OPP-2210:FINAL",
+     "xeroInvoices": [
+      {
+       "id": "inv-7",
+       "reference": "PO HA-7781 (OPP-2210:FINAL)"
+      }
+     ]
+    },
+    "expect": {
+     "action": "adopt-existing",
+     "invoiceId": "inv-7"
+    }
+   },
+   {
+    "name": "nothing in Xero yet",
+    "input": {
+     "record": {},
+     "key": "OPP-2210:FINAL",
+     "xeroInvoices": [
+      {
+       "id": "inv-8",
+       "reference": "OPP-1999:FINAL"
+      }
+     ]
+    },
+    "expect": {
+     "action": "create"
+    }
+   },
+   {
+    "name": "the deposit is there, the balance is not",
+    "input": {
+     "record": {},
+     "key": "OPP-2210:BAL",
+     "xeroInvoices": [
+      {
+       "id": "inv-3",
+       "reference": "OPP-2210:DEP"
+      }
+     ]
+    },
+    "expect": {
+     "action": "create"
+    }
+   },
+   {
+    "name": "month one is there, month two is not",
+    "input": {
+     "record": {},
+     "key": "OPP-2210:2027-02",
+     "xeroInvoices": [
+      {
+       "id": "inv-4",
+       "reference": "PO HA-7781 (OPP-2210:2027-01)"
+      }
+     ]
+    },
+    "expect": {
+     "action": "create"
+    }
+   },
+   {
+    "name": "the right month among several",
+    "input": {
+     "record": {},
+     "key": "OPP-2210:2027-02",
+     "xeroInvoices": [
+      {
+       "id": "inv-4",
+       "reference": "OPP-2210:2027-01"
+      },
+      {
+       "id": "inv-5",
+       "reference": "OPP-2210:2027-02"
+      }
+     ]
+    },
+    "expect": {
+     "action": "adopt-existing",
+     "invoiceId": "inv-5"
+    }
+   },
+   {
+    "name": "a shorter job number is not a match",
+    "input": {
+     "record": {},
+     "key": "OPP-221:FINAL",
+     "xeroInvoices": [
+      {
+       "id": "inv-6",
+       "reference": "OPP-2210:FINAL"
+      }
+     ]
+    },
+    "expect": {
+     "action": "create"
+    }
+   }
+  ],
+  "runBy": "us"
+ },
+ {
+  "id": "TC-19",
+  "title": "Finance hears about failures the next morning",
+  "requirements": [
+   "REQ-16"
+  ],
+  "steps": [
+   "Cause two failures during the afternoon and evening.",
+   "Check the inbox at 8am, and again after a day with no failures."
+  ],
+  "expected": "One email with a count of two. No email when nothing failed.",
+  "fn": "dailyDigest",
+  "cases": [
+   {
+    "name": "two failures in the last day",
+    "input": {
+     "now": "2027-02-04T08:00:00",
+     "logs": [
+      {
+       "result": "Failed",
+       "at": "2027-02-03T15:00:00"
+      },
+      {
+       "result": "Failed",
+       "at": "2027-02-04T01:00:00"
+      },
+      {
+       "result": "Succeeded",
+       "at": "2027-02-03T16:00:00"
+      },
+      {
+       "result": "Failed",
+       "at": "2027-02-02T07:00:00"
+      }
+     ]
+    },
+    "expect": {
+     "send": true,
+     "count": 2
+    }
+   },
+   {
+    "name": "no failures",
+    "input": {
+     "now": "2027-02-04T08:00:00",
+     "logs": [
+      {
+       "result": "Succeeded",
+       "at": "2027-02-03T16:00:00"
+      }
+     ]
+    },
+    "expect": {
+     "send": false,
+     "count": 0
+    }
+   }
+  ],
+  "runBy": "us"
+ },
+ {
+  "id": "TC-20",
+  "title": "Sales see payment status, not errors",
+  "requirements": [
+   "REQ-17"
+  ],
+  "steps": [
+   "Sign in as a sales user and open an invoice.",
+   "Sign in as finance."
+  ],
+  "expected": "Sales see the payment status only. Finance also see the log and can re-run.",
+  "fn": "canSee",
+  "cases": [
+   {
+    "name": "sales: payment",
+    "input": {
+     "profile": "Sales",
+     "item": "payment"
+    },
+    "expect": {
+     "$": true
+    }
+   },
+   {
+    "name": "sales: log",
+    "input": {
+     "profile": "Sales",
+     "item": "log"
+    },
+    "expect": {
+     "$": false
+    }
+   },
+   {
+    "name": "sales: re-run",
+    "input": {
+     "profile": "Sales",
+     "item": "rerun"
+    },
+    "expect": {
+     "$": false
+    }
+   },
+   {
+    "name": "finance: log",
+    "input": {
+     "profile": "Finance",
+     "item": "log"
+    },
+    "expect": {
+     "$": true
+    }
+   },
+   {
+    "name": "finance: re-run",
+    "input": {
+     "profile": "Finance",
+     "item": "rerun"
+    },
+    "expect": {
+     "$": true
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-21",
+  "title": "Nothing before the start month is billed",
+  "requirements": [
+   "REQ-18"
+  ],
+  "steps": [
+   "Set the start month to February 2027.",
+   "Consider an invoice dated 28 January and one dated 1 February."
+  ],
+  "expected": "The January invoice is not created, the February one is.",
+  "fn": "cutover",
+  "cases": [
+   {
+    "name": "before the start",
+    "input": {
+     "invoiceDate": "2027-01-28",
+     "startMonth": "2027-02"
+    },
+    "expect": {
+     "create": false
+    }
+   },
+   {
+    "name": "on the first day",
+    "input": {
+     "invoiceDate": "2027-02-01",
+     "startMonth": "2027-02"
+    },
+    "expect": {
+     "create": true
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-22",
+  "title": "Go live only when customers are linked and the rehearsal has passed",
+  "requirements": [
+   "REQ-18"
+  ],
+  "steps": [
+   "Count the customers not yet linked and check the rehearsal result."
+  ],
+  "expected": "Ready only when none are unlinked and the rehearsal has passed.",
+  "fn": "goLive",
+  "cases": [
+   {
+    "name": "three unlinked",
+    "input": {
+     "unlinkedAccounts": 3,
+     "rehearsalPassed": true
+    },
+    "expect": {
+     "ready": false
+    }
+   },
+   {
+    "name": "none unlinked, no rehearsal",
+    "input": {
+     "unlinkedAccounts": 0,
+     "rehearsalPassed": false
+    },
+    "expect": {
+     "ready": false
+    }
+   },
+   {
+    "name": "both in place",
+    "input": {
+     "unlinkedAccounts": 0,
+     "rehearsalPassed": true
+    },
+    "expect": {
+     "ready": true
+    }
+   }
+  ],
+  "runBy": "us"
+ },
+ {
+  "id": "TC-23",
+  "title": "Nothing goes missing",
+  "requirements": [
+   "REQ-19"
+  ],
+  "steps": [
+   "At the end of a day, count the deals won and jobs completed.",
+   "Check each one is a draft, a scheduled invoice or on the failures list."
+  ],
+  "expected": "Every one is accounted for. Anything that is in none of those places is listed as missing.",
+  "fn": "reconcile",
+  "cases": [
+   {
+    "name": "all accounted for",
+    "input": {
+     "expected": [
+      "OPP-1",
+      "OPP-2",
+      "OPP-3"
+     ],
+     "handled": [
+      {
+       "id": "OPP-1",
+       "as": "draft"
+      },
+      {
+       "id": "OPP-2",
+       "as": "draft"
+      },
+      {
+       "id": "OPP-3",
+       "as": "exception"
+      }
+     ]
+    },
+    "expect": {
+     "ok": true,
+     "counts.expected": 3,
+     "counts.drafts": 2,
+     "counts.exceptions": 1
+    }
+   },
+   {
+    "name": "one lost",
+    "input": {
+     "expected": [
+      "OPP-1",
+      "OPP-2",
+      "OPP-3"
+     ],
+     "handled": [
+      {
+       "id": "OPP-1",
+       "as": "draft"
+      },
+      {
+       "id": "OPP-3",
+       "as": "scheduled"
+      }
+     ]
+    },
+    "expect": {
+     "ok": false,
+     "missing": [
+      "OPP-2"
+     ]
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-24",
+  "title": "A running contract joins the schedule at the start month",
+  "requirements": [
+   "REQ-18"
+  ],
+  "steps": [
+   "Load a 12 month contract that started in November, with a start month of February.",
+   "Read the schedule."
+  ],
+  "expected": "The first draft is dated in February and the later months follow the term.",
+  "fn": "remainingSchedule",
+  "cases": [
+   {
+    "name": "started before the start month",
+    "input": {
+     "start": "2026-11-15",
+     "months": 12,
+     "monthly": 500,
+     "startMonth": "2027-02"
+    },
+    "expect": {
+     "length": 9,
+     "[0].date": "2027-02-15",
+     "[8].date": "2027-10-15"
+    }
+   },
+   {
+    "name": "starts after the start month: unchanged",
+    "input": {
+     "start": "2027-03-10",
+     "months": 3,
+     "monthly": 500,
+     "startMonth": "2027-02"
+    },
+    "expect": {
+     "length": 3,
+     "[0].date": "2027-03-10"
+    }
+   }
+  ],
+  "runBy": "client"
+ },
+ {
+  "id": "TC-25",
+  "title": "Month end closes with every invoice approved",
+  "requirements": [
+   "REQ-20"
+  ],
+  "steps": [
+   "Leave one January invoice as a draft.",
+   "Look at the finance task list on 2 February, the working day before the close, and again on 4 February."
+  ],
+  "expected": "On 2 February a warning names the draft, and says the books close on 3 February. On 4 February it is marked late. When every invoice is approved, no warning is raised.",
+  "fn": "closeReadiness",
+  "cases": [
+   {
+    "name": "the working day before the close",
+    "input": {
+     "month": "2027-01",
+     "today": "2027-02-02",
+     "holidays": [],
+     "invoices": [
+      {
+       "id": "a",
+       "date": "2027-01-15",
+       "status": "DRAFT"
+      },
+      {
+       "id": "b",
+       "date": "2027-01-20",
+       "status": "AUTHORISED"
+      },
+      {
+       "id": "c",
+       "date": "2027-02-01",
+       "status": "DRAFT"
+      }
+     ]
+    },
+    "expect": {
+     "closes": "2027-02-03",
+     "open": [
+      "a"
+     ],
+     "warn": true,
+     "late": false
+    }
+   },
+   {
+    "name": "too early to warn",
+    "input": {
+     "month": "2027-01",
+     "today": "2027-01-28",
+     "holidays": [],
+     "invoices": [
+      {
+       "id": "a",
+       "date": "2027-01-15",
+       "status": "DRAFT"
+      }
+     ]
+    },
+    "expect": {
+     "closes": "2027-02-03",
+     "warn": false,
+     "late": false
+    }
+   },
+   {
+    "name": "after the close",
+    "input": {
+     "month": "2027-01",
+     "today": "2027-02-04",
+     "holidays": [],
+     "invoices": [
+      {
+       "id": "a",
+       "date": "2027-01-15",
+       "status": "DRAFT"
+      }
+     ]
+    },
+    "expect": {
+     "warn": false,
+     "late": true
+    }
+   },
+   {
+    "name": "everything approved",
+    "input": {
+     "month": "2027-01",
+     "today": "2027-02-02",
+     "holidays": [],
+     "invoices": [
+      {
+       "id": "a",
+       "date": "2027-01-15",
+       "status": "AUTHORISED"
+      }
+     ]
+    },
+    "expect": {
+     "open": [],
+     "warn": false,
+     "late": false
+    }
+   },
+   {
+    "name": "a bank holiday moves the close",
+    "input": {
+     "month": "2027-12",
+     "today": "2028-01-04",
+     "holidays": [
+      "2028-01-03"
+     ],
+     "invoices": []
+    },
+    "expect": {
+     "closes": "2028-01-06"
+    }
+   }
+  ],
+  "runBy": "us"
+ }
+]
