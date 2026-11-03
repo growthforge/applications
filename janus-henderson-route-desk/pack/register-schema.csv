@@ -1,0 +1,34 @@
+Column,Internal name,Type,Choices or format,Required,Set by,Notes
+Idea,Title,Single line of text,,Yes,Agent (confirmed by submitter),Short name of the idea
+Use case ID,UseCaseId,Single line of text,UC- plus a running number,Yes,Flow,Unique; shown to the submitter
+Problem shape,ProblemShape,Multiple lines of text (plain),,Yes,Agent (confirmed by submitter),"Context-independent: no people, clients, funds or system names"
+Unit,Unit,Single line of text,,Yes,Unit map,Business unit the idea came from
+Submitted by,SubmittedBy,Person,,Yes,Flow (signed-in user),
+ATC,ATC,Person,,Yes,Unit map,
+AI Business Partner,Partner,Person,,Yes,Unit map,
+Answers,AnswersJson,Multiple lines of text (plain),JSON with the ten answers,Yes,Flow,Exactly as submitted after normalisation
+Hours at stake,HoursAtStake,Number,Hours a month,Yes,Flow,Time spent today. Never reported as hours saved
+Problem type,ProblemType,Choice,process; process-then-ai; automation; ai,Yes,Rules,
+Suggested route,SuggestedRoute,Choice,Process first; Use what already exists; Business users; AI Business Partner; Process automation team; Technology; External partner or vendor product,Yes,Rules,
+Confirmed route,ConfirmedRoute,Choice,Same choices as Suggested route,No,AI Business Partner,Set from the Teams card
+Override reason,OverrideReason,Multiple lines of text (plain),,No,AI Business Partner,Required when Confirmed route differs from Suggested route
+Tier,Tier,Choice,1; 2; 3,Yes,Rules,Never set by the model
+Controls,Controls,Multiple lines of text (plain),,No,Rules,Add-ons such as DPIA screening or MAR controls
+Zone,Zone,Choice,Zone 1 citizen; Zone 2 partnered; Zone 3 professional; Not applicable,No,Rules,
+Platform,Platform,Single line of text,,No,Rules then Partner,
+Business owner,BusinessOwner,Person,,Before pilot,Partner,
+Co-owner (Fighter Pilot),CoOwner,Person,,Before go-live,Partner,Takes ownership when the Partner rotates
+Accountable Senior Manager,AccountableSMF,Person,,Tier 3 only,Partner,SM&CR accountability
+Approvals,Approvals,Multiple lines of text (plain),Approver; decision; date; comment,Tier 2 and 3,Flow,Written by the approvals step
+Benefit measure,BenefitMeasure,Choice,Hours saved; Quality improvement score; Risk reduction percentage; Revenue growth,Yes,Agent (confirmed by submitter),The advert's four KPIs
+Baseline,Baseline,Multiple lines of text (plain),,Before build,Benefit owner,How and when it was measured
+Benefit floor,BenefitFloor,Single line of text,,Before pilot,Benefit owner and Partner,Kill criterion threshold
+Verified benefit,VerifiedBenefit,Single line of text,,After pilot,Benefit owner,Confirmed by the department; updated monthly
+Routine adoption,RoutineAdoption,Single line of text,,After go-live,Flow,Share of intended users active four or more days in a rolling four weeks
+Verdict,Verdict,Single line of text,,Yes,Rules,
+Rules fired,RulesFired,Multiple lines of text (plain),,Yes,Rules,Rule ids and text
+Rules version,RulesVersion,Single line of text,,Yes,Flow,From route-rules.json
+Status,Status,Choice,Triaged; Process fix; Value case; Control review; Build; Pilot; Live; Review: retire or rework; Retired; Parked; Handed to existing tool or programme; Needs attention,Yes,Flow and Partner,
+Status changed,StatusChanged,Date and time,,Yes,Flow,
+Pattern record,PatternLink,Hyperlink,,At go-live,Partner,Link to the Use Case Library entry
+Next review,NextReview,Date only,,Yes,Flow,

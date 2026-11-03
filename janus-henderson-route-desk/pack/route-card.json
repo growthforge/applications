@@ -1,0 +1,178 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Route Desk: new idea to confirm",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "UC-0042 · Expense and travel policy questions",
+      "wrap": true,
+      "spacing": "None",
+      "isSubtle": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Colleagues ask a central team the same questions whose answers already sit in published policy documents that are hard to search.",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Verdict",
+          "value": "Pursue now"
+        },
+        {
+          "title": "Route",
+          "value": "AI Business Partner"
+        },
+        {
+          "title": "Platform",
+          "value": "A Copilot Studio agent with SharePoint knowledge and a citation on every answer."
+        },
+        {
+          "title": "Control",
+          "value": "Tier 1: notify only. A register entry on a pre-approved pattern; no review meeting."
+        },
+        {
+          "title": "Human gate",
+          "value": "The user owns the output and reviews it before sharing."
+        },
+        {
+          "title": "Measure",
+          "value": "Hours saved"
+        },
+        {
+          "title": "Hours at stake",
+          "value": "12 a month (not hours saved)"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Rules that fired",
+      "weight": "Bolder",
+      "wrap": true,
+      "spacing": "Medium"
+    },
+    {
+      "type": "TextBlock",
+      "text": "R5: The work is language or judgement, and the pain is volume, scattered knowledge or wording.",
+      "wrap": true,
+      "spacing": "Small",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "T1: Internal, non-sensitive data used in the person's own work.",
+      "wrap": true,
+      "spacing": "Small",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "D8: An AI build with wider reach, unlicensed users, a connector or a higher tier: the AI Business Partner builds it and hands it to a Fighter Pilot.",
+      "wrap": true,
+      "spacing": "Small",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "V4: Value 6 (hours 2, reach 4) against effort 2 (systems 1, licences or capacity 1).",
+      "wrap": true,
+      "spacing": "Small",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The rules suggest; you decide. An override needs a reason and is logged in the register.",
+      "wrap": true,
+      "isSubtle": true,
+      "size": "Small",
+      "spacing": "Medium"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Confirm route",
+      "data": {
+        "action": "confirm",
+        "useCaseId": "UC-0042",
+        "lane": "partner",
+        "tier": 1
+      }
+    },
+    {
+      "type": "Action.ShowCard",
+      "title": "Change route",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [
+          {
+            "type": "Input.ChoiceSet",
+            "id": "overrideLane",
+            "label": "New route",
+            "isRequired": true,
+            "errorMessage": "Choose a route",
+            "choices": [
+              {
+                "title": "Process first",
+                "value": "process"
+              },
+              {
+                "title": "Use what already exists",
+                "value": "existing"
+              },
+              {
+                "title": "Business users",
+                "value": "business"
+              },
+              {
+                "title": "AI Business Partner",
+                "value": "partner"
+              },
+              {
+                "title": "Process automation team",
+                "value": "automation"
+              },
+              {
+                "title": "Technology",
+                "value": "technology"
+              },
+              {
+                "title": "External partner or vendor product",
+                "value": "external"
+              }
+            ]
+          },
+          {
+            "type": "Input.Text",
+            "id": "overrideReason",
+            "label": "Reason (logged)",
+            "isMultiline": true,
+            "isRequired": true,
+            "errorMessage": "A reason is required"
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.Submit",
+            "title": "Save override",
+            "data": {
+              "action": "override",
+              "useCaseId": "UC-0042"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
