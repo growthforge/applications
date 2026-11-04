@@ -66,26 +66,23 @@ const P = {
   knowledge: { weekday: 950, weekend: 80, growth: -0.06,
     tokens: { input: 38000, cached: 0.05, output: 800 }, outcome: { failed: 0.03, discarded: 0.59, retryFailed: 0.60, retryDiscarded: 0.22 }, retrievalPerRun: 3 },
   embedTokensPerCall: 350,
-  embedUsdPerMTok: 0.13,                      // illustrative billed rate; no embeddings price in the research
+  embedUsdPerMTok: 0.13,                      // text-embedding-3-large, global (prices.json)
   miniUnmeteredShare: 0.015,                  // an internal job calls the shared deployment directly
   sandbox: { from: '2026-09-15', sepInput: 2.0e6, sepOutput: 1.5e5, octInput: 1.8e7, octOutput: 1.2e6 },
   aoaiDiscount: 0.05,                         // illustrative negotiated discount on Azure OpenAI meters
-  // Cloud estate. Illustrative constant unit rates close to retail list prices; none is sourced in
-  // this pack's research, so confirm any of them from the Azure Retail Prices API before relying on
-  // it. One rate per SKU for the whole window: quantities move from day to day, unit prices do not.
-  rates: {
-    'd16s-v5': { usd: 0.84, unit: 'Hours', meter: 'D16s v5' },
-    'd8s-v5': { usd: 0.42, unit: 'Hours', meter: 'D8s v5' },
-    'd4s-v5': { usd: 0.21, unit: 'Hours', meter: 'D4s v5' },
-    'sql-gp-vcore': { usd: 0.50, unit: 'vCore Hours', meter: 'General Purpose vCore' },
-    'storage-hot-lrs': { usd: 0.02, unit: 'GB-Months', meter: 'Hot LRS Data Stored' },
-    'log-analytics-ingest': { usd: 2.30, unit: 'GB', meter: 'Analytics Logs Data Ingestion' },
-    'apim-standard-v2': { usd: 1.90, unit: 'Unit Hours', meter: 'Standard v2 Unit' },
-    'search-s2': { usd: 1.34, unit: 'Search Unit Hours', meter: 'Standard S2 Unit' },
-  },
+  // Cloud estate. Unit rates are the Azure Retail Prices API's UK South pay-as-you-go prices, read
+  // on 4 Nov 2026 (prices.json, azureRetail). One rate per SKU for the whole window: quantities move
+  // from day to day, unit prices do not.
+  rates: Object.fromEntries([
+    ['d16s-v5', 'Hours'], ['d8s-v5', 'Hours'], ['d4s-v5', 'Hours'], ['sql-gp-vcore', 'vCore Hours'],
+    ['storage-hot-lrs', 'GB-Months'], ['log-analytics-ingest', 'GB'], ['apim-standard-v2', 'Unit Hours'], ['search-s2', 'Search Unit Hours'],
+  ].map(([key, unit]) => {
+    const r = prices.azureRetail.rows.find((x) => x.key === key);
+    return [key, { usd: r.usd, unit, meter: r.meter }];
+  })),
   cloud: {
     aksProdWeekdayNodes: 42, aksProdWeekendNodes: 36, aksNonprodNodes: 20, aksNonprodSystemNodes: 2, scheduleFrom: '2026-10-13',
-    sqlVcores: 8, storageGb: 58000, storageGrowth: 0.06, logGbPerDay: 55, appInsightsGbPerDay: 8, apimUnits: 2, searchUnits: 6,
+    sqlVcores: 8, storageGb: 42000, storageGrowth: 0.06, logGbPerDay: 55, appInsightsGbPerDay: 8, apimUnits: 2, searchUnits: 6,
   },
 };
 
@@ -300,8 +297,11 @@ for (const d of dates) {
     ['log-shared-uks', 'Microsoft.OperationalInsights/workspaces', 'Log Analytics', 'Management and Governance', 'log-analytics-ingest', C.logGbPerDay * jitter(0.08)],
     ['appi-shared-uks', 'Microsoft.Insights/components', 'Application Insights', 'Management and Governance', 'log-analytics-ingest', C.appInsightsGbPerDay * jitter(0.1)],
     ['apim-ai-gateway', 'Microsoft.ApiManagement/service', 'API Management', 'Integration', 'apim-standard-v2', C.apimUnits * 24]]) {
+    // The gateway and the Application Insights it reports to carry the AI gateway pool tag; the
+    // shared Log Analytics workspace has no owner and no pool.
+    const tags = name === 'log-shared-uks' ? { environment: 'prod' } : { 'cost-pool': 'ai-gateway', environment: 'prod' };
     cloudLine(d, { sub: 'sub-shared', rg: 'rg-shared-observability', id: `/subscriptions/sub-shared/resourceGroups/rg-shared-observability/providers/${provider}/${name}`,
-      category, service, rate, qty, tags: { environment: 'prod' } });
+      category, service, rate, qty, tags });
   }
 }
 

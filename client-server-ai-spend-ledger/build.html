@@ -63,10 +63,10 @@
       <div class="wrap">
         <div class="section__head"><h2 id="sum-title">The sixty-second version</h2><p><span class="badge badge--illus">Illustrative</span> Computed at load from the pack's data, like every figure here.</p></div>
         <ul class="sum60" data-region="summary60"><!-- pre:summary60 --><li><strong>Bill first.</strong> 2,118 illustrative rows shaped like an Azure FOCUS export (FOCUS 1.2 names, normalised to 1.4) are the only cost the ledger allocates; 1,656 gateway estimate rows decide shares and check the bill.</li>
-    <li><strong>Reconciled.</strong> Gateway metering explains 85% of token-billed AI cost (58% of all AI spend: the AI Search tier is not token-billed and is split by retrieval calls). The $1,712 gap is $2,084 of unmetered usage less a $372 negotiated discount. One bypass found.</li>
-    <li><strong>Owned.</strong> 88% of $61,974 has a named owner (Walk); the unallocated rest stays visible.</li>
-    <li><strong>Budgeted.</strong> AI spend $19,039 against $17,315 (110%); forecast alert 8 October.</li>
-    <li><strong>Decided on avoidable cost.</strong> Support assistant: scale; KYC document review: fix; Fraud alert explanations: scale; Internal knowledge assistant: fix. Savings pipeline $3,552 measured, $5,314 with assumptions and priors, $2,177 realised in October.</li><!-- /pre:summary60 --></ul>
+    <li><strong>Reconciled.</strong> Gateway metering explains 85% of token-billed AI cost (52% of all AI spend: the two AI pools, AI Search and the AI gateway, are not token-billed and are split by retrieval calls and gateway requests). The $1,711 gap is $2,084 of unmetered usage less a $372 negotiated discount. One bypass found.</li>
+    <li><strong>Owned.</strong> 91% of $61,282 has a named owner (Run); the unallocated rest stays visible: an untagged Log Analytics workspace and $558 of AI use the gateway never metered.</li>
+    <li><strong>Budgeted.</strong> AI spend, including the AI gateway, $21,215 against $19,770 (107%); the ledger's forecast alert 13 October.</li>
+    <li><strong>Decided on avoidable cost.</strong> Support assistant: scale; KYC document review: fix; Fraud alert explanations: scale; Internal knowledge assistant: fix. Savings pipeline $9,545 measured, $17,232 with assumptions and priors, $2,302 realised in October; the KYC retry cap is a guardrail and is not counted.</li><!-- /pre:summary60 --></ul>
       </div>
     </section>
 
@@ -87,7 +87,8 @@
             <tbody role="rowgroup">
               <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Cost</th><td role="cell" data-label="Source"><div class="v">BilledCost and EffectiveCost in the cost export</div></td><td role="cell" data-label="Used for"><div class="v">Everything that is reported or allocated</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Each team's share of a shared line</th><td role="cell" data-label="Source"><div class="v">Gateway token counts, same deployment and token class (cost-weighted for the CCU line)</div></td><td role="cell" data-label="Used for"><div class="v">Allocation</div></td></tr>
-              <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Shared AI platform split</th><td role="cell" data-label="Source"><div class="v">Gateway retrieval calls per use case</div></td><td role="cell" data-label="Used for"><div class="v">Allocation of AI Search</div></td></tr>
+              <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Shared AI platform split</th><td role="cell" data-label="Source"><div class="v">Gateway retrieval calls per use case (AI Search); gateway requests per use case (the AI gateway: API Management and its Application Insights)</div></td><td role="cell" data-label="Used for"><div class="v">Allocation of the two AI pools, which count as AI spend</div></td></tr>
+              <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Unmetered remainder</th><td role="cell" data-label="Source"><div class="v">The part of a billed model line the gateway's list-price estimate does not explain</div></td><td role="cell" data-label="Used for"><div class="v">Held unallocated, not charged to the metered team</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="Figure">List-price estimate</th><td role="cell" data-label="Source"><div class="v">Gateway tokens times published list prices</div></td><td role="cell" data-label="Used for"><div class="v">Reconciliation, levers and the what-if only</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="Figure">Successful outcomes</th><td role="cell" data-label="Source"><div class="v">Each use case's outcome log</div></td><td role="cell" data-label="Used for"><div class="v">Unit cost, decisions, next-bill checks</div></td></tr>
             </tbody>
@@ -102,7 +103,7 @@
           <p><span class="badge badge--illus">Illustrative</span> For every token-billed line: the gap between billed cost and the list-price estimate is unmetered usage at list price, less the negotiated discount, plus a residual that is only non-zero when the bill's unit price disagrees with the price sheet. Coverage is the share of token-billed AI cost the gateway explains; a bypass is a billed line with no metered calls.</p></div>
         <figure class="wf" aria-describedby="rec-cap">
           <figcaption><span class="badge badge--illus">Illustrative</span> From the gateway's estimate to the billed amount, October, token-billed lines with a list price.</figcaption>
-          <div class="wf-body" role="img" aria-label="Waterfall from list-price estimate to billed cost; the figures are in the table below." data-region="recon-waterfall"><!-- pre:recon-waterfall --><div class="wf-row"><span class="wf-k">List-price estimate from metered tokens</span><span class="wf-track"><span class="wf-bar wf-bar--base" style="left:0.00%;width:84.48%"></span></span><span class="wf-v num">$11,342</span></div><div class="wf-row"><span class="wf-k">Unmetered usage, at list price</span><span class="wf-track"><span class="wf-bar wf-bar--up" style="left:84.48%;width:15.52%"></span></span><span class="wf-v num">+$2,084</span></div><div class="wf-row"><span class="wf-k">Negotiated discount</span><span class="wf-track"><span class="wf-bar wf-bar--down" style="left:97.23%;width:2.77%"></span></span><span class="wf-v num">−$372</span></div><div class="wf-row"><span class="wf-k">Rounding residual</span><span class="wf-track"><span class="wf-bar wf-bar--flat" style="left:97.23%;width:0.30%"></span></span><span class="wf-v num">$0</span></div><div class="wf-row wf-row--total"><span class="wf-k">Billed (priced lines)</span><span class="wf-track"><span class="wf-bar wf-bar--total" style="left:0;width:97.23%"></span></span><span class="wf-v num">$13,053</span></div><!-- /pre:recon-waterfall --></div>
+          <div class="wf-body" role="img" aria-label="Waterfall from list-price estimate to billed cost; the figures are in the table below." data-region="recon-waterfall"><!-- pre:recon-waterfall --><div class="wf-row"><span class="wf-k">List-price estimate from metered tokens</span><span class="wf-track"><span class="wf-bar wf-bar--base" style="left:0.00%;width:84.48%"></span></span><span class="wf-v num">$11,345</span></div><div class="wf-row"><span class="wf-k">Unmetered usage, at list price</span><span class="wf-track"><span class="wf-bar wf-bar--up" style="left:84.48%;width:15.52%"></span></span><span class="wf-v num">+$2,084</span></div><div class="wf-row"><span class="wf-k">Negotiated discount</span><span class="wf-track"><span class="wf-bar wf-bar--down" style="left:97.23%;width:2.77%"></span></span><span class="wf-v num">−$372</span></div><div class="wf-row"><span class="wf-k">Rounding residual</span><span class="wf-track"><span class="wf-bar wf-bar--flat" style="left:97.23%;width:0.30%"></span></span><span class="wf-v num">$0</span></div><div class="wf-row wf-row--total"><span class="wf-k">Billed (priced lines)</span><span class="wf-track"><span class="wf-bar wf-bar--total" style="left:0;width:97.23%"></span></span><span class="wf-v num">$13,057</span></div><!-- /pre:recon-waterfall --></div>
         </figure>
         <div class="table-wrap" role="region" aria-labelledby="rec-cap" tabindex="0">
           <table role="table" class="table table--cards" id="rec-table" data-region="recon-table" aria-describedby="rec-cap"><!-- pre:recon-table --><caption>Token-billed AI lines, October. Illustrative. Coverage is billed tokens the gateway metered (for the CCU line, the estimate's share of the bill), over token-billed AI cost only.</caption>
@@ -153,29 +154,29 @@
       <td role="cell" data-label="Check"><div class="v"><span class="status status--blocked">bypass</span></div></td>
     </tr>
 <tr role="row" class="">
-      <th role="rowheader" scope="row" data-label="Billed line"><code>embed-shared</code><span class="sub">text-embedding</span></th>
+      <th role="rowheader" scope="row" data-label="Billed line"><code>embed-shared</code><span class="sub">text-embedding-3-large</span></th>
       <td role="cell" class="num" data-label="Billed"><div class="v">$4</div></td>
-      <td role="cell" class="num" data-label="Estimate"><div class="v"><span class="muted">no price</span></div></td>
+      <td role="cell" class="num" data-label="Estimate"><div class="v">$4</div></td>
       <td role="cell" class="num" data-label="Unmetered"><div class="v">$0</div></td>
       <td role="cell" class="num" data-label="Discount"><div class="v">$0</div></td>
       <td role="cell" class="num" data-label="Coverage"><div class="v">100%</div></td>
       <td role="cell" data-label="Check"><div class="v"><span class="status status--realised">covered</span></div></td>
     </tr></tbody>
-    <tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Total">All token-billed lines</th><td role="cell" class="num" data-label="Billed"><div class="v">$13,057</div></td><td role="cell" class="num" data-label="Estimate"><div class="v">$11,342</div></td><td role="cell" class="num" data-label="Unmetered"><div class="v">+$2,084</div></td><td role="cell" class="num" data-label="Discount"><div class="v">−$372</div></td><td role="cell" class="num" data-label="Coverage"><div class="v">85%</div></td><td role="cell" data-label="Check"><div class="v">0 price mismatches</div></td></tr></tfoot><!-- /pre:recon-table --></table>
+    <tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Total">All token-billed lines</th><td role="cell" class="num" data-label="Billed"><div class="v">$13,057</div></td><td role="cell" class="num" data-label="Estimate"><div class="v">$11,345</div></td><td role="cell" class="num" data-label="Unmetered"><div class="v">+$2,084</div></td><td role="cell" class="num" data-label="Discount"><div class="v">−$372</div></td><td role="cell" class="num" data-label="Coverage"><div class="v">85%</div></td><td role="cell" data-label="Check"><div class="v">0 price mismatches</div></td></tr></tfoot><!-- /pre:recon-table --></table>
         </div>
-        <p class="note" id="rec-cap">Coverage here is over token-billed AI cost; the AI Search tier is not token-billed (it is split by retrieval calls), so as a share of all AI spend the gateway explains less, as the sixty-second summary says. Two findings come straight out of it: a sandbox deployment in the non-production subscription is billed with no gateway calls (traffic goes straight to the endpoint, so the hard quota never applies), and part of the Claude line has no metered calls behind it, which is what playground use in Foundry looks like. Both are fixes for the platform team, not allocation problems.</p>
+        <p class="note" id="rec-cap">Coverage here is over token-billed AI cost; the AI Search tier is not token-billed (it is split by retrieval calls), so as a share of all AI spend the gateway explains less, as the sixty-second summary says. Two findings come straight out of it: a sandbox deployment in the non-production subscription is billed with no gateway calls (traffic goes straight to the endpoint, so the hard quota never applies), and part of the Claude line has no metered calls behind it, which is what playground use in Foundry looks like. That part is held unallocated rather than charged to the KYC team. Both are fixes for the platform team, not allocation problems.</p>
       </div>
     </section>
 
     <section class="section" id="allocation" aria-labelledby="alloc-title" data-illustrative>
       <div class="wrap">
         <div class="section__head"><h2 id="alloc-title">Allocation</h2>
-          <p><span class="badge badge--illus">Illustrative</span> First matching rule wins, and each allocated row records it in <code>AllocatedMethodId</code>: gateway token share for a metered Azure OpenAI line; gateway cost share for the CCU line, because one CCU line mixes input, cache and output tokens; retrieval-call share for the shared AI platform; the resource's owner tag; the resource group's or subscription's tag (the resource tag wins, as in Azure tag inheritance); otherwise unallocated, kept as its own line.</p></div>
+          <p><span class="badge badge--illus">Illustrative</span> First matching rule wins, and each allocated row records it in <code>AllocatedMethodId</code>: gateway token share for the metered part of an Azure OpenAI line; gateway cost share for the metered part of the CCU line, because one CCU line mixes input, cache and output tokens; the unmetered remainder of a model line, held unallocated; retrieval-call share for AI Search and gateway-request share for the AI gateway, the two shared AI pools; the resource's owner tag; the resource group's or subscription's tag (the resource tag wins, as in Azure tag inheritance); otherwise unallocated, kept as its own line.</p></div>
         <div class="split">
-          <div class="table-wrap" role="region" aria-label="Allocation by rule" tabindex="0"><table role="table" class="table table--cards" data-region="alloc-methods"><!-- pre:alloc-methods --><caption>How October's bill was allocated. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Rule (AllocatedMethodId)</th><th role="columnheader" scope="col" class="num">Cost</th><th role="columnheader" scope="col" class="num">Share</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>gateway-token-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,625</div></td><td role="cell" class="num" data-label="Share"><div class="v">9.1%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>gateway-cost-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,984</div></td><td role="cell" class="num" data-label="Share"><div class="v">9.7%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>retrieval-call-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,982</div></td><td role="cell" class="num" data-label="Share"><div class="v">9.7%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>resource-tag</code></th><td role="cell" class="num" data-label="October"><div class="v">$7,015</div></td><td role="cell" class="num" data-label="Share"><div class="v">11.3%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>inherited-tag</code></th><td role="cell" class="num" data-label="October"><div class="v">$29,938</div></td><td role="cell" class="num" data-label="Share"><div class="v">48.3%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>unallocated</code></th><td role="cell" class="num" data-label="October"><div class="v">$7,430</div></td><td role="cell" class="num" data-label="Share"><div class="v">12.0%</div></td></tr></tbody><tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Total">Total</th><td role="cell" class="num" data-label="Cost"><div class="v">$61,974</div></td><td role="cell" class="num" data-label="Share"><div class="v">equals the bill</div></td></tr></tfoot><!-- /pre:alloc-methods --></table></div>
-          <div class="table-wrap" role="region" aria-label="Allocation maturity by month" tabindex="0"><table role="table" class="table table--cards" data-region="alloc-trend"><!-- pre:alloc-trend --><caption>Share of spend with a named owner against Crawl 70%, Walk 85% and Run (over 90%). Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Month</th><th role="columnheader" scope="col" class="num">Total bill</th><th role="columnheader" scope="col" class="num">With an owner</th><th role="columnheader" scope="col">Stage</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Month">August</th><td role="cell" class="num" data-label="Total"><div class="v">$59,073</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">87.6%</div></td><td role="cell" data-label="Stage"><div class="v">Walk</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Month">September</th><td role="cell" class="num" data-label="Total"><div class="v">$58,262</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">87.9%</div></td><td role="cell" data-label="Stage"><div class="v">Walk</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Month">October</th><td role="cell" class="num" data-label="Total"><div class="v">$61,974</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">88.0%</div></td><td role="cell" data-label="Stage"><div class="v">Walk</div></td></tr></tbody><!-- /pre:alloc-trend --></table></div>
+          <div class="table-wrap" role="region" aria-label="Allocation by rule" tabindex="0"><table role="table" class="table table--cards" data-region="alloc-methods"><!-- pre:alloc-methods --><caption>How October's bill was allocated. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Rule (AllocatedMethodId)</th><th role="columnheader" scope="col" class="num">Cost</th><th role="columnheader" scope="col" class="num">Share</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>gateway-token-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,590</div></td><td role="cell" class="num" data-label="Share"><div class="v">9.1%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>gateway-cost-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,461</div></td><td role="cell" class="num" data-label="Share"><div class="v">8.9%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>retrieval-call-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$6,000</div></td><td role="cell" class="num" data-label="Share"><div class="v">9.8%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>gateway-request-share</code></th><td role="cell" class="num" data-label="October"><div class="v">$2,159</div></td><td role="cell" class="num" data-label="Share"><div class="v">3.5%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>resource-tag</code></th><td role="cell" class="num" data-label="October"><div class="v">$4,834</div></td><td role="cell" class="num" data-label="Share"><div class="v">7.9%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>inherited-tag</code></th><td role="cell" class="num" data-label="October"><div class="v">$31,648</div></td><td role="cell" class="num" data-label="Share"><div class="v">51.6%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>unmetered-remainder</code></th><td role="cell" class="num" data-label="October"><div class="v">$558</div></td><td role="cell" class="num" data-label="Share"><div class="v">0.9%</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Rule"><code>unallocated</code></th><td role="cell" class="num" data-label="October"><div class="v">$5,031</div></td><td role="cell" class="num" data-label="Share"><div class="v">8.2%</div></td></tr></tbody><tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Total">Total</th><td role="cell" class="num" data-label="Cost"><div class="v">$61,282</div></td><td role="cell" class="num" data-label="Share"><div class="v">equals the bill</div></td></tr></tfoot><!-- /pre:alloc-methods --></table></div>
+          <div class="table-wrap" role="region" aria-label="Allocation maturity by month" tabindex="0"><table role="table" class="table table--cards" data-region="alloc-trend"><!-- pre:alloc-trend --><caption>Share of spend with a named owner against Crawl 70%, Walk 85% and Run (over 90%). Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Month</th><th role="columnheader" scope="col" class="num">Total bill</th><th role="columnheader" scope="col" class="num">With an owner</th><th role="columnheader" scope="col">Stage</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Month">August</th><td role="cell" class="num" data-label="Total"><div class="v">$58,472</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">91.3%</div></td><td role="cell" data-label="Stage"><div class="v">Run</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Month">September</th><td role="cell" class="num" data-label="Total"><div class="v">$57,668</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">91.5%</div></td><td role="cell" data-label="Stage"><div class="v">Run</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Month">October</th><td role="cell" class="num" data-label="Total"><div class="v">$61,282</div></td><td role="cell" class="num" data-label="With an owner"><div class="v">90.9%</div></td><td role="cell" data-label="Stage"><div class="v">Run</div></td></tr></tbody><!-- /pre:alloc-trend --></table></div>
         </div>
-        <p class="note">Targets are the Foundation's sample allocation KPIs for Crawl, Walk and Run <span data-src="S5">(70%, 85% and over 90% of cost with a known owner)</span>.</p>
+        <p class="note">Targets are the Foundation's sample allocation KPIs for Crawl, Walk and Run <span data-src="S5">(70%, 85% and over 90% of cost with a known owner)</span> <a class="cite" href="#src-S5" data-src="S5">S5</a>. October reaches Run on the whole bill; the gaps left are one untagged Log Analytics workspace and the unmetered model use.</p>
       </div>
     </section>
 
@@ -203,7 +204,7 @@ Every column the ledger reads or writes, the FOCUS version it comes from, and ho
 
 | Version | Status (read 3 Nov 2026) | What the ledger does with it |
 |---|---|---|
-| FOCUS 1.2 | Azure Cost Management's FOCUS export is documented up to the 1.2-preview dataset (some 1.2 fields not yet populated). | The illustrative export `data/focus_export.csv` is shaped like an Azure FOCUS export: FOCUS 1.2 column names, daily rows, one constant illustrative rate per SKU. It is synthetic, not an export. |
+| FOCUS 1.2 | Azure Cost Management's FOCUS export is documented up to the 1.2-preview dataset (some 1.2 fields not yet populated). | The illustrative export `data/focus_export.csv` is shaped like an Azure FOCUS export: FOCUS 1.2 column names, daily rows, cloud services at Azure Retail Prices API pay-as-you-go rates (one constant rate per SKU). It is synthetic, not an export. |
 | FOCUS 1.4 | Current specification, ratified 4 June 2026. No token columns. Removes ProviderName and PublisherName. | The ledger normalises every row to FOCUS 1.4 column names (`ledger/normalise.js`). |
 | FOCUS 1.5 | Planned for ratification on 3 Dec 2026, so not current. The working draft adds token direction, token cache action and model identity (ModelDeveloper, ModelFamily, ModelId, ModelVersion). | Token fields ride as `x_` extension columns shaped like the draft names, so moving to 1.5 is a rename. |
 
@@ -224,7 +225,7 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | InvoiceIssuerName | same | Entity that issues the invoice | Microsoft for every row: Anthropic usage through Foundry is invoiced by Microsoft |
 | SubAccountId | same | Grouping of resources (an Azure subscription here) | Subscription tags for tag inheritance |
 | RegionId | same | Region | uksouth |
-| ServiceCategory | same | Highest-level classification; &quot;AI and Machine Learning&quot; is an allowed value | Defines AI spend |
+| ServiceCategory | same | Highest-level classification; &quot;AI and Machine Learning&quot; is an allowed value | Defines AI spend, together with the two shared AI pools (see `x_AiSpend`) |
 | ServiceName | same | The purchasable offering | Labels |
 | ResourceId, ResourceName | same | Provider resource identifier and display name | Deployment name for Azure OpenAI lines (the end of ResourceId); the Claude line is matched on ResourceId |
 | SkuId, SkuMeter | same | SKU and usage meter | Meter names are parsed into the token extension columns |
@@ -235,7 +236,7 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | BilledCost | same | Cost as invoiced | The source of truth for allocation and reconciliation |
 | EffectiveCost | same | Cost with prepaid commitments amortised | Allocated and reported (equals BilledCost until a commitment is bought) |
 | CommitmentDiscountId | same | Commitment discount applied, if any | Empty: none bought yet |
-| Tags | same | Finalised user and provider tags (JSON) | Owner and cost-pool tags; resource tag wins over inherited ones |
+| Tags | same | Finalised user and provider tags (JSON) | Owner and cost-pool tags (`shared-ai-platform` for AI Search, `ai-gateway` for API Management and its Application Insights); resource tag wins over inherited ones |
 | x_ResourceGroupName | same (Azure extension) | Resource group | Resource group tags for tag inheritance |
 
 ## Columns the ledger adds
@@ -248,14 +249,16 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | x_ModelDeveloper | FOCUS 1.5 draft ModelDeveloper | OpenAI or Anthropic |
 | x_Deployment | ledger extension | Azure OpenAI deployment name |
 | x_Team, x_UseCase, x_Environment | ledger extension | Labels from the gateway's metric dimensions |
-| AllocatedMethodId | FOCUS 1.3+ column | gateway-token-share, gateway-cost-share, retrieval-call-share, resource-tag, inherited-tag or unallocated |
+| AllocatedMethodId | FOCUS 1.3+ column | gateway-token-share, gateway-cost-share, unmetered-remainder, retrieval-call-share, gateway-request-share, resource-tag, inherited-tag or unallocated |
 | AllocatedResourceId | FOCUS 1.3+ column | The billed resource whose cost was split |
 | AllocatedTags | FOCUS 1.3+ column | The owner (and use case) the split cost now belongs to |
-| x_Owner | ledger extension | Owner after allocation, or &quot;unallocated&quot; |
+| x_Owner | ledger extension | Owner after allocation, or &quot;unallocated&quot; (an untagged resource, or model use the gateway never metered) |
+| x_CostPool | ledger extension | The shared AI pool a row belongs to, from its cost-pool tag: shared-ai-platform or ai-gateway |
+| x_AiSpend | ledger extension | True for ServiceCategory &quot;AI and Machine Learning&quot; and for both AI pools: the one definition of AI spend used for budgets, variance and the memo |
 
 ## Gateway metrics, mapped
 
-The API Management policy emits prompt, completion and total tokens (cached tokens in preview) with four dimensions: team, use-case, environment and deployment. The daily aggregate in `data/token_metrics.csv` becomes FOCUS-aligned estimate rows: one row per token class, `ConsumedUnit` Tokens, `ServiceCategory` AI and Machine Learning, the `x_` columns above, and `ListCost` = tokens times the published list price. These rows never join the bill. They decide each team's share of a billed line and feed the reconciliation.
+The API Management policy emits prompt, completion and total tokens (cached tokens in preview) with five dimensions: team, use-case, environment, deployment (or the body's model field on the v1, Responses and Anthropic paths) and provider. The daily aggregate in `data/token_metrics.csv` becomes FOCUS-aligned estimate rows: one row per token class, `ConsumedUnit` Tokens, `ServiceCategory` AI and Machine Learning, the `x_` columns above, and `ListCost` = tokens times the published list price. These rows never join the bill. They decide each team's share of a billed line and feed the reconciliation.
 
 ## What is not modelled
 
@@ -266,84 +269,84 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
     <section class="section" id="guardrails" aria-labelledby="guard-title" data-illustrative>
       <div class="wrap">
         <div class="section__head"><h2 id="guard-title">Budgets and guardrails</h2>
-          <p><span class="badge badge--illus">Illustrative</span> Budgets are 115% of the two-month baseline with alerts at 80% and 100% of actual and 100% of forecast <span data-src="S3">(the Foundation's 110 to 120% band)</span>. Azure budgets only alert, about once a day <a class="cite" href="#src-S8" data-src="S8">S8</a>, so the gateway carries the near-real-time limit: soft in production, hard outside it. The forecast alert in the memo comes from the ledger's driver-based forecast; Azure's own forecast notification uses Azure's forecast and can fire on a different day, so both are set.</p></div>
+          <p><span class="badge badge--illus">Illustrative</span> Budgets are 115% of the two-month baseline with alerts at 80% and 100% of actual and 100% of forecast <span data-src="S3">(the Foundation's 110 to 120% band)</span> <a class="cite" href="#src-S3" data-src="S3">S3</a>. AI spend means the AI and Machine Learning category plus the two shared AI pools, AI Search and the AI gateway, on every page and in every file. Azure budgets only alert, about once a day <a class="cite" href="#src-S8" data-src="S8">S8</a>, so the gateway carries the near-real-time limit: soft in production, hard outside it. The forecast alert in the memo comes from the ledger's driver-based forecast; Azure's own forecast notification uses Azure's forecast and can fire on a different day, so both are set.</p></div>
         <h3>AI spend by owner against budget</h3>
         <figure class="bb" aria-describedby="owners-cap">
           <figcaption><span class="badge badge--illus">Illustrative</span> Bars are October actuals; the dark tick is the budget, the light tick 80% of it.</figcaption>
           <div class="bb-body" role="img" aria-label="Bullet chart of AI spend by owner against budget; the figures are in the table below." data-region="owners-bars"><!-- pre:owners-bars --><div class="bb-row">
       <span class="bb-name">Customer Operations</span>
       <span class="bb-track">
-        <span class="bb-bar" style="width:89.31%"></span>
-        <span class="bb-tick bb-tick--80" style="left:71.81%"></span>
-        <span class="bb-tick bb-tick--100" style="left:89.77%"></span>
+        <span class="bb-bar" style="width:91.43%"></span>
+        <span class="bb-tick bb-tick--80" style="left:74.07%"></span>
+        <span class="bb-tick bb-tick--100" style="left:92.59%"></span>
       </span>
-      <span class="bb-val num">$5,772 of $5,802<b class="">99%</b></span>
+      <span class="bb-val num">$6,131 of $6,209<b class="">99%</b></span>
     </div><div class="bb-row is-over">
-      <span class="bb-name">Financial Crime<span class="sub">budget at CCU meter scope</span></span>
+      <span class="bb-name">Financial Crime<span class="sub">metered share of the Claude line</span></span>
       <span class="bb-track">
-        <span class="bb-bar" style="width:92.59%"></span>
-        <span class="bb-tick bb-tick--80" style="left:58.93%"></span>
-        <span class="bb-tick bb-tick--100" style="left:73.66%"></span>
+        <span class="bb-bar" style="width:82.72%"></span>
+        <span class="bb-tick bb-tick--80" style="left:55.02%"></span>
+        <span class="bb-tick bb-tick--100" style="left:68.77%"></span>
       </span>
-      <span class="bb-val num">$5,984 of $4,761<b class="warn">126%</b></span>
+      <span class="bb-val num">$5,546 of $4,611<b class="warn">120%</b></span>
     </div><div class="bb-row">
       <span class="bb-name">Fraud Analytics</span>
       <span class="bb-track">
-        <span class="bb-bar" style="width:25.18%"></span>
-        <span class="bb-tick bb-tick--80" style="left:21.76%"></span>
-        <span class="bb-tick bb-tick--100" style="left:27.20%"></span>
+        <span class="bb-bar" style="width:47.43%"></span>
+        <span class="bb-tick bb-tick--80" style="left:41.92%"></span>
+        <span class="bb-tick bb-tick--100" style="left:52.40%"></span>
       </span>
-      <span class="bb-val num">$1,627 of $1,758<b class="">93%</b></span>
+      <span class="bb-val num">$3,180 of $3,514<b class="">91%</b></span>
     </div><div class="bb-row is-over">
       <span class="bb-name">Engineering</span>
       <span class="bb-track">
-        <span class="bb-bar" style="width:87.49%"></span>
-        <span class="bb-tick bb-tick--80" style="left:61.82%"></span>
-        <span class="bb-tick bb-tick--100" style="left:77.27%"></span>
+        <span class="bb-bar" style="width:86.50%"></span>
+        <span class="bb-tick bb-tick--80" style="left:61.74%"></span>
+        <span class="bb-tick bb-tick--100" style="left:77.18%"></span>
       </span>
-      <span class="bb-val num">$5,654 of $4,994<b class="warn">113%</b></span>
+      <span class="bb-val num">$5,800 of $5,175<b class="warn">112%</b></span>
     </div><!-- /pre:owners-bars --></div>
         </figure>
-        <div class="table-wrap" role="region" aria-labelledby="owners-cap" tabindex="0"><table role="table" class="table table--cards" data-region="owners-table" id="owners-table"><!-- pre:owners-table --><caption>AI budgets by owner, October: 115% of the two-month baseline, with the day each alert would be raised. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Owner</th><th role="columnheader" scope="col" class="num">Baseline</th><th role="columnheader" scope="col" class="num">Budget</th><th role="columnheader" scope="col" class="num">Actual</th><th role="columnheader" scope="col" class="num">Of budget</th><th role="columnheader" scope="col">Forecast 100%</th><th role="columnheader" scope="col">Actual 80%</th><th role="columnheader" scope="col">Actual 100%</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Owner">Customer Operations</th><td role="cell" class="num" data-label="Baseline"><div class="v">$5,045</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$5,802</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,772</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">99%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">26 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">27 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">none</div></td></tr><tr role="row" class="is-flag"><th role="rowheader" scope="row" data-label="Owner">Financial Crime</th><td role="cell" class="num" data-label="Baseline"><div class="v">$4,140</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$4,761</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,984</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">126%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">14 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">22 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">27 Oct</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Owner">Fraud Analytics</th><td role="cell" class="num" data-label="Baseline"><div class="v">$1,529</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$1,758</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$1,627</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">93%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">none</div></td><td role="cell" data-label="Actual 80%"><div class="v">28 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">none</div></td></tr><tr role="row" class="is-flag"><th role="rowheader" scope="row" data-label="Owner">Engineering</th><td role="cell" class="num" data-label="Baseline"><div class="v">$4,343</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$4,994</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,654</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">113%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">4 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">23 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">29 Oct</div></td></tr></tbody><!-- /pre:owners-table --></table></div>
-        <p class="note" id="owners-cap">These are the ledger's budgets, on allocated AI spend. Azure sees less: a subscription-scope budget only sees its own subscription, and owner-tagged resources sit in several, so the Azure budgets in <code>budget.bicep</code> are deployed at management-group scope with tag filters (or at the EA department or MCA invoice section, through the Budgets API): one per owner tag, one on the shared-platform pool tag and one on all AI spend. Financial Crime's AI spend is the Claude line, which carries no resource tags (one aggregated CCU line <a class="cite" href="#src-S10">S10</a>), so its budget sits at meter scope in the AI subscription, where an action group can also be called, and the ledger applies the gateway share.</p>
+        <div class="table-wrap" role="region" aria-labelledby="owners-cap" tabindex="0"><table role="table" class="table table--cards" data-region="owners-table" id="owners-table"><!-- pre:owners-table --><caption>AI budgets by owner, October: 115% of the two-month baseline, with the day each alert would be raised. The last row is the whole Claude line, including the unmetered use the ledger holds unallocated. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Owner</th><th role="columnheader" scope="col" class="num">Baseline</th><th role="columnheader" scope="col" class="num">Budget</th><th role="columnheader" scope="col" class="num">Actual</th><th role="columnheader" scope="col" class="num">Of budget</th><th role="columnheader" scope="col">Forecast 100%</th><th role="columnheader" scope="col">Actual 80%</th><th role="columnheader" scope="col">Actual 100%</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Owner">Customer Operations</th><td role="cell" class="num" data-label="Baseline"><div class="v">$5,399</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$6,209</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$6,131</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">99%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">26 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">27 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">none</div></td></tr><tr role="row" class="is-flag"><th role="rowheader" scope="row" data-label="Owner">Financial Crime</th><td role="cell" class="num" data-label="Baseline"><div class="v">$4,010</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$4,611</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,546</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">120%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">15 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">22 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">28 Oct</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Owner">Fraud Analytics</th><td role="cell" class="num" data-label="Baseline"><div class="v">$3,055</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$3,514</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$3,180</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">91%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">none</div></td><td role="cell" data-label="Actual 80%"><div class="v">29 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">none</div></td></tr><tr role="row" class="is-flag"><th role="rowheader" scope="row" data-label="Owner">Engineering</th><td role="cell" class="num" data-label="Baseline"><div class="v">$4,500</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$5,175</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,800</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">112%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">5 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">23 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">29 Oct</div></td></tr></tbody><tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Scope">Claude CCU line, whole meter (Azure budget)</th><td role="cell" class="num" data-label="Baseline"><div class="v">$4,140</div></td><td role="cell" class="num" data-label="Budget"><div class="v">$4,761</div></td><td role="cell" class="num" data-label="Actual"><div class="v">$5,984</div></td><td role="cell" class="num" data-label="Of budget"><div class="v">126%</div></td><td role="cell" data-label="Forecast 100%"><div class="v">14 Oct</div></td><td role="cell" data-label="Actual 80%"><div class="v">22 Oct</div></td><td role="cell" data-label="Actual 100%"><div class="v">27 Oct</div></td></tr></tfoot><!-- /pre:owners-table --></table></div>
+        <p class="note" id="owners-cap">These are the ledger's budgets, on allocated AI spend. Azure sees less: a subscription-scope budget only sees its own subscription, and owner-tagged resources sit in several, so the Azure budgets in <code>budget.bicep</code> are deployed at management-group scope with tag filters (or at the EA department or MCA invoice section, through the Budgets API): one per owner tag, one on the AI pool tags and one on the AI services by name. Azure budget filters combine conditions with "and" only, so AI spend as defined here (services plus pools) is covered by those two together, and the all-AI budget in the memo is the ledger's. Financial Crime's AI spend is the Claude line, which carries no resource tags (one aggregated CCU line <a class="cite" href="#src-S10">S10</a>), so its budget sits at meter scope in the AI subscription, where an action group can also be called. The ledger charges Financial Crime only the metered share and holds the unmetered remainder, so the meter-scope budget sees more than the owner budget does.</p>
 
         <h3>Daily burn and forecast, all AI spend</h3>
         <figure class="burn-fig">
           <div class="burn-wrap" data-region="burn-svg"><!-- pre:burn-svg --><svg class="burn burn--wide" viewBox="0 0 760 330" role="img" aria-labelledby="burn-title-wide burn-desc-wide" style="font-size:13px">
     <title id="burn-title-wide">Daily burn against budget, October. Illustrative.</title>
     <desc id="burn-desc-wide">Cumulative AI spend, the month-end forecast made each day from drivers, a trailing-mean cross-check, and the budget with its 80% line. The table after the chart has every value.</desc>
-    <g class="burn__grid"><line x1="52" x2="618" y1="300.0" y2="300.0"/><text x="46" y="304.6" text-anchor="end">$0</text></g><g class="burn__grid"><line x1="52" x2="618" y1="246.0" y2="246.0"/><text x="46" y="250.6" text-anchor="end">$5k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="192.0" y2="192.0"/><text x="46" y="196.6" text-anchor="end">$10k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="138.0" y2="138.0"/><text x="46" y="142.6" text-anchor="end">$15k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="84.0" y2="84.0"/><text x="46" y="88.5" text-anchor="end">$20k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="30.0" y2="30.0"/><text x="46" y="34.6" text-anchor="end">$25k</text></g>
+    <g class="burn__grid"><line x1="52" x2="618" y1="300.0" y2="300.0"/><text x="46" y="304.6" text-anchor="end">$0</text></g><g class="burn__grid"><line x1="52" x2="618" y1="255.0" y2="255.0"/><text x="46" y="259.6" text-anchor="end">$5k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="210.0" y2="210.0"/><text x="46" y="214.6" text-anchor="end">$10k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="165.0" y2="165.0"/><text x="46" y="169.6" text-anchor="end">$15k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="120.0" y2="120.0"/><text x="46" y="124.6" text-anchor="end">$20k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="75.0" y2="75.0"/><text x="46" y="79.6" text-anchor="end">$25k</text></g><g class="burn__grid"><line x1="52" x2="618" y1="30.0" y2="30.0"/><text x="46" y="34.6" text-anchor="end">$30k</text></g>
     <text class="burn__xt" x="52.0" y="318.2" text-anchor="middle">1 Oct</text><text class="burn__xt" x="221.8" y="318.2" text-anchor="middle">10 Oct</text><text class="burn__xt" x="410.5" y="318.2" text-anchor="middle">20 Oct</text><text class="burn__xt" x="618.0" y="318.2" text-anchor="middle">31 Oct</text>
-    <line class="burn__80" x1="52" x2="618" y1="150.4" y2="150.4"/>
-    <line class="burn__budget" x1="52" x2="618" y1="113.0" y2="113.0"/>
-    <path class="burn__tm" d="M52.0,82.3 L70.9,84.5 L89.7,118.6 L108.6,135.9 L127.5,125.2 L146.3,118.0 L165.2,113.3 L184.1,109.2 L202.9,106.6 L221.8,114.5 L240.7,121.0 L259.5,115.3 L278.4,109.7 L297.3,103.9 L316.1,99.0 L335.0,93.6 L353.9,99.0 L372.7,103.5 L391.6,100.2 L410.5,97.2 L429.3,95.0 L448.2,92.5 L467.1,91.0 L485.9,94.8 L504.8,98.3 L523.7,96.6 L542.5,95.1 L561.4,94.0 L580.3,92.6 L599.1,91.5 L618.0,94.4"/>
-    <path class="burn__fc" d="M52.0,128.7 L70.9,126.3 L89.7,123.8 L108.6,121.6 L127.5,119.3 L146.3,115.5 L165.2,112.8 L184.1,113.8 L202.9,113.7 L221.8,112.2 L240.7,110.8 L259.5,108.9 L278.4,106.9 L297.3,103.7 L316.1,101.1 L335.0,98.5 L353.9,97.3 L372.7,95.7 L391.6,94.4 L410.5,92.9 L429.3,92.9 L448.2,92.6 L467.1,92.7 L485.9,91.4 L504.8,90.2 L523.7,90.9 L542.5,92.6 L561.4,93.9 L580.3,94.6 L599.1,95.7 L618.0,94.4"/>
-    <path class="burn__act" d="M52.0,293.0 L70.9,286.1 L89.7,282.4 L108.6,278.8 L127.5,271.8 L146.3,264.8 L165.2,257.9 L184.1,250.8 L202.9,243.9 L221.8,240.2 L240.7,236.5 L259.5,228.5 L278.4,220.2 L297.3,211.4 L316.1,202.8 L335.0,193.5 L353.9,189.8 L372.7,185.9 L391.6,177.5 L410.5,169.2 L429.3,161.2 L448.2,152.7 L467.1,144.9 L485.9,141.2 L504.8,137.4 L523.7,129.4 L542.5,121.6 L561.4,113.9 L580.3,106.0 L599.1,98.3 L618.0,94.4"/>
-    <g class="burn__alert"><line x1="165.2" x2="165.2" y1="46.9" y2="105.8"/><circle cx="165.2" cy="112.8" r="5.5"/><text x="165.2" y="41.7" text-anchor="middle">forecast alert</text></g><g class="burn__alert"><line x1="467.1" x2="467.1" y1="46.9" y2="137.9"/><circle cx="467.1" cy="144.9" r="5.5"/><text x="467.1" y="41.7" text-anchor="middle">80% actual</text></g><g class="burn__alert"><line x1="580.3" x2="580.3" y1="46.9" y2="99.0"/><circle cx="580.3" cy="106.0" r="5.5"/><text x="578.0" y="41.7" text-anchor="middle">100% actual</text></g>
-    <text class="burn__lab burn__lab--act" x="626" y="98.9">actual $19,039</text><text class="burn__lab burn__lab--fc" x="626" y="115.2">forecast</text><text class="burn__lab burn__lab--budget" x="626" y="131.4">budget $17,315</text><text class="burn__lab burn__lab--80" x="626" y="155.0">80% $13,852</text>
+    <line class="burn__80" x1="52" x2="618" y1="157.7" y2="157.7"/>
+    <line class="burn__budget" x1="52" x2="618" y1="122.1" y2="122.1"/>
+    <path class="burn__tm" d="M52.0,100.6 L70.9,101.4 L89.7,129.4 L108.6,143.9 L127.5,134.9 L146.3,128.9 L165.2,125.0 L184.1,121.5 L202.9,119.4 L221.8,126.0 L240.7,131.4 L259.5,126.6 L278.4,121.8 L297.3,117.0 L316.1,113.0 L335.0,108.5 L353.9,112.8 L372.7,116.6 L391.6,113.8 L410.5,111.3 L429.3,109.5 L448.2,107.4 L467.1,106.2 L485.9,109.4 L504.8,112.2 L523.7,110.8 L542.5,109.6 L561.4,108.7 L580.3,107.5 L599.1,106.7 L618.0,109.1"/>
+    <path class="burn__fc" d="M52.0,137.9 L70.9,135.5 L89.7,133.4 L108.6,131.6 L127.5,129.9 L146.3,126.5 L165.2,124.4 L184.1,125.3 L202.9,125.6 L221.8,124.4 L240.7,123.1 L259.5,121.5 L278.4,119.6 L297.3,116.8 L316.1,114.2 L335.0,111.9 L353.9,110.7 L372.7,109.3 L391.6,108.3 L410.5,107.3 L429.3,107.4 L448.2,107.4 L467.1,107.5 L485.9,106.5 L504.8,105.5 L523.7,106.2 L542.5,107.6 L561.4,108.7 L580.3,109.3 L599.1,110.1 L618.0,109.1"/>
+    <path class="burn__act" d="M52.0,293.6 L70.9,287.2 L89.7,283.5 L108.6,279.9 L127.5,273.4 L146.3,266.9 L165.2,260.5 L184.1,253.9 L202.9,247.6 L221.8,243.9 L240.7,240.2 L259.5,232.9 L278.4,225.3 L297.3,217.4 L316.1,209.5 L335.0,201.2 L353.9,197.4 L372.7,193.5 L391.6,185.9 L410.5,178.3 L429.3,170.9 L448.2,163.3 L467.1,156.2 L485.9,152.4 L504.8,148.6 L523.7,141.3 L542.5,134.2 L561.4,127.2 L580.3,120.0 L599.1,112.9 L618.0,109.1"/>
+    <g class="burn__alert"><line x1="259.5" x2="259.5" y1="46.9" y2="114.5"/><circle cx="259.5" cy="121.5" r="5.5"/><text x="259.5" y="41.7" text-anchor="middle">forecast alert</text></g><g class="burn__alert"><line x1="467.1" x2="467.1" y1="46.9" y2="149.2"/><circle cx="467.1" cy="156.2" r="5.5"/><text x="467.1" y="41.7" text-anchor="middle">80% actual</text></g><g class="burn__alert"><line x1="580.3" x2="580.3" y1="46.9" y2="113.0"/><circle cx="580.3" cy="120.0" r="5.5"/><text x="578.0" y="41.7" text-anchor="middle">100% actual</text></g>
+    <text class="burn__lab burn__lab--act" x="626" y="113.6">actual $21,215</text><text class="burn__lab burn__lab--fc" x="626" y="129.9">forecast</text><text class="burn__lab burn__lab--budget" x="626" y="146.1">budget $19,770</text><text class="burn__lab burn__lab--80" x="626" y="162.4">80% $15,816</text>
   </svg><svg class="burn burn--narrow" viewBox="0 0 380 330" role="img" aria-labelledby="burn-title-narrow burn-desc-narrow" style="font-size:13px">
     <title id="burn-title-narrow">Daily burn against budget, October. Illustrative.</title>
     <desc id="burn-desc-narrow">Cumulative AI spend, the month-end forecast made each day from drivers, a trailing-mean cross-check, and the budget with its 80% line. The table after the chart has every value.</desc>
-    <g class="burn__grid"><line x1="40" x2="276" y1="300.0" y2="300.0"/><text x="34" y="304.6" text-anchor="end">$0</text></g><g class="burn__grid"><line x1="40" x2="276" y1="246.0" y2="246.0"/><text x="34" y="250.6" text-anchor="end">$5k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="192.0" y2="192.0"/><text x="34" y="196.6" text-anchor="end">$10k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="138.0" y2="138.0"/><text x="34" y="142.6" text-anchor="end">$15k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="84.0" y2="84.0"/><text x="34" y="88.5" text-anchor="end">$20k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="30.0" y2="30.0"/><text x="34" y="34.6" text-anchor="end">$25k</text></g>
+    <g class="burn__grid"><line x1="40" x2="276" y1="300.0" y2="300.0"/><text x="34" y="304.6" text-anchor="end">$0</text></g><g class="burn__grid"><line x1="40" x2="276" y1="255.0" y2="255.0"/><text x="34" y="259.6" text-anchor="end">$5k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="210.0" y2="210.0"/><text x="34" y="214.6" text-anchor="end">$10k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="165.0" y2="165.0"/><text x="34" y="169.6" text-anchor="end">$15k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="120.0" y2="120.0"/><text x="34" y="124.6" text-anchor="end">$20k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="75.0" y2="75.0"/><text x="34" y="79.6" text-anchor="end">$25k</text></g><g class="burn__grid"><line x1="40" x2="276" y1="30.0" y2="30.0"/><text x="34" y="34.6" text-anchor="end">$30k</text></g>
     <text class="burn__xt" x="40.0" y="318.2" text-anchor="middle">1 Oct</text><text class="burn__xt" x="110.8" y="318.2" text-anchor="middle">10 Oct</text><text class="burn__xt" x="189.5" y="318.2" text-anchor="middle">20 Oct</text><text class="burn__xt" x="276.0" y="318.2" text-anchor="middle">31 Oct</text>
-    <line class="burn__80" x1="40" x2="276" y1="150.4" y2="150.4"/>
-    <line class="burn__budget" x1="40" x2="276" y1="113.0" y2="113.0"/>
-    <path class="burn__tm" d="M40.0,82.3 L47.9,84.5 L55.7,118.6 L63.6,135.9 L71.5,125.2 L79.3,118.0 L87.2,113.3 L95.1,109.2 L102.9,106.6 L110.8,114.5 L118.7,121.0 L126.5,115.3 L134.4,109.7 L142.3,103.9 L150.1,99.0 L158.0,93.6 L165.9,99.0 L173.7,103.5 L181.6,100.2 L189.5,97.2 L197.3,95.0 L205.2,92.5 L213.1,91.0 L220.9,94.8 L228.8,98.3 L236.7,96.6 L244.5,95.1 L252.4,94.0 L260.3,92.6 L268.1,91.5 L276.0,94.4"/>
-    <path class="burn__fc" d="M40.0,128.7 L47.9,126.3 L55.7,123.8 L63.6,121.6 L71.5,119.3 L79.3,115.5 L87.2,112.8 L95.1,113.8 L102.9,113.7 L110.8,112.2 L118.7,110.8 L126.5,108.9 L134.4,106.9 L142.3,103.7 L150.1,101.1 L158.0,98.5 L165.9,97.3 L173.7,95.7 L181.6,94.4 L189.5,92.9 L197.3,92.9 L205.2,92.6 L213.1,92.7 L220.9,91.4 L228.8,90.2 L236.7,90.9 L244.5,92.6 L252.4,93.9 L260.3,94.6 L268.1,95.7 L276.0,94.4"/>
-    <path class="burn__act" d="M40.0,293.0 L47.9,286.1 L55.7,282.4 L63.6,278.8 L71.5,271.8 L79.3,264.8 L87.2,257.9 L95.1,250.8 L102.9,243.9 L110.8,240.2 L118.7,236.5 L126.5,228.5 L134.4,220.2 L142.3,211.4 L150.1,202.8 L158.0,193.5 L165.9,189.8 L173.7,185.9 L181.6,177.5 L189.5,169.2 L197.3,161.2 L205.2,152.7 L213.1,144.9 L220.9,141.2 L228.8,137.4 L236.7,129.4 L244.5,121.6 L252.4,113.9 L260.3,106.0 L268.1,98.3 L276.0,94.4"/>
-    <g class="burn__alert"><line x1="87.2" x2="87.2" y1="46.9" y2="105.8"/><circle cx="87.2" cy="112.8" r="5.5"/><text x="87.2" y="41.7" text-anchor="middle">forecast</text></g><g class="burn__alert"><line x1="213.1" x2="213.1" y1="46.9" y2="137.9"/><circle cx="213.1" cy="144.9" r="5.5"/><text x="213.1" y="41.7" text-anchor="middle">80%</text></g><g class="burn__alert"><line x1="260.3" x2="260.3" y1="46.9" y2="99.0"/><circle cx="260.3" cy="106.0" r="5.5"/><text x="260.3" y="41.7" text-anchor="middle">100%</text></g>
-    <text class="burn__lab burn__lab--act" x="284" y="98.9">actual $19,039</text><text class="burn__lab burn__lab--fc" x="284" y="115.2">forecast</text><text class="burn__lab burn__lab--budget" x="284" y="131.4">budget $17,315</text><text class="burn__lab burn__lab--80" x="284" y="155.0">80% $13,852</text>
+    <line class="burn__80" x1="40" x2="276" y1="157.7" y2="157.7"/>
+    <line class="burn__budget" x1="40" x2="276" y1="122.1" y2="122.1"/>
+    <path class="burn__tm" d="M40.0,100.6 L47.9,101.4 L55.7,129.4 L63.6,143.9 L71.5,134.9 L79.3,128.9 L87.2,125.0 L95.1,121.5 L102.9,119.4 L110.8,126.0 L118.7,131.4 L126.5,126.6 L134.4,121.8 L142.3,117.0 L150.1,113.0 L158.0,108.5 L165.9,112.8 L173.7,116.6 L181.6,113.8 L189.5,111.3 L197.3,109.5 L205.2,107.4 L213.1,106.2 L220.9,109.4 L228.8,112.2 L236.7,110.8 L244.5,109.6 L252.4,108.7 L260.3,107.5 L268.1,106.7 L276.0,109.1"/>
+    <path class="burn__fc" d="M40.0,137.9 L47.9,135.5 L55.7,133.4 L63.6,131.6 L71.5,129.9 L79.3,126.5 L87.2,124.4 L95.1,125.3 L102.9,125.6 L110.8,124.4 L118.7,123.1 L126.5,121.5 L134.4,119.6 L142.3,116.8 L150.1,114.2 L158.0,111.9 L165.9,110.7 L173.7,109.3 L181.6,108.3 L189.5,107.3 L197.3,107.4 L205.2,107.4 L213.1,107.5 L220.9,106.5 L228.8,105.5 L236.7,106.2 L244.5,107.6 L252.4,108.7 L260.3,109.3 L268.1,110.1 L276.0,109.1"/>
+    <path class="burn__act" d="M40.0,293.6 L47.9,287.2 L55.7,283.5 L63.6,279.9 L71.5,273.4 L79.3,266.9 L87.2,260.5 L95.1,253.9 L102.9,247.6 L110.8,243.9 L118.7,240.2 L126.5,232.9 L134.4,225.3 L142.3,217.4 L150.1,209.5 L158.0,201.2 L165.9,197.4 L173.7,193.5 L181.6,185.9 L189.5,178.3 L197.3,170.9 L205.2,163.3 L213.1,156.2 L220.9,152.4 L228.8,148.6 L236.7,141.3 L244.5,134.2 L252.4,127.2 L260.3,120.0 L268.1,112.9 L276.0,109.1"/>
+    <g class="burn__alert"><line x1="126.5" x2="126.5" y1="46.9" y2="114.5"/><circle cx="126.5" cy="121.5" r="5.5"/><text x="126.5" y="41.7" text-anchor="middle">forecast</text></g><g class="burn__alert"><line x1="213.1" x2="213.1" y1="46.9" y2="149.2"/><circle cx="213.1" cy="156.2" r="5.5"/><text x="213.1" y="41.7" text-anchor="middle">80%</text></g><g class="burn__alert"><line x1="260.3" x2="260.3" y1="46.9" y2="113.0"/><circle cx="260.3" cy="120.0" r="5.5"/><text x="260.3" y="41.7" text-anchor="middle">100%</text></g>
+    <text class="burn__lab burn__lab--act" x="284" y="113.6">actual $21,215</text><text class="burn__lab burn__lab--fc" x="284" y="129.9">forecast</text><text class="burn__lab burn__lab--budget" x="284" y="146.1">budget $19,770</text><text class="burn__lab burn__lab--80" x="284" y="162.4">80% $15,816</text>
   </svg><p class="burn__key" aria-hidden="true"><span class="k k--act">actual to date</span><span class="k k--fc">month-end forecast, as it stood each day</span><span class="k k--tm">trailing-mean cross-check</span><span class="k k--al">alert raised next day</span></p><!-- /pre:burn-svg --></div>
           <figcaption><span class="badge badge--illus">Illustrative</span> The forecast line is the month-end forecast as it stood each day: expected runs times trailing cost per run, plus a run rate for cost no use case drives. The dotted line is the trailing-mean cross-check.</figcaption>
         </figure>
         <details class="code"><summary>Daily values behind the chart</summary>
-          <div class="table-wrap" role="region" aria-label="Daily burn values" tabindex="0"><table role="table" class="table table--cards" data-region="burn-table"><!-- pre:burn-table --><caption>Daily values behind the chart. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Day</th><th role="columnheader" scope="col" class="num">Actual to date</th><th role="columnheader" scope="col" class="num">Driver forecast</th><th role="columnheader" scope="col" class="num">Trailing-mean check</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Day">1 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$650</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$15,857</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,154</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">2 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$1,287</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$16,084</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,952</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">3 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$1,625</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$16,311</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$16,796</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">4 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$1,960</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$16,522</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$15,191</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">5 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$2,611</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$16,735</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$16,187</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">6 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$3,261</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,082</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$16,849</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">7 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$3,903</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,331</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,283</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">8 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$4,558</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,240</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,663</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">9 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$5,199</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,254</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,906</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">10 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$5,541</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,391</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,177</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">11 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$5,881</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,521</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$16,574</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">12 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$6,622</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,692</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,106</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">13 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$7,389</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$17,879</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,620</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">14 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$8,201</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,172</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,159</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">15 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$9,004</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,420</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,608</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">16 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$9,863</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,660</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,109</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">17 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$10,206</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,769</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,610</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">18 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$10,562</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,918</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,191</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">19 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$11,341</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,036</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,504</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">20 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$12,113</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,171</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,775</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">21 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$12,856</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,175</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,978</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">22 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$13,635</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,201</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,213</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">23 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$14,358</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,196</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,352</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">24 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$14,707</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,314</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,996</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">25 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$15,060</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,424</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,674</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">26 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$15,797</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,358</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,835</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">27 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$16,520</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,208</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,968</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">28 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$17,227</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,082</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,073</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">29 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$17,964</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,014</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,203</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">30 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$18,680</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,921</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,302</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">31 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$19,039</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,039</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,039</div></td></tr></tbody><!-- /pre:burn-table --></table></div>
+          <div class="table-wrap" role="region" aria-label="Daily burn values" tabindex="0"><table role="table" class="table table--cards" data-region="burn-table"><!-- pre:burn-table --><caption>Daily values behind the chart. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Day</th><th role="columnheader" scope="col" class="num">Actual to date</th><th role="columnheader" scope="col" class="num">Driver forecast</th><th role="columnheader" scope="col" class="num">Trailing-mean check</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Day">1 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$715</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,009</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$22,153</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">2 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$1,423</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,281</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$22,064</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">3 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$1,834</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,513</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,953</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">4 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$2,237</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,708</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$17,339</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">5 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$2,960</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$18,899</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,350</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">6 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$3,680</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,279</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,014</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">7 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$4,391</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,514</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,445</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">8 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$5,118</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,407</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,831</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">9 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$5,826</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,378</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,067</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">10 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$6,238</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,517</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,338</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">11 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$6,645</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,653</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$18,728</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">12 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$7,458</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$19,832</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,267</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">13 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$8,303</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$20,050</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$19,799</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">14 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$9,180</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$20,358</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,328</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">15 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$10,055</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$20,641</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,780</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">16 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$10,982</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$20,897</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,278</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">17 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$11,403</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,029</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,794</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">18 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$11,832</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,187</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,377</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">19 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$12,680</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,298</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,689</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">20 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$13,527</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,413</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,967</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">21 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$14,340</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,395</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,169</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">22 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$15,187</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,395</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,399</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">23 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$15,979</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,384</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,537</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">24 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$16,399</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,495</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,182</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">25 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$16,824</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,606</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$20,862</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">26 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$17,630</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,531</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,021</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">27 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$18,423</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,382</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,152</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">28 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$19,198</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,259</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,255</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">29 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$20,004</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,194</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,384</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">30 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$20,787</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,096</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,480</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Day">31 Oct</th><td role="cell" class="num" data-label="Actual to date"><div class="v">$21,215</div></td><td role="cell" class="num" data-label="Driver forecast"><div class="v">$21,215</div></td><td role="cell" class="num" data-label="Trailing-mean check"><div class="v">$21,215</div></td></tr></tbody><!-- /pre:burn-table --></table></div>
         </details>
 
-        <h3>Why spend moved: volume, price and mix</h3>
-        <div class="table-wrap" role="region" aria-label="Variance by use case" tabindex="0"><table role="table" class="table table--cards" data-region="variance-table"><!-- pre:variance-table --><caption>Avoidable AI cost by use case (model tokens and embeddings), September to October, and the two buckets runs do not drive. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Use case</th><th role="columnheader" scope="col" class="num">September</th><th role="columnheader" scope="col" class="num">Volume</th><th role="columnheader" scope="col" class="num">Price</th><th role="columnheader" scope="col" class="num">Mix</th><th role="columnheader" scope="col" class="num">October</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Support assistant</th><td role="cell" class="num" data-label="September"><div class="v">$2,910</div></td><td role="cell" class="num" data-label="Volume"><div class="v">+$117</div></td><td role="cell" class="num" data-label="Price"><div class="v">+$286</div></td><td role="cell" class="num" data-label="Mix"><div class="v">+$127</div></td><td role="cell" class="num" data-label="October"><div class="v">$3,441</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">KYC document review</th><td role="cell" class="num" data-label="September"><div class="v">$4,160</div></td><td role="cell" class="num" data-label="Volume"><div class="v">+$1,581</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">+$243</div></td><td role="cell" class="num" data-label="October"><div class="v">$5,984</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Fraud alert explanations</th><td role="cell" class="num" data-label="September"><div class="v">$1,551</div></td><td role="cell" class="num" data-label="Volume"><div class="v">+$83</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">−$7</div></td><td role="cell" class="num" data-label="October"><div class="v">$1,627</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Internal knowledge assistant</th><td role="cell" class="num" data-label="September"><div class="v">$582</div></td><td role="cell" class="num" data-label="Volume"><div class="v">−$15</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">−$11</div></td><td role="cell" class="num" data-label="October"><div class="v">$556</div></td></tr></tbody>
-  <tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Bucket">Fixed shared platform</th><td role="cell" class="num" data-label="September"><div class="v">$5,789</div></td><td role="cell" colspan="3" data-label="Change"><div class="v">+$193: <code>srch-shared-uks</code>, a fixed daily charge split by retrieval calls</div></td><td role="cell" class="num" data-label="October"><div class="v">$5,982</div></td></tr>
-  <tr role="row"><th role="rowheader" scope="row" data-label="Bucket">Unattributed AI</th><td role="cell" class="num" data-label="September"><div class="v">$91</div></td><td role="cell" colspan="3" data-label="Change"><div class="v">+$1,356: <code>gpt54-sandbox</code>, billed AI with no use case</div></td><td role="cell" class="num" data-label="October"><div class="v">$1,447</div></td></tr></tfoot><!-- /pre:variance-table --></table></div>
+        <h3>Why spend moved: calendar, volume, price and mix</h3>
+        <div class="table-wrap" role="region" aria-label="Variance by use case" tabindex="0"><table role="table" class="table table--cards" data-region="variance-table"><!-- pre:variance-table --><caption>Avoidable AI cost by use case (model tokens and embeddings), September to October, and the two buckets runs do not drive. Calendar is one more day (31 against 30) at September's daily level; volume is runs per day. Illustrative.</caption><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Use case</th><th role="columnheader" scope="col" class="num">September</th><th role="columnheader" scope="col" class="num">Calendar</th><th role="columnheader" scope="col" class="num">Volume per day</th><th role="columnheader" scope="col" class="num">Price</th><th role="columnheader" scope="col" class="num">Mix</th><th role="columnheader" scope="col" class="num">October</th></tr></thead><tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Support assistant</th><td role="cell" class="num" data-label="September"><div class="v">$2,885</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">+$96</div></td><td role="cell" class="num" data-label="Volume per day"><div class="v">+$20</div></td><td role="cell" class="num" data-label="Price"><div class="v">+$286</div></td><td role="cell" class="num" data-label="Mix"><div class="v">+$127</div></td><td role="cell" class="num" data-label="October"><div class="v">$3,415</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">KYC document review</th><td role="cell" class="num" data-label="September"><div class="v">$3,958</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">+$132</div></td><td role="cell" class="num" data-label="Volume per day"><div class="v">+$1,372</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">−$1</div></td><td role="cell" class="num" data-label="October"><div class="v">$5,461</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Fraud alert explanations</th><td role="cell" class="num" data-label="September"><div class="v">$1,551</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">+$52</div></td><td role="cell" class="num" data-label="Volume per day"><div class="v">+$31</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">−$7</div></td><td role="cell" class="num" data-label="October"><div class="v">$1,627</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Use case">Internal knowledge assistant</th><td role="cell" class="num" data-label="September"><div class="v">$573</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">+$19</div></td><td role="cell" class="num" data-label="Volume per day"><div class="v">−$34</div></td><td role="cell" class="num" data-label="Price"><div class="v">$0</div></td><td role="cell" class="num" data-label="Mix"><div class="v">−$10</div></td><td role="cell" class="num" data-label="October"><div class="v">$548</div></td></tr></tbody>
+  <tfoot role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Bucket">Fixed shared platform</th><td role="cell" class="num" data-label="September"><div class="v">$7,888</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">+$263</div></td><td role="cell" colspan="3" data-label="Change"><div class="v">+$8 beyond the extra day: <code>srch-shared-uks</code>, <code>apim-ai-gateway</code>, <code>appi-shared-uks</code>, fixed daily charges split by retrieval calls or gateway requests</div></td><td role="cell" class="num" data-label="October"><div class="v">$8,159</div></td></tr>
+  <tr role="row"><th role="rowheader" scope="row" data-label="Bucket">Unattributed AI</th><td role="cell" class="num" data-label="September"><div class="v">$328</div></td><td role="cell" class="num" data-label="Calendar"><div class="v">$0</div></td><td role="cell" colspan="3" data-label="Change"><div class="v">+$1,678: <code>gpt54-sandbox</code>, <code>foundry-prod-uks</code>, <code>gpt54mini-shared</code>, billed AI with no use case (the sandbox and unmetered use)</div></td><td role="cell" class="num" data-label="October"><div class="v">$2,006</div></td></tr></tfoot><!-- /pre:variance-table --></table></div>
         <p class="note">Price variance comes only from a published list price changing on a deployment: in this data, the support hard-case deployment moving from <span data-src="S11">GPT-5.2 to GPT-5.4</span> on 8 October. Without such a row, price variance is zero and the split is volume and mix.</p>
 
         <h3>Gateway limits</h3>
@@ -351,6 +354,8 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
           <li><strong>Production, soft.</strong> No monthly quota, because a quota answers 403 and would stop customer work. The emitted metric drives an hourly alert at 80% and 100% of each use case's allowance; a high tokens-per-minute ceiling (429) still stops runaway loops <a class="cite" href="#src-S9" data-src="S9">S9</a>.</li>
           <li><strong>Outside production, hard.</strong> Tokens per minute and a monthly quota per subscription and model.</li>
           <li><strong>Keyed by subscription and model.</strong> Each use case has its own subscription, and its name carries team, use case and environment, so a caller cannot charge another team.</li>
+          <li><strong>No guessing.</strong> A call with no deployment in the path and no model in the body is refused, so nothing is metered under the wrong model or provider.</li>
+          <li><strong>Bypass closed.</strong> Two Azure Policy built-ins at management-group scope: key access disabled on the AI resources, and their network access restricted to the gateway's network, so the only way in is Microsoft Entra ID through API Management. Audit first, then Deny.</li>
         </ul>
         <details class="code"><summary><code>azure/apim-ai-gateway.policy.xml</code>: the gateway policy, commented line by line (not deployed)</summary><pre><code>&lt;!--
   AI gateway policy for the illustrative organisation (a FinTech on Azure, made up for this pack).
@@ -372,8 +377,13 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
        the monthly allowance is watched by an alert on the emitted metric at 80% and 100%
        (kql/soft-quota-alert.kql). A high tokens-per-minute ceiling (429) still stops runaway loops.
     3. Outside production: hard limits. Tokens per minute (429) and a monthly token quota (403).
-    4. Emits token counts to Application Insights with those four dimensions, which the ledger joins
-       to the bill to split shared lines between teams.
+    4. Emits token counts to Application Insights with five dimensions (team, use case, environment,
+       deployment or model, provider), which the ledger joins to the bill to split shared lines.
+    5. Never guesses the model: a call with no deployment in the URL and no model in the body is
+       refused (400), so nothing is metered under the wrong model or provider.
+  Closing the bypass needs the other half too: key access disabled on the AI resources and their
+  network restricted to this gateway (see policy-close-bypass.bicep). The gateway then calls Azure
+  OpenAI with its managed identity, below.
 --&gt;
 &lt;policies&gt;
   &lt;!-- inbound: runs before the request is forwarded to the model backend --&gt;
@@ -386,8 +396,41 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
     &lt;set-variable name=&quot;useCase&quot; value=&quot;@{ var p = (context.Subscription?.Name ?? &amp;quot;&amp;quot;).Split('.'); return p.Length == 3 ? p[1] : &amp;quot;unknown&amp;quot;; }&quot; /&gt;
     &lt;!-- environment: third part; anything other than prod is treated as non-production, so the hard limits apply --&gt;
     &lt;set-variable name=&quot;environment&quot; value=&quot;@{ var p = (context.Subscription?.Name ?? &amp;quot;&amp;quot;).Split('.'); return p.Length == 3 &amp;amp;&amp;amp; p[2] == &amp;quot;prod&amp;quot; ? &amp;quot;prod&amp;quot; : &amp;quot;nonprod&amp;quot;; }&quot; /&gt;
-    &lt;!-- deployment: the Azure OpenAI deployment from the URL template /openai/deployments/{deployment-id}/...; the Claude API uses a single named backend --&gt;
-    &lt;set-variable name=&quot;deployment&quot; value=&quot;@(context.Request.MatchedParameters.ContainsKey(&amp;quot;deployment-id&amp;quot;) ? context.Request.MatchedParameters[&amp;quot;deployment-id&amp;quot;] : &amp;quot;claude-sonnet-55-kyc&amp;quot;)&quot; /&gt;
+    &lt;!-- provider: which API this call came in on. The Azure OpenAI API is published under the path openai and
+         the Anthropic Messages API (Claude in Foundry) under anthropic; adjust the prefix to your API paths. --&gt;
+    &lt;set-variable name=&quot;provider&quot; value=&quot;@(context.Api.Path.StartsWith(&amp;quot;anthropic&amp;quot;) ? &amp;quot;anthropic&amp;quot; : &amp;quot;azure-openai&amp;quot;)&quot; /&gt;
+    &lt;!-- deployment: from the URL template /openai/deployments/{deployment-id}/... when there is one; otherwise
+         the model field in the JSON body, which the Azure OpenAI v1 paths (/openai/v1/chat/completions,
+         /openai/v1/responses) and the Anthropic Messages API both carry. The body is read with
+         preserveContent so the backend still receives it. Nothing found: unknown, and refused below. --&gt;
+    &lt;set-variable name=&quot;deployment&quot; value=&quot;@{
+      if (context.Request.MatchedParameters.ContainsKey(&amp;quot;deployment-id&amp;quot;)) { return context.Request.MatchedParameters[&amp;quot;deployment-id&amp;quot;]; }
+      var body = context.Request.Body?.As&amp;lt;JObject&amp;gt;(preserveContent: true);
+      var model = body?[&amp;quot;model&amp;quot;]?.ToString();
+      return string.IsNullOrEmpty(model) ? &amp;quot;unknown&amp;quot; : model;
+    }&quot; /&gt;
+    &lt;!-- choose: refuse calls the gateway cannot attribute to a model, instead of labelling them as one --&gt;
+    &lt;choose&gt;
+      &lt;!-- when: no deployment and no model --&gt;
+      &lt;when condition=&quot;@((string)context.Variables[&amp;quot;deployment&amp;quot;] == &amp;quot;unknown&amp;quot;)&quot;&gt;
+        &lt;!-- return-response: 400 with a short reason; nothing reaches a model and nothing is metered --&gt;
+        &lt;return-response&gt;
+          &lt;!-- set-status: client error --&gt;
+          &lt;set-status code=&quot;400&quot; reason=&quot;Bad Request&quot; /&gt;
+          &lt;!-- set-body: the reason, as JSON --&gt;
+          &lt;set-body&gt;{&quot;error&quot;: &quot;A deployment in the path or a model in the body is required so the call can be metered.&quot;}&lt;/set-body&gt;
+        &lt;/return-response&gt;
+      &lt;/when&gt;
+    &lt;/choose&gt;
+    &lt;!-- choose: Azure OpenAI calls authenticate with the gateway's managed identity, so the AI resources can
+         have key access disabled; the Claude backend's credentials are set on its backend entity --&gt;
+    &lt;choose&gt;
+      &lt;!-- when: the Azure OpenAI API --&gt;
+      &lt;when condition=&quot;@((string)context.Variables[&amp;quot;provider&amp;quot;] == &amp;quot;azure-openai&amp;quot;)&quot;&gt;
+        &lt;!-- authentication-managed-identity: a token for Azure AI services, sent as the Authorization header --&gt;
+        &lt;authentication-managed-identity resource=&quot;https://cognitiveservices.azure.com&quot; /&gt;
+      &lt;/when&gt;
+    &lt;/choose&gt;
     &lt;!-- choose: pick the limit by environment --&gt;
     &lt;choose&gt;
       &lt;!-- when: production traffic --&gt;
@@ -409,11 +452,11 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
     &lt;/choose&gt;
     &lt;!-- llm-emit-token-metric: sends prompt, completion and total token counts (cached tokens in preview) to
          Application Insights in the ai-spend-ledger namespace. Needs Application Insights integration with
-         custom metrics enabled. Four custom dimensions (the limit is five per policy). Subscription ID is not
-         added because the three labels already identify the subscription, and fewer dimensions keep the
-         product of unique values well under the 1,000 active time series API Management tracks per namespace
-         (beyond that, data is silently discarded). For OpenAI streaming calls set include_usage to true, or
-         counts can be missing. --&gt;
+         custom metrics enabled. Five custom dimensions, the limit per policy. Subscription ID is not added
+         because the three labels already identify the subscription; the product of unique values (about 4
+         teams, 4 use cases, 2 environments, 8 deployments, 2 providers) stays under the 1,000 active time
+         series API Management tracks per namespace (beyond that, data is silently discarded). For OpenAI
+         streaming calls set include_usage to true, or counts can be missing. --&gt;
     &lt;llm-emit-token-metric namespace=&quot;ai-spend-ledger&quot;&gt;
       &lt;!-- dimension: owning team, from the subscription name --&gt;
       &lt;dimension name=&quot;team&quot; value=&quot;@((string)context.Variables[&amp;quot;team&amp;quot;])&quot; /&gt;
@@ -421,8 +464,10 @@ Following the FOCUS 1.5 release scope, these stay outside the ledger: reasoning 
       &lt;dimension name=&quot;use-case&quot; value=&quot;@((string)context.Variables[&amp;quot;useCase&amp;quot;])&quot; /&gt;
       &lt;!-- dimension: prod or nonprod, so production and experiments are never mixed in one figure --&gt;
       &lt;dimension name=&quot;environment&quot; value=&quot;@((string)context.Variables[&amp;quot;environment&amp;quot;])&quot; /&gt;
-      &lt;!-- dimension: model deployment, the key the ledger matches to the billed line --&gt;
+      &lt;!-- dimension: model deployment (or model name on the v1 and Anthropic paths), the key the ledger matches to the billed line --&gt;
       &lt;dimension name=&quot;deployment&quot; value=&quot;@((string)context.Variables[&amp;quot;deployment&amp;quot;])&quot; /&gt;
+      &lt;!-- dimension: provider, so Azure OpenAI and Claude calls never share a line in the metrics --&gt;
+      &lt;dimension name=&quot;provider&quot; value=&quot;@((string)context.Variables[&amp;quot;provider&amp;quot;])&quot; /&gt;
     &lt;/llm-emit-token-metric&gt;
   &lt;/inbound&gt;
   &lt;!-- backend: forward to the model; nothing extra here --&gt;
@@ -472,7 +517,7 @@ AppMetrics
 | extend level = case(usedShare &gt;= 1.0, &quot;100% of allowance&quot;, usedShare &gt;= 0.8, &quot;80% of allowance&quot;, &quot;&quot;)
 | where isnotempty(level)
 | project useCase, deployment, usedTokens, monthlyTokens, usedShare, level</code></pre></details>
-        <details class="code"><summary><code>azure/budget.bicep</code>: management-group budgets per owner tag, for the shared pool and for all AI, with 80%, 100% and forecast alerts (not deployed)</summary><pre><code>// budget.bicep: Azure Cost Management budgets for the illustrative organisation. NOT DEPLOYED.
+        <details class="code"><summary><code>azure/budget.bicep</code>: management-group budgets per owner tag, for the AI pools and for the AI services, with 80%, 100% and forecast alerts (not deployed, not compiled)</summary><pre><code>// budget.bicep: Azure Cost Management budgets for the illustrative organisation. NOT DEPLOYED.
 //
 // Resource shape checked by hand against the Microsoft.Consumption/budgets template reference on
 // Microsoft Learn (API version 2024-08-01; properties amount, category, timeGrain, timePeriod, filter
@@ -491,14 +536,20 @@ AppMetrics
 // What Azure can and cannot see. Budgets filter on tags and billing dimensions, not on the
 // gateway's token shares, so:
 //   1. one budget per owner tag, for everything that tag carries (an Azure-side backstop);
-//   2. one budget on the shared AI platform pool tag (the shared deployment, embeddings, AI Search),
-//      because those resources carry no owner tag and are split between teams only in the ledger;
-//   3. one budget on all AI spend, by service name;
+//   2. one budget on the AI pool tags (the shared AI platform: shared deployment, embeddings, AI Search;
+//      and the AI gateway: API Management and its Application Insights), because those resources carry
+//      no owner tag and are split between teams only in the ledger;
+//   3. one budget on the AI services, by service name (Azure OpenAI, Claude in Foundry, AI Search).
+//      The ledger's AI spend is the AI services plus the AI pools. Azure budget filters combine
+//      conditions with 'and' only, so that union cannot be one Azure budget: budgets 2 and 3 cover it
+//      together (AI Search sits in both), and the all-AI budget in the memo is the ledger's own;
 //   4. the Claude line at meter scope in the AI subscription (budget-ccu-subscription.bicep):
 //      Claude in Microsoft Foundry arrives as one aggregated Claude Consumption Unit line with no
 //      resource tags, so no owner-tag budget sees it.
-// Amounts come from the ledger (115% of the August and September baseline): budget.parameters.json
-// is generated from the same data the pages use.
+// Amounts come from the ledger: 115% of the mean of the two months before the budget month, so the
+// November budgets use September and October. budget.parameters.json is generated from the same data
+// the pages use, and the generator refuses a November budget below October's actual for the AI
+// services and for the ledger's AI spend.
 //
 // Two forecasts. The memo's forecast alert comes from the ledger's driver-based forecast (runs times
 // cost per run). The 'Forecasted' notifications below use Azure's own forecast and can fire on a
@@ -516,13 +567,13 @@ param contactEmails array
 @description('Owner-tag budgets: [{ owner: string, amount: int }], monthly, in the billing currency.')
 param ownerBudgets array
 
-@description('Monthly amount for the shared AI platform pool (resources tagged cost-pool = shared-ai-platform).')
+@description('Monthly amount for the AI pools (resources tagged cost-pool = shared-ai-platform or ai-gateway).')
 param sharedPlatformAmount int
 
-@description('Monthly amount for all AI spend.')
-param allAiAmount int
+@description('Monthly amount for the AI services, by service name (the ledger adds the AI gateway pool to make AI spend).')
+param aiServicesAmount int
 
-@description('Service names that make up AI spend, exactly as Cost analysis shows them for your agreement.')
+@description('AI service names, exactly as Cost analysis shows them for your agreement.')
 param aiServiceNames array
 
 @description('Subscription that holds the Foundry project whose Claude usage is billed as CCU.')
@@ -604,6 +655,7 @@ resource sharedPlatformBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
         operator: 'In'
         values: [
           'shared-ai-platform'
+          'ai-gateway'
         ]
       }
     }
@@ -611,12 +663,12 @@ resource sharedPlatformBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
   }
 }
 
-// 3. All AI spend, by service name (the dimension name used in Cost analysis; confirm before deploying).
-resource allAiBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
-  name: 'budget-all-ai'
+// 3. The AI services, by service name (the dimension name used in Cost analysis; confirm before deploying).
+resource aiServicesBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
+  name: 'budget-ai-services'
   properties: {
     category: 'Cost'
-    amount: allAiAmount
+    amount: aiServicesAmount
     timeGrain: 'Monthly'
     timePeriod: {
       startDate: '${startDate}T00:00:00Z'
@@ -647,10 +699,10 @@ module claudeCcu 'budget-ccu-subscription.bicep' = {
 
 output budgetNames array = concat(map(ownerBudgets, b =&gt; 'budget-owner-${b.owner}'), [
   sharedPlatformBudget.name
-  allAiBudget.name
+  aiServicesBudget.name
   'budget-claude-ccu'
 ])</code></pre></details>
-        <details class="code"><summary><code>azure/budget-ccu-subscription.bicep</code>: the Claude CCU line at meter scope in the AI subscription (not deployed)</summary><pre><code>// budget-ccu-subscription.bicep: the Claude Consumption Unit line at meter scope. NOT DEPLOYED.
+        <details class="code"><summary><code>azure/budget-ccu-subscription.bicep</code>: the Claude CCU line at meter scope in the AI subscription (not deployed, not compiled)</summary><pre><code>// budget-ccu-subscription.bicep: the Claude Consumption Unit line at meter scope. NOT DEPLOYED.
 // Deployed by budget.bicep as a module into the AI subscription. Subscription scope is where an
 // action group can be called, and it is enough here because the CCU line sits in one subscription.
 // Filter: Marketplace charges in the resource group that holds the Foundry project. The dimension
@@ -732,7 +784,70 @@ resource claudeCcuBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
     }
   }
 }</code></pre></details>
-        <details class="code"><summary><code>azure/budget.parameters.json</code>: budget amounts generated from the ledger</summary><pre><code>{
+        <details class="code"><summary><code>azure/policy-close-bypass.bicep</code>: the two Azure Policy assignments that close the bypass (not deployed, not compiled)</summary><pre><code>// policy-close-bypass.bicep: close the gateway bypass the reconciliation found. NOT DEPLOYED.
+//
+// The ledger found a sandbox deployment billed with no gateway calls: scripts called the endpoint
+// directly with a key. Two built-in Azure Policy definitions stop that for every Azure AI services
+// resource under the management group (names and IDs as listed on Microsoft Learn, &quot;Built-in policy
+// definitions for Foundry Tools&quot;, https://learn.microsoft.com/en-us/azure/ai-services/policy-reference,
+// read 4 Nov 2026):
+//   71ef260a-8f18-47b7-abcb-62d0673d94dc  Azure AI Services resources should have key access disabled
+//                                         (disable local authentication)  [Audit, Deny, Disabled]
+//   037eea7a-bd0a-46c5-9a66-03aea78705d3  Azure AI Services resources should restrict network access
+//                                         [Audit, Deny, Disabled]
+// With both in force, the only way in is Microsoft Entra ID from an allowed network: the API
+// Management gateway (its managed identity, its subnet or private endpoint). Related built-ins, not
+// assigned here: 55eff01b-f2bd-4c32-9203-db285f709d30 &quot;Configure Azure AI Services resources to disable
+// local key access&quot; (DeployIfNotExists, to fix existing resources) and d6759c02-b87f-42b7-892e-71b3f471d782
+// &quot;Azure AI Services resources should use Azure Private Link&quot; (Audit).
+// Trade-off the Learn page states: tools that need key access (Azure OpenAI Studio) stop working, so
+// start with Audit in development, then Deny.
+// The parameter name 'effect' is the usual one on these definitions; confirm it in the definition
+// before deploying. The Bicep CLI was not available where this was written, so it is not compiled.
+
+targetScope = 'managementGroup'
+
+@allowed([
+  'Audit'
+  'Deny'
+  'Disabled'
+])
+@description('Audit first, then Deny once every caller goes through the gateway.')
+param effect string = 'Audit'
+
+var assignments = [
+  {
+    name: 'ai-no-key-access'
+    definitionId: '71ef260a-8f18-47b7-abcb-62d0673d94dc'
+    displayName: 'AI resources: key access disabled'
+    message: 'Call AI models through the API Management gateway with Microsoft Entra ID, not with a resource key.'
+  }
+  {
+    name: 'ai-restrict-network'
+    definitionId: '037eea7a-bd0a-46c5-9a66-03aea78705d3'
+    displayName: 'AI resources: network restricted'
+    message: 'AI resources accept traffic from the API Management gateway network only.'
+  }
+]
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2024-04-01' = [for a in assignments: {
+  name: a.name
+  properties: {
+    displayName: a.displayName
+    policyDefinitionId: tenantResourceId('Microsoft.Authorization/policyDefinitions', a.definitionId)
+    parameters: {
+      effect: {
+        value: effect
+      }
+    }
+    nonComplianceMessages: [
+      {
+        message: a.message
+      }
+    ]
+  }
+}]</code></pre></details>
+        <details class="code"><summary><code>azure/budget.parameters.json</code>: November budget amounts generated from the ledger, on the September and October baseline</summary><pre><code>{
   &quot;$schema&quot;: &quot;https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#&quot;,
   &quot;contentVersion&quot;: &quot;1.0.0.0&quot;,
   &quot;parameters&quot;: {
@@ -748,27 +863,27 @@ resource claudeCcuBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
       &quot;value&quot;: [
         {
           &quot;owner&quot;: &quot;customer-ops&quot;,
-          &quot;amount&quot;: 1419
+          &quot;amount&quot;: 1631
         },
         {
           &quot;owner&quot;: &quot;fincrime&quot;,
-          &quot;amount&quot;: 354
+          &quot;amount&quot;: 374
         },
         {
           &quot;owner&quot;: &quot;fraud-analytics&quot;,
-          &quot;amount&quot;: 2465
+          &quot;amount&quot;: 2575
         },
         {
           &quot;owner&quot;: &quot;engineering&quot;,
-          &quot;amount&quot;: 40903
+          &quot;amount&quot;: 40493
         }
       ]
     },
     &quot;sharedPlatformAmount&quot;: {
-      &quot;value&quot;: 9325
+      &quot;value&quot;: 11903
     },
-    &quot;allAiAmount&quot;: {
-      &quot;value&quot;: 17315
+    &quot;aiServicesAmount&quot;: {
+      &quot;value&quot;: 19641
     },
     &quot;aiServiceNames&quot;: {
       &quot;value&quot;: [
@@ -781,7 +896,7 @@ resource claudeCcuBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
       &quot;value&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;
     },
     &quot;claudeCcuAmount&quot;: {
-      &quot;value&quot;: 4761
+      &quot;value&quot;: 5833
     },
     &quot;claudeResourceGroup&quot;: {
       &quot;value&quot;: &quot;rg-ai-prod&quot;
@@ -823,8 +938,18 @@ resource claudeCcuBudget 'Microsoft.Consumption/budgets@2024-08-01' = {
       <div class="wrap">
         <div class="section__head"><h2 id="com-title">The commitment call</h2><p><span class="badge badge--illus">Illustrative</span> Commit only to what the data says is steady <a class="cite" href="#src-S3" data-src="S3">S3</a> <a class="cite" href="#src-S8" data-src="S8">S8</a>.</p></div>
         <ul class="plain" data-region="commitment"><!-- pre:commitment --><li><strong>Baseline:</strong> 92 days of daily cost, past the 60 to 90 days the Foundation asks for before committing.</li>
-    <li><strong>Commit to the floor, not the mean, at discounted rates.</strong> Production compute (AKS and VMs, after the rightsizing lever) never fell below $711 a day at pay-as-you-go rates ($29.61 an hour), against a mean of $848. A savings plan commits a discounted hourly amount, so the commitment is $29.61 × (1 − d), where d is the discount Microsoft's savings plan recommendation gives for this SKU mix; it is not in this pack's sources, so it is a parameter in <code>org.json</code>, not a number here. Microsoft's own order is rightsize first, then reservations for stable workloads, then savings plans.</li>
-    <li><strong>No PTU yet.</strong> Daily production tokens swing 2.3× between the quietest and busiest day (P90 1.1× the median), and KYC document review runs moved 38% in a month. Provisioned throughput pays only when it is busy; sizing it needs the Foundry capacity calculator, so it is not priced here.</li><!-- /pre:commitment --></ul>
+    <li><strong>Commit to the floor, not the mean, at discounted rates.</strong> Production compute (AKS and VMs, after the rightsizing lever) never fell below $751 a day at pay-as-you-go rates ($31.30 an hour), against a mean of $896. The Azure Retail Prices API lists a 1-year savings plan for D16s v5 at $0.67 an hour against $0.89 pay-as-you-go, so d = 24.9% and the hourly commitment is $31.30 × (1 − d) = $23.52, saving about $5,790 a month if the floor holds. Microsoft's own order is rightsize first, then reservations for stable workloads, then savings plans.</li>
+    <li><strong>No PTU yet.</strong> Daily production tokens swing 2.3× between the quietest and busiest day (P90 1.1× the median), and KYC document review runs a day moved 34% in a month. Provisioned throughput pays only when it is busy; sizing it needs the Foundry capacity calculator, so it is not priced here.</li><!-- /pre:commitment --></ul>
+        <p class="note">Pay-as-you-go and savings-plan rates for compute, SQL, storage, Log Analytics, API Management and AI Search come from the Azure Retail Prices API, UK South, read on 4 November 2026 <a class="cite" href="#src-S11" data-src="S11">S11</a>; each row in <code>prices.json</code> keeps its query.</p>
+      </div>
+    </section>
+
+    <section class="section" id="scenario" aria-labelledby="scn-title" data-illustrative>
+      <div class="wrap">
+        <div class="section__head"><h2 id="scn-title">Knowledge assistant: fix, then downsize</h2><p><span class="badge badge--illus">Illustrative</span> Its avoidable cost is under its value, but its share of the AI Search tier puts the fully loaded cost above it. Fixing retrieval alone is not enough; fixing it and moving the tier to a smaller size is.</p></div>
+        <div class="table-wrap" role="region" aria-label="Knowledge assistant scenario" tabindex="0"><table role="table" class="table table--cards" data-region="scenario"><!-- pre:scenario --><caption>Internal knowledge assistant, October: value $0.55 per useful answer. Same runs and avoidable cost per run; useful answers raised to the 60% bar; search tier from the priced lever. Stopping instead would move its $3,804 of fixed shared cost, mostly to the support assistant ($0.044 to $0.071 per accepted draft). Illustrative.</caption>
+  <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Case</th><th role="columnheader" scope="col" class="num">Useful answers</th><th role="columnheader" scope="col" class="num">Avoidable per answer</th><th role="columnheader" scope="col" class="num">Full cost per answer</th><th role="columnheader" scope="col">Against value</th></tr></thead>
+  <tbody role="rowgroup"><tr role="row"><th role="rowheader" scope="row" data-label="Case">As run in October</th><td role="cell" class="num" data-label="Useful answers"><div class="v">7,305</div></td><td role="cell" class="num" data-label="Avoidable per answer"><div class="v">$0.075</div></td><td role="cell" class="num" data-label="Full cost per answer"><div class="v">$0.60</div></td><td role="cell" data-label="Against value"><div class="v"><span class="warn">full cost above value</span></div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Case">Fix retrieval to the bar</th><td role="cell" class="num" data-label="Useful answers"><div class="v">11,305</div></td><td role="cell" class="num" data-label="Avoidable per answer"><div class="v">$0.048</div></td><td role="cell" class="num" data-label="Full cost per answer"><div class="v">$0.39</div></td><td role="cell" data-label="Against value"><div class="v">below value</div></td></tr><tr role="row"><th role="rowheader" scope="row" data-label="Case">Fix retrieval and downsize the search tier</th><td role="cell" class="num" data-label="Useful answers"><div class="v">11,305</div></td><td role="cell" class="num" data-label="Avoidable per answer"><div class="v">$0.048</div></td><td role="cell" class="num" data-label="Full cost per answer"><div class="v">$0.10</div></td><td role="cell" data-label="Against value"><div class="v">below value</div></td></tr></tbody><!-- /pre:scenario --></table></div>
       </div>
     </section>
 
@@ -898,6 +1023,7 @@ export function normaliseExport(rows) {
     o.x_Date = String(o.ChargePeriodStart).slice(0, 10);
     o.x_Month = monthOf(o.x_Date);
     o.x_Deployment = deploymentOf(o.ResourceId);
+    o.x_CostPool = o.Tags['cost-pool'] || null;
     const meter = o.ConsumedUnit === 'Tokens' ? parseMeter(o.SkuMeter) : null;
     if (meter) {
       o.x_ModelId = meter.modelId;
@@ -984,7 +1110,11 @@ export function requestIndex(metrics) {
 //                         same deployment and token class
 //   gateway-cost-share    the aggregated Claude CCU line: split by each team's list-price estimate,
 //                         because one CCU line mixes input, cache and output tokens
+//   unmetered-remainder   the part of a gateway-split line the gateway never saw (billed tokens above
+//                         metered tokens, or CCU above the metered estimate): held as unallocated
 //   retrieval-call-share  the shared AI platform pool (AI Search): split by retrieval calls
+//   gateway-request-share the AI gateway pool (API Management and its Application Insights): split
+//                         by each use case's gateway requests that day
 //   resource-tag          the resource's own owner tag
 //   inherited-tag         the resource group's or subscription's owner tag (resource tag wins, as
 //                         in Azure tag inheritance by default)
@@ -992,6 +1122,19 @@ export function requestIndex(metrics) {
 import { tokenClassOf } from './normalise.js';
 
 const sum = (a) =&gt; a.reduce((s, x) =&gt; s + x, 0);
+
+// Cost that a pool splits by calls or requests: fixed in total, so it stays if one use case stops.
+export const FIXED_METHODS = ['retrieval-call-share', 'gateway-request-share'];
+
+// AI spend: the AI and Machine Learning service category plus the AI cost pools.
+export function isAi(r) {
+  return r.x_AiSpend !== undefined ? r.x_AiSpend : r.ServiceCategory === 'AI and Machine Learning';
+}
+export function markAiSpend(rows, org) {
+  const pools = (org.allocation &amp;&amp; org.allocation.aiPools) || [];
+  for (const r of rows) r.x_AiSpend = r.ServiceCategory === 'AI and Machine Learning' || pools.includes(r.x_CostPool || (r.Tags &amp;&amp; r.Tags['cost-pool']));
+  return rows;
+}
 
 function indexGateway(gw) {
   const byLine = {};    // date|deployment|class -&gt; { team|useCase: qty }
@@ -1018,12 +1161,14 @@ export function ownerFromTags(row, org) {
   return { owner: 'unallocated', method: 'unallocated' };
 }
 
+// metered = the share of the line the gateway saw (1 when it saw everything).
 function weightsFor(row, ctx) {
   const { org, gw, requests } = ctx;
   if (row.x_TokenDirection &amp;&amp; row.x_Deployment) {
     const cls = tokenClassOf(row.x_TokenDirection, row.x_TokenCacheAction);
     const w = gw.byLine[row.x_Date + '|' + row.x_Deployment + '|' + cls];
-    if (w &amp;&amp; sum(Object.values(w)) &gt; 0) return { method: 'gateway-token-share', weights: w };
+    const seen = w ? sum(Object.values(w)) : 0;
+    if (seen &gt; 0) return { method: 'gateway-token-share', weights: w, metered: row.ConsumedQuantity &gt; 0 ? Math.min(1, seen / row.ConsumedQuantity) : 1 };
   }
   const ccu = org.gateway.ccuLines[row.ResourceId];
   if (ccu) {
@@ -1031,20 +1176,36 @@ function weightsFor(row, ctx) {
     for (const model of ccu.models) {
       for (const [who, v] of Object.entries(gw.byModel[row.x_Date + '|' + model] || {})) w[who] = (w[who] || 0) + v;
     }
-    if (sum(Object.values(w)) &gt; 0) return { method: 'gateway-cost-share', weights: w };
+    const est = sum(Object.values(w));
+    // The CCU line is billed at list ($0.01 per CCU), so the estimate's share of it is what was metered.
+    if (est &gt; 0) return { method: 'gateway-cost-share', weights: w, metered: row.ListCost &gt; 0 ? Math.min(1, est / row.ListCost) : 1 };
   }
   const pool = row.Tags &amp;&amp; row.Tags[org.allocation.poolTag];
-  if (pool &amp;&amp; org.allocation.pools[pool]) {
+  const rule = pool &amp;&amp; org.allocation.pools[pool];
+  if (rule &amp;&amp; rule.method === 'retrieval-call-share') {
     const calls = requests[row.x_Date + '|' + org.gateway.retrievalDeployment] || {};
     const w = {};
     for (const [uc, n] of Object.entries(calls)) w[org.useCases[uc].owner + '|' + uc] = n;
-    if (sum(Object.values(w)) &gt; 0) return { method: 'retrieval-call-share', weights: w };
+    if (sum(Object.values(w)) &gt; 0) return { method: 'retrieval-call-share', weights: w, metered: 1 };
+  }
+  if (rule &amp;&amp; rule.method === 'gateway-request-share') {
+    const byUc = ctx.requestsByDate[row.x_Date] || {};
+    const w = {};
+    for (const [uc, n] of Object.entries(byUc)) if (org.useCases[uc]) w[org.useCases[uc].owner + '|' + uc] = n;
+    if (sum(Object.values(w)) &gt; 0) return { method: 'gateway-request-share', weights: w, metered: 1 };
   }
   return null;
 }
 
 export function allocate(billed, gatewayRowsList, requests, org) {
-  const ctx = { org, gw: indexGateway(gatewayRowsList), requests };
+  // Gateway requests per use case per day, across every deployment.
+  const requestsByDate = {};
+  for (const [key, byUc] of Object.entries(requests)) {
+    const date = key.slice(0, key.indexOf('|'));
+    const t = requestsByDate[date] ??= {};
+    for (const [uc, n] of Object.entries(byUc)) t[uc] = (t[uc] || 0) + n;
+  }
+  const ctx = { org, gw: indexGateway(gatewayRowsList), requests, requestsByDate };
   const rows = [];
   billed.forEach((row, i) =&gt; {
     const base = {
@@ -1053,12 +1214,21 @@ export function allocate(billed, gatewayRowsList, requests, org) {
       ResourceName: row.ResourceName, x_Deployment: row.x_Deployment, x_ModelId: row.x_ModelId || null,
       x_TokenDirection: row.x_TokenDirection || null, x_TokenCacheAction: row.x_TokenCacheAction || null,
       ConsumedUnit: row.ConsumedUnit, AllocatedResourceId: row.ResourceId, x_SourceRow: i,
+      x_CostPool: row.x_CostPool || (row.Tags &amp;&amp; row.Tags[org.allocation.poolTag]) || null,
+      ...(row.x_AiSpend !== undefined ? { x_AiSpend: row.x_AiSpend } : {}),
     };
     const split = weightsFor(row, ctx);
     if (split) {
       const total = sum(Object.values(split.weights));
+      const m = split.metered;
+      if (m &lt; 1 - 1e-12) {
+        const rest = 1 - m;
+        rows.push({ ...base, x_Owner: 'unallocated', x_UseCase: null, AllocatedMethodId: 'unmetered-remainder', AllocatedTags: { owner: 'unallocated' },
+          x_Share: rest, ConsumedQuantity: row.ConsumedQuantity * rest, ListCost: row.ListCost * rest,
+          BilledCost: row.BilledCost * rest, EffectiveCost: row.EffectiveCost * rest });
+      }
       for (const [who, w] of Object.entries(split.weights)) {
-        const share = w / total;
+        const share = (w / total) * m;
         const [owner, useCase] = who.split('|');
         rows.push({ ...base, x_Owner: owner, x_UseCase: useCase, AllocatedMethodId: split.method, AllocatedTags: { owner, 'use-case': useCase },
           x_Share: share, ConsumedQuantity: row.ConsumedQuantity * share, ListCost: row.ListCost * share,
@@ -1091,8 +1261,13 @@ export function allocationSummary(allocated, billed, month, org) {
   const t = org.allocation.targets;
   const stage = pct &gt; t.run ? 'Run' : pct &gt;= t.walk ? 'Walk' : pct &gt;= t.crawl ? 'Crawl' : 'below Crawl';
   const unallocatedGroups = {};
-  for (const r of inMonth.filter((x) =&gt; x.x_Owner === 'unallocated')) unallocatedGroups[r.x_ResourceGroupName] = (unallocatedGroups[r.x_ResourceGroupName] || 0) + r.EffectiveCost;
-  return { month, billedTotal, allocatedTotal, byOwner, byMethod, unallocated, owned, ownedPct: pct, stage, targets: t, unallocatedGroups };
+  const unallocatedByCause = { untagged: {}, unmetered: 0 };
+  for (const r of inMonth.filter((x) =&gt; x.x_Owner === 'unallocated')) {
+    unallocatedGroups[r.x_ResourceGroupName] = (unallocatedGroups[r.x_ResourceGroupName] || 0) + r.EffectiveCost;
+    if (r.AllocatedMethodId === 'unmetered-remainder') unallocatedByCause.unmetered += r.EffectiveCost;
+    else unallocatedByCause.untagged[r.ResourceName] = (unallocatedByCause.untagged[r.ResourceName] || 0) + r.EffectiveCost;
+  }
+  return { month, billedTotal, allocatedTotal, byOwner, byMethod, unallocated, owned, ownedPct: pct, stage, targets: t, unallocatedGroups, unallocatedByCause };
 }</code></pre></details>
         <details class="code"><summary><code>ledger/reconcile.js</code>: estimate against the bill, gap explained, coverage and bypass</summary><pre><code>// reconcile.js: the list-price estimate against the bill, line by line, with the gap explained.
 //
@@ -1107,6 +1282,7 @@ export function allocationSummary(allocated, billed, month, org) {
 // restates it over all AI spend, including the AI Search tier, which is not token-billed); a bypass is a billed line
 // with no metered calls at all.
 import { tokenClassOf, priceOn } from './normalise.js';
+import { isAi } from './allocate.js';
 
 const BYPASS_FLOOR = 1;          // dollars: ignore rounding-size lines
 const PARTIAL_BELOW = 0.98;      // coverage below this is flagged as partial
@@ -1184,7 +1360,7 @@ export function reconcile(billed, gw, prices, org, month) {
     coverage: totBilled ? out.reduce((s, x) =&gt; s + x.billed * x.coverage, 0) / totBilled : 0,
   };
   totals.gap = pricedRows.reduce((s, x) =&gt; s + x.billed, 0) - totals.estimate;
-  const notTokenBilled = billed.filter((r) =&gt; r.x_Month === month &amp;&amp; r.ServiceCategory === 'AI and Machine Learning' &amp;&amp; r.ConsumedUnit !== 'Tokens' &amp;&amp; !org.gateway.ccuLines[r.ResourceId]);
+  const notTokenBilled = billed.filter((r) =&gt; r.x_Month === month &amp;&amp; isAi(r) &amp;&amp; r.ConsumedUnit !== 'Tokens' &amp;&amp; !org.gateway.ccuLines[r.ResourceId]);
   totals.notTokenBilled = notTokenBilled.reduce((s, r) =&gt; s + r.BilledCost, 0);
   // The same explained cost as a share of all AI spend, including lines that are not token-billed.
   totals.coverageOfAllAi = (totBilled + totals.notTokenBilled) ? (totals.coverage * totBilled) / (totBilled + totals.notTokenBilled) : 0;
@@ -1205,6 +1381,7 @@ export function reconcile(billed, gw, prices, org, month) {
 // no caching. It goes negative when cache writes are not read back.
 import { priceOn } from './normalise.js';
 import { num } from './csv.js';
+import { isAi, FIXED_METHODS } from './allocate.js';
 
 const sum = (a) =&gt; a.reduce((s, x) =&gt; s + x, 0);
 
@@ -1261,23 +1438,25 @@ export function cacheStats(gwRows, prices) {
 export function unitEconomics({ allocated, gw, outcomes, prices, org, month }) {
   const out = {};
   for (const [uc, meta] of Object.entries(org.useCases)) {
-    const rows = allocated.filter((r) =&gt; r.x_Month === month &amp;&amp; r.x_UseCase === uc &amp;&amp; r.ServiceCategory === 'AI and Machine Learning');
+    const rows = allocated.filter((r) =&gt; r.x_Month === month &amp;&amp; r.x_UseCase === uc &amp;&amp; isAi(r));
     const spend = sum(rows.map((r) =&gt; r.EffectiveCost));
-    const fixedShared = sum(rows.filter((r) =&gt; r.AllocatedMethodId === 'retrieval-call-share').map((r) =&gt; r.EffectiveCost));
+    const fixedShared = sum(rows.filter((r) =&gt; FIXED_METHODS.includes(r.AllocatedMethodId)).map((r) =&gt; r.EffectiveCost));
+    const searchShare = sum(rows.filter((r) =&gt; r.AllocatedMethodId === 'retrieval-call-share').map((r) =&gt; r.EffectiveCost));
+    const gatewayShare = sum(rows.filter((r) =&gt; r.AllocatedMethodId === 'gateway-request-share').map((r) =&gt; r.EffectiveCost));
     const embeddings = sum(rows.filter((r) =&gt; r.x_ModelId === 'text-embedding').map((r) =&gt; r.EffectiveCost));
     const oc = outcomes.filter((o) =&gt; o.date.slice(0, 7) === month &amp;&amp; o.use_case === uc);
     const t = outcomeTotals(oc);
     const g = gw.filter((x) =&gt; x.x_Month === month &amp;&amp; x.x_UseCase === uc &amp;&amp; x.x_ModelId !== 'text-embedding');
     const tokens = sum(g.map((x) =&gt; x.ConsumedQuantity));
     const daily = {};
-    for (const r of rows) if (r.AllocatedMethodId !== 'retrieval-call-share') daily[r.x_Date] = (daily[r.x_Date] || 0) + r.EffectiveCost;
+    for (const r of rows) if (!FIXED_METHODS.includes(r.AllocatedMethodId)) daily[r.x_Date] = (daily[r.x_Date] || 0) + r.EffectiveCost;
     const dailyCps = oc.filter((o) =&gt; num(o.successful) &gt; 0).map((o) =&gt; ({ date: o.date, value: (daily[o.date] || 0) / num(o.successful) }));
     const cache = cacheStats(g, prices);
     const cps = costPerSuccess(spend, t.successful);
     const avoidable = spend - fixedShared;
     out[uc] = {
       useCase: uc, name: meta.name, owner: meta.owner, month,
-      spend, avoidableSpend: avoidable, fixedSharedSpend: fixedShared, embeddingSpend: embeddings, tokenSpend: avoidable - embeddings,
+      spend, avoidableSpend: avoidable, fixedSharedSpend: fixedShared, searchShareSpend: searchShare, gatewayShareSpend: gatewayShare, embeddingSpend: embeddings, tokenSpend: avoidable - embeddings,
       ...t,
       successRate: t.runs ? t.successful / t.runs : 0,
       costPerRun: t.runs ? avoidable / t.runs : null,
@@ -1303,8 +1482,51 @@ export function unitEconomics({ allocated, gw, outcomes, prices, org, month }) {
 export function aiSpendByOwner(allocated, month) {
   const out = {};
   for (const r of allocated) {
-    if (r.x_Month !== month || r.ServiceCategory !== 'AI and Machine Learning') continue;
+    if (r.x_Month !== month || !isAi(r)) continue;
     out[r.x_Owner] = (out[r.x_Owner] || 0) + r.EffectiveCost;
+  }
+  return out;
+}
+
+// Failure anomalies: days whose failure rate is far above the two prior months' daily pattern.
+// For each use case with such days: the run of days, failures a day, the failure rate against the
+// baseline, the share of the month's excess failures those days explain, cost per successful outcome
+// on those days against the month's normal days, and how far retries rose (the data's own pointer to
+// a root cause).
+export function failureAnomalies({ outcomes, allocated, org, month, prior }) {
+  const cfg = org.anomaly || { sdMultiple: 4, minRatioToBaseline: 2 };
+  const out = [];
+  for (const uc of Object.keys(org.useCases)) {
+    const base = outcomes.filter((o) =&gt; o.use_case === uc &amp;&amp; prior.includes(o.date.slice(0, 7)) &amp;&amp; num(o.runs) &gt; 0);
+    const now = outcomes.filter((o) =&gt; o.use_case === uc &amp;&amp; o.date.slice(0, 7) === month &amp;&amp; num(o.runs) &gt; 0);
+    if (!base.length || !now.length) continue;
+    const rate = (o) =&gt; num(o.failed) / num(o.runs);
+    const rates = base.map(rate);
+    const mean = sum(rates) / rates.length;
+    const sd = Math.sqrt(sum(rates.map((r) =&gt; (r - mean) ** 2)) / rates.length);
+    const flagged = now.filter((o) =&gt; rate(o) &gt; mean + cfg.sdMultiple * sd &amp;&amp; rate(o) &gt;= cfg.minRatioToBaseline * mean);
+    if (!flagged.length) continue;
+    const dayCost = {};
+    for (const r of allocated) if (r.x_Month === month &amp;&amp; r.x_UseCase === uc &amp;&amp; isAi(r) &amp;&amp; !FIXED_METHODS.includes(r.AllocatedMethodId)) dayCost[r.x_Date] = (dayCost[r.x_Date] || 0) + r.EffectiveCost;
+    const excess = (o) =&gt; Math.max(0, num(o.failed) - mean * num(o.runs));
+    const monthExcess = sum(now.map(excess));
+    const flaggedDates = new Set(flagged.map((o) =&gt; o.date));
+    const cps = (o) =&gt; (num(o.successful) ? (dayCost[o.date] || 0) / num(o.successful) : null);
+    const normal = now.filter((o) =&gt; !flaggedDates.has(o.date)).map(cps).filter((x) =&gt; x !== null);
+    const retryShare = (rows) =&gt; { const r = sum(rows.map((o) =&gt; num(o.runs))); return r ? sum(rows.map((o) =&gt; num(o.retried))) / r : 0; };
+    out.push({
+      useCase: uc,
+      dates: flagged.map((o) =&gt; o.date),
+      from: flagged[0].date, to: flagged[flagged.length - 1].date,
+      failuresPerDay: sum(flagged.map((o) =&gt; num(o.failed))) / flagged.length,
+      rate: sum(flagged.map((o) =&gt; num(o.failed))) / sum(flagged.map((o) =&gt; num(o.runs))),
+      baselineRate: mean,
+      shareOfMonthExcess: monthExcess ? sum(flagged.map(excess)) / monthExcess : 0,
+      costPerSuccessRange: [Math.min(...flagged.map(cps)), Math.max(...flagged.map(cps))],
+      normalCostPerSuccess: percentile(normal, 0.5),
+      excessCost: sum(flagged.map((o) =&gt; excess(o) * ((dayCost[o.date] || 0) / num(o.runs)))),
+      retryMultiple: retryShare(base) ? retryShare(flagged) / retryShare(base) : null,
+    });
   }
   return out;
 }</code></pre></details>
@@ -1318,7 +1540,8 @@ export function aiSpendByOwner(allocated, month) {
 // drives. A trailing-mean forecast (month to date / days elapsed x days in month) is kept only as a
 // cross-check.
 // Variance, September to October, for each use case's avoidable cost (model tokens and embeddings):
-//   volume = change in runs x September cost per run
+//   calendar = one more (or fewer) day at September's daily level (October has 31 days, September 30)
+//   volume = change in runs per day x September cost per run
 //   price  = October tokens x change in published list price (zero unless a price row changes)
 //   mix    = the rest: tokens per run, model mix and success rates
 // plus two buckets that runs do not drive, kept apart: the fixed shared platform (the AI Search
@@ -1326,6 +1549,7 @@ export function aiSpendByOwner(allocated, month) {
 import { datesOfMonth, prevMonth, isWeekend, addDays } from './dates.js';
 import { priceOn } from './normalise.js';
 import { num } from './csv.js';
+import { isAi, FIXED_METHODS } from './allocate.js';
 
 const sum = (a) =&gt; a.reduce((s, x) =&gt; s + x, 0);
 
@@ -1413,22 +1637,23 @@ export function evaluateBudget(series, month, budget, cfg) {
 // The month-on-month variance split for AI cost.
 export function variance({ allocated, gw, outcomes, prices, org, month }) {
   const prev = prevMonth(month, 1);
-  const isToken = (r) =&gt; r.ServiceCategory === 'AI and Machine Learning' &amp;&amp; r.AllocatedMethodId !== 'retrieval-call-share'
+  const isToken = (r) =&gt; isAi(r) &amp;&amp; !FIXED_METHODS.includes(r.AllocatedMethodId)
     &amp;&amp; (r.ConsumedUnit === 'Tokens' || org.gateway.ccuLines[r.ResourceId]);
-  const isFixed = (r) =&gt; r.ServiceCategory === 'AI and Machine Learning' &amp;&amp; r.AllocatedMethodId === 'retrieval-call-share';
-  const isAi = (r) =&gt; r.ServiceCategory === 'AI and Machine Learning';
+  const isFixed = (r) =&gt; isAi(r) &amp;&amp; FIXED_METHODS.includes(r.AllocatedMethodId);
   const cost = (m, pred) =&gt; sum(allocated.filter((r) =&gt; r.x_Month === m &amp;&amp; pred(r)).map((r) =&gt; r.EffectiveCost));
   const runs = (m, uc) =&gt; sum(outcomes.filter((o) =&gt; o.date.slice(0, 7) === m &amp;&amp; o.use_case === uc).map((o) =&gt; num(o.runs) || 0));
   // The model each deployment ran on the last day of the previous month: the reference price.
   const refModel = {};
   for (const r of allocated) if (r.x_Month === prev &amp;&amp; r.x_Deployment &amp;&amp; r.x_ModelId) refModel[r.x_Deployment] = r.x_ModelId;
   const refDate = datesOfMonth(prev).slice(-1)[0];
+  const dayFactor = datesOfMonth(month).length / datesOfMonth(prev).length;
   const rows = [];
   for (const uc of Object.keys(org.useCases)) {
     const pred = (r) =&gt; r.x_UseCase === uc &amp;&amp; isToken(r);
     const cPrev = cost(prev, pred); const cNow = cost(month, pred);
     const rPrev = runs(prev, uc); const rNow = runs(month, uc);
-    const volume = rPrev ? (rNow - rPrev) * (cPrev / rPrev) : 0;
+    const calendar = cPrev * (dayFactor - 1);
+    const volume = rPrev ? (rNow - rPrev * dayFactor) * (cPrev / rPrev) : 0;
     let price = 0;
     for (const r of allocated) {
       if (r.x_Month !== month || !pred(r) || !r.x_ModelId || r.ConsumedUnit !== 'Tokens') continue;
@@ -1448,14 +1673,17 @@ export function variance({ allocated, gw, outcomes, prices, org, month }) {
       if (now &amp;&amp; ref) price += (g.ConsumedQuantity / 1e6) * (now.usdPerMTok - ref.usdPerMTok);
     }
     const change = cNow - cPrev;
-    rows.push({ useCase: uc, previous: cPrev, current: cNow, change, volume, price, mix: change - volume - price, runsPrevious: rPrev, runsCurrent: rNow });
+    rows.push({ useCase: uc, previous: cPrev, current: cNow, change, calendar, volume, price, mix: change - calendar - volume - price, runsPrevious: rPrev, runsCurrent: rNow,
+      runsPerDayChange: rPrev ? (rNow / datesOfMonth(month).length) / (rPrev / datesOfMonth(prev).length) - 1 : null });
   }
   const aiPrev = cost(prev, isAi); const aiNow = cost(month, isAi);
   const tokenChange = sum(rows.map((r) =&gt; r.change));
   const fixedPrev = cost(prev, isFixed); const fixedNow = cost(month, isFixed);
-  const fixedPlatform = fixedNow - fixedPrev;
-  const unattributed = (aiNow - aiPrev) - tokenChange - fixedPlatform;
+  const calendarFixed = fixedPrev * (dayFactor - 1);
+  const fixedPlatform = fixedNow - fixedPrev * dayFactor;
+  const unattributed = (aiNow - aiPrev) - tokenChange - fixedPlatform - calendarFixed;
   const platform = fixedPlatform + unattributed;
+  const calendar = sum(rows.map((r) =&gt; r.calendar)) + calendarFixed;
   // What sits in the two buckets, by resource: fixed shared platform, and unattributed AI cost.
   const ucs = Object.keys(org.useCases);
   const other = {};
@@ -1469,6 +1697,7 @@ export function variance({ allocated, gw, outcomes, prices, org, month }) {
   return {
     month, previousMonth: prev, previous: aiPrev, current: aiNow, change: aiNow - aiPrev, rows,
     volume: sum(rows.map((r) =&gt; r.volume)), price: sum(rows.map((r) =&gt; r.price)), mix: sum(rows.map((r) =&gt; r.mix)), platform, otherByResource,
+    calendar, calendarFixed, dayFactor, daysCurrent: datesOfMonth(month).length, daysPrevious: datesOfMonth(prev).length,
     fixedPlatform, unattributed, fixedPrevious: fixedPrev, fixedCurrent: fixedNow,
     unattributedPrevious: aiPrev - fixedPrev - sum(rows.map((r) =&gt; r.previous)), unattributedCurrent: aiNow - fixedNow - sum(rows.map((r) =&gt; r.current)),
   };
@@ -1489,6 +1718,7 @@ export function variance({ allocated, gw, outcomes, prices, org, month }) {
 import { priceOn } from './normalise.js';
 import { datesOfMonth, prevMonth } from './dates.js';
 import { num } from './csv.js';
+import { isAi, FIXED_METHODS } from './allocate.js';
 
 const sum = (a) =&gt; a.reduce((s, x) =&gt; s + x, 0);
 const clamp01 = (x) =&gt; Math.max(0, Math.min(1, x));
@@ -1541,8 +1771,8 @@ export function applyStep(remaining, component, share, effect) {
 
 // Token cost components of a use case in a month: input and output, and the part on the hard path.
 function components(allocated, uc, month, hardDeployment) {
-  const rows = allocated.filter((r) =&gt; r.x_Month === month &amp;&amp; r.x_UseCase === uc &amp;&amp; r.ServiceCategory === 'AI and Machine Learning'
-    &amp;&amp; r.AllocatedMethodId !== 'retrieval-call-share' &amp;&amp; r.x_ModelId !== 'text-embedding');
+  const rows = allocated.filter((r) =&gt; r.x_Month === month &amp;&amp; r.x_UseCase === uc &amp;&amp; isAi(r)
+    &amp;&amp; !FIXED_METHODS.includes(r.AllocatedMethodId) &amp;&amp; r.x_ModelId !== 'text-embedding');
   const tokenRows = rows.filter((r) =&gt; r.x_TokenDirection);
   const ccuRows = rows.filter((r) =&gt; !r.x_TokenDirection);
   const c = { input: 0, output: 0, hard: { input: 0, output: 0 } };
@@ -1576,7 +1806,53 @@ export function promptTokensPerCall(metrics, uc, month) {
   return calls ? sum(rows.map((m) =&gt; num(m.input_tokens) || 0)) / calls : 0;
 }
 
-export function priceLevers({ levers, allocated, billed, gw, metrics = [], outcomes, prices, org, ue, decisions, vmUtil, month }) {
+const retail = (prices, key) =&gt; ((prices.azureRetail &amp;&amp; prices.azureRetail.rows) || []).find((r) =&gt; r.key === key) || null;
+const NEXT_DOWN = { 'D16s v5': 'd8s-v5', 'D8s v5': 'd4s-v5' };
+const SKU_KEY = { 'D16s v5': 'd16s-v5', 'D8s v5': 'd8s-v5', 'D4s v5': 'd4s-v5' };
+
+// Routing effect from the price sheet: what the same hard-path tokens cost on the cheaper model.
+export function routingEffect(gwRows, prices, from, to, date) {
+  let a = 0; let b = 0;
+  for (const g of gwRows) {
+    const pf = priceOn(prices, from, g.x_TokenClass, date); const pt = priceOn(prices, to, g.x_TokenClass, date);
+    if (!pf || !pt) continue;
+    a += g.ConsumedQuantity * pf.usdPerMTok; b += g.ConsumedQuantity * pt.usdPerMTok;
+  }
+  return a ? 1 - b / a : 0;
+}
+
+// VMs whose P95 CPU stayed under the threshold in every month of the window.
+export function rightsizeCandidates(vmUtil, months, threshold) {
+  const names = [...new Set(vmUtil.map((v) =&gt; v.resource))];
+  return names.filter((n) =&gt; months.every((m) =&gt; vmUtil.some((v) =&gt; v.resource === n &amp;&amp; v.month === m &amp;&amp; num(v.p95_cpu_pct) &lt; threshold)));
+}
+
+// The steady production compute floor (lowest day, after rightsizing) and its savings-plan pricing.
+export function computeFloor(billed, prices, vmUtil, months, rightsizeLever) {
+  const low = new Set(rightsizeLever ? rightsizeCandidates(vmUtil, months, rightsizeLever.cpuThresholdPct) : []);
+  const daily = {};
+  const skuDaily = {};
+  for (const r of billed) {
+    if (r.ServiceCategory !== 'Compute' || !/prod$/.test(r.SubAccountId) || /nonprod/.test(r.SubAccountId)) continue;
+    let sku = r.SkuMeter; let qty = r.PricingQuantity;
+    if (low.has(r.ResourceName) &amp;&amp; NEXT_DOWN[sku]) { const down = retail(prices, NEXT_DOWN[sku]); sku = down.meter; }
+    const rate = retail(prices, SKU_KEY[sku]);
+    const cost = rate ? qty * rate.usd : r.EffectiveCost;
+    daily[r.x_Date] = (daily[r.x_Date] || 0) + cost;
+    skuDaily[r.x_Date] ??= {};
+    skuDaily[r.x_Date][sku] = (skuDaily[r.x_Date][sku] || 0) + qty;
+  }
+  const days = Object.keys(daily);
+  const floorDay = days.reduce((a, d) =&gt; (daily[d] &lt; daily[a] ? d : a), days[0]);
+  return { floorPerDay: daily[floorDay], floorDay, days: days.length, meanPerDay: sum(Object.values(daily)) / days.length, mix: skuDaily[floorDay] || {} };
+}
+
+export function savingsPlanDiscount(prices, term = '1 Year') {
+  const r = retail(prices, 'd16s-v5');
+  return r &amp;&amp; r.savingsPlan &amp;&amp; r.savingsPlan[term] ? 1 - r.savingsPlan[term] / r.usd : null;
+}
+
+export function priceLevers({ levers, allocated, billed, gw, metrics = [], outcomes, prices, org, ue, decisions, vmUtil, month, anomalies = [] }) {
   const out = [];
   const byUc = {};
   for (const l of levers.slice().sort((a, b) =&gt; (a.useCase || a.resource || '').localeCompare(b.useCase || b.resource || '') || a.order - b.order)) {
@@ -1603,7 +1879,18 @@ export function priceLevers({ levers, allocated, billed, gw, metrics = [], outco
       if (l.type === 'blocked') {
         row.saving = 0; row.method = 'Blocked: ' + l.effect.text + '.';
         out.push(row); continue;
-      } else if (l.type === 'routing' || l.type === 'prior' || l.type === 'batch') {
+      } else if (l.type === 'routing') {
+        share = l.eligible.value ?? 1;
+        const hard = gw.filter((g) =&gt; g.x_Month === month &amp;&amp; g.x_UseCase === l.useCase &amp;&amp; g.x_Deployment === l.deployment);
+        effect = routingEffect(hard, prices, l.effect.from, l.effect.to, datesOfMonth(month).slice(-1)[0]);
+        row.priceRatio = 1 - effect;
+      } else if (l.type === 'discard-avoid') {
+        const now = outcomes.filter((o) =&gt; o.use_case === l.useCase &amp;&amp; o.date.slice(0, 7) === month);
+        const runs = sum(now.map((o) =&gt; num(o.runs)));
+        share = runs ? sum(now.map((o) =&gt; num(o.discarded))) / runs : 0;  // measured
+        effect = l.effect.value;  // assumption
+        row.discardShare = share;
+      } else if (l.type === 'prior' || l.type === 'batch') {
         share = l.eligible.value ?? 1;
         effect = l.effect.point ?? l.effect.value;
       } else if (l.type === 'cache-azure') {
@@ -1618,14 +1905,14 @@ export function priceLevers({ levers, allocated, billed, gw, metrics = [], outco
         const disc = 1 - miniCached.usdPerMTok / miniIn.usdPerMTok;    // 0.9 on the GPT-5.4 family
         effect = cacheLeverEffect(h, target, disc);
         row.measuredHitRate = h; row.targetHitRate = target; row.cacheDiscount = disc;
-      } else if (l.type === 'failure') {
-        const base = outcomes.filter((o) =&gt; o.use_case === l.useCase &amp;&amp; (o.date.slice(0, 7) === prevMonth(month, 1) || o.date.slice(0, 7) === prevMonth(month, 2)));
-        const now = outcomes.filter((o) =&gt; o.use_case === l.useCase &amp;&amp; o.date.slice(0, 7) === month);
-        const f = (rows) =&gt; { const r = sum(rows.map((o) =&gt; num(o.runs))); return r ? sum(rows.map((o) =&gt; num(o.failed))) / r : 0; };
-        const excess = Math.max(0, f(now) - f(base));
-        share = excess;                                // share of remaining cost spent on excess failures
-        effect = l.effect.value;
-        row.failureRateBaseline = f(base); row.failureRateNow = f(now);
+      } else if (l.type === 'guardrail') {
+        // A guardrail against a repeat of an incident: its cost is shown, never counted as a monthly saving.
+        const a = anomalies.find((x) =&gt; x.useCase === l.useCase);
+        row.saving = null; row.guardrailCost = a ? a.excessCost : 0; row.anomaly = a || null; row.status = 'guardrail';
+        row.method = a
+          ? `Guardrail, not a recurring saving: the ${shortRange(a.from, a.to)} incident cost ${fmt(a.excessCost)} in failed runs above the normal rate (measured). A page-count pre-check and a two-retry cap stop a repeat.`
+          : 'Guardrail, not a recurring saving: no incident this month.';
+        out.push(row); continue;
       }
       const step = applyStep(scope.remaining, l.component, share, effect);
       scope.saved += step.saving;
@@ -1648,19 +1935,50 @@ export function priceLevers({ levers, allocated, billed, gw, metrics = [], outco
       row.check = { metric: 'non-production cluster cost per day', current: meanBefore, target: meanAfter };
       row.method = `Measured from the bill: mean daily cost ${fmt(meanBefore)} in ${monthLabel(prevMonth(month, 1))}, ${fmt(meanAfter)} from the change; ${Math.round(row.expectedOffShare * 100)}% of hours are scheduled off.`;
     } else if (l.type === 'rightsize') {
-      const low = new Set(vmUtil.filter((v) =&gt; v.month === month &amp;&amp; num(v.p95_cpu_pct) &lt; l.cpuThresholdPct).map((v) =&gt; v.resource));
-      const cost = sum(billed.filter((r) =&gt; r.x_Month === month &amp;&amp; low.has(r.ResourceName)).map((r) =&gt; r.EffectiveCost));
-      row.eligibleCost = cost; row.effect = l.effect.value; row.saving = cost * l.effect.value;
+      const low = new Set(rightsizeCandidates(vmUtil, org.months, l.cpuThresholdPct));
+      const rows = billed.filter((r) =&gt; r.x_Month === month &amp;&amp; low.has(r.ResourceName));
+      const cost = sum(rows.map((r) =&gt; r.EffectiveCost));
+      let after = 0;
+      for (const r of rows) { const down = retail(prices, NEXT_DOWN[r.SkuMeter]); after += down ? r.PricingQuantity * down.usd : r.EffectiveCost; }
+      row.eligibleCost = cost; row.saving = cost - after; row.effect = cost ? row.saving / cost : 0;
       row.resources = [...low];
-      row.check = { metric: 'cost per VM-day', current: cost / Math.max(1, low.size) / datesOfMonth(month).length, target: (cost * (1 - l.effect.value)) / Math.max(1, low.size) / datesOfMonth(month).length };
-      row.method = `Assumption-based: ${low.size} VMs (${[...low].join(', ')}) under ${l.cpuThresholdPct}% P95 CPU all month; ${l.effect.text}.`;
+      const n = Math.max(1, low.size); const days = datesOfMonth(month).length;
+      row.check = { metric: 'cost per VM-day', current: cost / n / days, target: after / n / days };
+      row.method = `Assumption-based: ${low.size} VMs (${[...low].join(', ')}) stayed under ${l.cpuThresholdPct}% P95 CPU all quarter (illustrative telemetry); one size down is priced from the Azure Retail Prices API, which halves the Dsv5 rate. Memory must fit too.`;
+    } else if (l.type === 'storage-tier') {
+      const hot = retail(prices, 'storage-hot-lrs'); const cool = retail(prices, 'storage-cool-lrs');
+      const cost = sum(billed.filter((r) =&gt; r.x_Month === month &amp;&amp; r.ResourceName === l.resource).map((r) =&gt; r.EffectiveCost));
+      row.eligibleCost = cost * l.olderShare; row.effect = hot &amp;&amp; cool ? 1 - cool.usd / hot.usd : 0; row.saving = row.eligibleCost * row.effect;
+      row.check = { metric: 'storage cost per GB-month', current: hot.usd, target: hot.usd * (1 - l.olderShare * row.effect) };
+      row.method = `Assumption-based: ${Math.round(l.olderShare * 100)}% of the data is older than 30 days (assumption); Cool LRS at ${unit(cool.usd)} against Hot at ${unit(hot.usd)} per GB-month (Azure Retail Prices API). Cool's higher operation charges and early-deletion charge are not priced.`;
+    } else if (l.type === 'search-tier') {
+      const from = retail(prices, l.fromSku); const to = retail(prices, l.toSku);
+      const rows = billed.filter((r) =&gt; r.x_Month === month &amp;&amp; r.ResourceName === l.resource);
+      const cost = sum(rows.map((r) =&gt; r.EffectiveCost));
+      const units = rows.length ? sum(rows.map((r) =&gt; r.PricingQuantity)) / rows.length / 24 : 0;
+      const after = from &amp;&amp; to &amp;&amp; units ? cost * ((l.toUnits * to.usd) / (units * from.usd)) : cost;
+      row.eligibleCost = cost; row.saving = cost - after; row.effect = cost ? row.saving / cost : 0;
+      row.unitsNow = units; row.costAfter = after;
+      row.check = { metric: 'search tier cost per day', current: cost / datesOfMonth(month).length, target: after / datesOfMonth(month).length };
+      row.method = `Assumption-based: ${Math.round(units)} ${from.meter.replace(' Unit', '')} units today; ${l.toUnits} ${to.meter.replace(' Unit', '')} units (${unit(to.usd)} an hour each against ${unit(from.usd)}, Azure Retail Prices API) if the index and query load fit, which is the assumption to test.`;
+    } else if (l.type === 'commitment') {
+      const rs = levers.find((x) =&gt; x.type === 'rightsize');
+      const f = computeFloor(billed, prices, vmUtil, org.months, rs);
+      const d = org.commitment &amp;&amp; Number.isFinite(org.commitment.savingsPlanDiscount) ? org.commitment.savingsPlanDiscount : savingsPlanDiscount(prices, l.term);
+      const hours = datesOfMonth(month).length * 24;
+      row.floor = f; row.discount = d;
+      row.eligibleCost = (f.floorPerDay / 24) * hours;
+      row.effect = d; row.saving = d === null ? null : row.eligibleCost * d;
+      row.commitmentPerHour = d === null ? null : (f.floorPerDay / 24) * (1 - d);
+      row.check = { metric: 'effective cost per production compute hour at the floor', current: f.floorPerDay / 24, target: row.commitmentPerHour ?? f.floorPerDay / 24 };
+      row.method = `Measured floor, price-sheet discount: production compute never fell below ${fmt(f.floorPerDay)} a day at pay-as-you-go rates (${unit(f.floorPerDay / 24)} an hour) across ${f.days} days, after the rightsizing above. A ${l.term.toLowerCase().replace(&quot; &quot;, &quot;-&quot;)} savings plan bills Dsv5 at ${pctTxt(1 - d)} of pay-as-you-go (Azure Retail Prices API), so commit ${unit(row.commitmentPerHour)} an hour: the floor times (1 \u2212 ${pctTxt(d)}).`;
     } else if (l.type === 'unpriced') {
       row.saving = null;
       row.method = 'Not priced: ' + l.effect.text + '.';
     }
     out.push(row);
   }
-  const counted = out.filter((r) =&gt; r.saving !== null &amp;&amp; !['on hold', 'blocked'].includes(r.status));
+  const counted = out.filter((r) =&gt; r.saving !== null &amp;&amp; !['on hold', 'blocked', 'guardrail'].includes(r.status));
   const by = (g) =&gt; sum(counted.filter((r) =&gt; r.grade === g).map((r) =&gt; r.saving));
   const totals = {
     measured: by('measured'),
@@ -1675,6 +1993,9 @@ export function priceLevers({ levers, allocated, billed, gw, metrics = [], outco
 }
 
 function fmt(x) { return '$' + Math.round(x).toLocaleString('en-GB'); }
+function unit(x) { return '$' + (x &gt;= 1 ? x.toFixed(2) : x &gt;= 0.1 ? x.toFixed(3) : x.toFixed(4)); }
+function pctTxt(x) { return (Math.round(x * 1000) / 10).toString().replace(/\.0$/, '') + '%'; }
+function shortRange(a, b) { const d = (x) =&gt; Number(x.slice(8, 10)); return `${d(a)} to ${d(b)} ${monthLabel(a.slice(0, 7))}`; }
 function monthLabel(m) { return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][Number(m.slice(5, 7)) - 1]; }
 
 function methodText(l, row) {
@@ -1685,6 +2006,12 @@ function methodText(l, row) {
   }
   if (l.type === 'failure') {
     return `Assumption-based: failure rate ${pct(row.failureRateNow)} against ${pct(row.failureRateBaseline)} in the two prior months (measured); ${l.effect.text}.`;
+  }
+  if (l.type === 'routing') {
+    return `Assumption-based: ${pct(l.eligible.value)} of hard-case tickets are simple enough (assumption); the price sheet puts the same tokens on GPT-5.4 mini at ${pct(row.priceRatio)} of GPT-5.4, so routing saves ${pct(row.effect)} of each routed ticket's cost.`;
+  }
+  if (l.type === 'discard-avoid') {
+    return `Assumption-based: ${pct(row.discardShare)} of explanations were never used (measured); generating on open avoids them, assuming ${pct(l.effect.value)} of unused ones are on alerts nobody opens.`;
   }
   if (l.effect.kind === 'prior') {
     const share = l.eligible.value !== undefined ? `${pct(l.eligible.value)} of the path eligible (assumption); ` : '';
@@ -1837,9 +2164,9 @@ export function whatIf(raw, prices, date, defaults) {
 // the no-JS view; the tests call it on the committed data.
 import { parseCsv, num } from './csv.js';
 import { normaliseExport, gatewayRows, requestIndex, priceOn } from './normalise.js';
-import { allocate, allocationSummary } from './allocate.js';
+import { allocate, allocationSummary, isAi, markAiSpend, FIXED_METHODS } from './allocate.js';
 import { reconcile } from './reconcile.js';
-import { unitEconomics, aiSpendByOwner, percentile } from './metrics.js';
+import { unitEconomics, aiSpendByOwner, percentile, failureAnomalies } from './metrics.js';
 import { baselineOf, budgetOf, scopeSeries, evaluateBudget, variance } from './budget.js';
 import { decideAll } from './decision.js';
 import { priceLevers } from './levers.js';
@@ -1872,35 +2199,35 @@ export function modelChanges(billed, month) {
 // over the other users of the pool in proportion to their own share. Returns, per use case with a
 // fixed share, the cost that moves and each other user's fully loaded cost per outcome before and after.
 export function sharedReallocation(ueMonth, allocated, month) {
+  // Pool by pool: the search tier goes to the other retrieval users, the gateway to the other gateway users.
+  const pools = [['searchShareSpend', 'search tier'], ['gatewayShareSpend', 'AI gateway']];
+  const users = Object.values(ueMonth);
   const out = {};
-  const users = Object.values(ueMonth).filter((u) =&gt; u.fixedSharedSpend &gt; 0);
   for (const u of users) {
-    const others = users.filter((x) =&gt; x.useCase !== u.useCase);
-    const base = others.reduce((s, x) =&gt; s + x.fixedSharedSpend, 0);
+    if (!(u.fixedSharedSpend &gt; 0)) continue;
+    const added = {};
+    for (const [key] of pools) {
+      const mine = u[key] !== undefined ? u[key] : (key === 'searchShareSpend' ? u.fixedSharedSpend : 0);
+      if (!(mine &gt; 0)) continue;
+      const others = users.filter((x) =&gt; x.useCase !== u.useCase &amp;&amp; (x[key] !== undefined ? x[key] : (key === 'searchShareSpend' ? x.fixedSharedSpend : 0)) &gt; 0);
+      const base = others.reduce((s, x) =&gt; s + (x[key] !== undefined ? x[key] : x.fixedSharedSpend), 0);
+      for (const x of others) added[x.useCase] = (added[x.useCase] || 0) + (base ? mine * ((x[key] !== undefined ? x[key] : x.fixedSharedSpend) / base) : 0);
+    }
     out[u.useCase] = {
       moved: u.fixedSharedSpend,
-      to: others.map((x) =&gt; {
-        const add = base ? u.fixedSharedSpend * (x.fixedSharedSpend / base) : 0;
-        return { useCase: x.useCase, added: add, from: x.costPerSuccess, to: x.successful ? (x.spend + add) / x.successful : null };
-      }),
+      to: Object.entries(added).map(([uc, add]) =&gt; {
+        const x = ueMonth[uc];
+        return { useCase: uc, added: add, from: x.costPerSuccess, to: x.successful ? (x.spend + add) / x.successful : null };
+      }).sort((a, b) =&gt; b.added - a.added),
     };
   }
   return out;
 }
 
-export function commitmentCall({ billed, gw, levers, org, months }) {
-  const discount = org.commitment &amp;&amp; Number.isFinite(org.commitment.savingsPlanDiscount) ? org.commitment.savingsPlanDiscount : null;
-  const rightsized = new Set((levers.levers.find((l) =&gt; l.id === 'vm-rightsize') || {}).resources || []);
-  const effect = (levers.levers.find((l) =&gt; l.id === 'vm-rightsize') || {}).effect || 0;
-  const daily = {};
-  for (const r of billed) {
-    if (r.ServiceCategory !== 'Compute' || !/prod$/.test(r.SubAccountId) || /nonprod/.test(r.SubAccountId)) continue;
-    const c = rightsized.has(r.ResourceName) ? r.EffectiveCost * (1 - effect) : r.EffectiveCost;
-    daily[r.x_Date] = (daily[r.x_Date] || 0) + c;
-  }
-  const values = Object.values(daily);
-  const floor = Math.min(...values);
-  const days = values.length;
+// The commitment call: the priced savings-plan lever, plus why provisioned throughput waits.
+export function commitmentCall({ gw, levers }) {
+  const c = levers.levers.find((l) =&gt; l.id === 'compute-commitment') || {};
+  const f = c.floor || { floorPerDay: null, days: 0, meanPerDay: null };
   const tok = {};
   for (const g of gw) if (g.x_Environment === 'prod' &amp;&amp; g.x_ModelId !== 'text-embedding') tok[g.x_Date] = (tok[g.x_Date] || 0) + g.ConsumedQuantity;
   const t = Object.values(tok);
@@ -1909,17 +2236,35 @@ export function commitmentCall({ billed, gw, levers, org, months }) {
   const minT = Math.min(...t);
   const maxT = Math.max(...t);
   return {
-    baselineDays: days, meetsBaselineRule: days &gt;= 60, computeFloorPerDay: floor, computeFloorPerHour: floor / 24,
-    savingsPlanDiscount: discount, commitmentPerHour: discount === null ? null : (floor / 24) * (1 - discount),
-    computeMeanPerDay: sum(values) / Math.max(1, days),
+    baselineDays: f.days, meetsBaselineRule: f.days &gt;= 60, computeFloorPerDay: f.floorPerDay, computeFloorPerHour: f.floorPerDay / 24,
+    savingsPlanDiscount: c.discount ?? null, commitmentPerHour: c.commitmentPerHour ?? null, monthlySaving: c.saving ?? null,
+    computeMeanPerDay: f.meanPerDay,
     tokensP50: p50, tokensP90: p90, tokensP90toP50: p50 ? p90 / p50 : null, tokensMaxToMin: minT ? maxT / minT : null,
     ptuRecommended: false,
   };
 }
 
+// Knowledge assistant scenario: fix retrieval up to the owner's quality bar, then downsize the search
+// tier. Same runs and avoidable cost per run; more useful answers; the tier's cost from the priced lever.
+export function knowledgeScenario({ ue, decisions, levers, uc = 'knowledge-assistant' }) {
+  const u = ue[uc]; const d = decisions[uc];
+  const tier = levers.levers.find((l) =&gt; l.id === 'search-tier');
+  if (!u || !d || !tier) return null;
+  const usefulNow = u.successful;
+  const usefulFixed = u.runs * Math.max(d.qualityBar, u.successRate);
+  const tierShare = u.searchShareSpend;
+  const tierAfterShare = tier.eligibleCost ? tierShare * (tier.costAfter / tier.eligibleCost) : tierShare;
+  return {
+    useCase: uc, value: d.valuePerSuccess, bar: d.qualityBar,
+    now: { useful: usefulNow, avoidable: u.avoidableSpend / usefulNow, loaded: u.spend / usefulNow },
+    fixed: { useful: usefulFixed, avoidable: u.avoidableSpend / usefulFixed, loaded: u.spend / usefulFixed },
+    fixedAndDownsized: { useful: usefulFixed, avoidable: u.avoidableSpend / usefulFixed, loaded: (u.spend - tierShare + tierAfterShare) / usefulFixed },
+  };
+}
+
 export function buildLedger(data) {
   const { prices, org, values } = data;
-  const billed = normaliseExport(rows(data.focus));
+  const billed = markAiSpend(normaliseExport(rows(data.focus)), org);
   const metrics = rows(data.tokens);
   const outcomes = rows(data.outcomes);
   const vmUtil = rows(data.vm || []);
@@ -1940,7 +2285,6 @@ export function buildLedger(data) {
   }
 
   const decisions = decideAll(ue[month], values, org);
-  const isAi = (r) =&gt; r.ServiceCategory === 'AI and Machine Learning';
   const ownersWithAi = Object.keys(org.owners).filter((o) =&gt; o !== 'unallocated');
   const ccuIds = Object.keys(org.gateway.ccuLines);
   const scopes = [
@@ -1960,8 +2304,10 @@ export function buildLedger(data) {
 
   const v = variance({ allocated, gw, outcomes, prices, org, month });
   const changes = modelChanges(billed, month);
-  const levers = priceLevers({ levers: data.levers.levers, allocated, billed, gw, metrics, outcomes, prices, org, ue: ue[month], decisions, vmUtil, month });
-  const commitment = commitmentCall({ billed, gw, levers, org, months });
+  const anomalies = failureAnomalies({ outcomes, allocated, org, month, prior: [prevMonth(month, 1), prevMonth(month, 2)] });
+  const levers = priceLevers({ levers: data.levers.levers, allocated, billed, gw, metrics, outcomes, prices, org, ue: ue[month], decisions, vmUtil, month, anomalies });
+  const commitment = commitmentCall({ gw, levers });
+  const scenario = knowledgeScenario({ ue: ue[month], decisions, levers });
 
   // Cost per KYC summary task across providers, from the measured October token counts.
   const kyc = ue[month]['kyc-review'];
@@ -2000,7 +2346,7 @@ export function buildLedger(data) {
     org, prices, values, month, months, previousMonth: prevMonth(month, 1), reallocation,
     billed, gw, allocated, outcomes,
     allocation, reconciliation, ue, decisions, aiTotals, aiByOwner, totals,
-    budget, variance: v, modelChanges: changes, levers, commitment, compare,
+    budget, variance: v, modelChanges: changes, levers, commitment, compare, anomalies, scenario,
     whatifDefaults, whatifBase,
     checks: {
       allocationSumsToBill: months.every((m) =&gt; Math.abs(allocation[m].allocatedTotal - allocation[m].billedTotal) &lt; 1e-6 * Math.max(1, allocation[m].billedTotal)),
@@ -2132,6 +2478,31 @@ test('reconciliation: a stale price row shows up as a residual and a mismatch', 
   // all tokens metered, so nothing unmetered; the $0.05 left is the bill disagreeing with the sheet
   close(r.lines[0].unmetered, 0); close(r.lines[0].residual, 0.05);
   assert.equal(r.priceMismatches.length, 1);
+});
+
+test('what the gateway did not meter stays unallocated', () =&gt; {
+  // 5M tokens billed for $125, 4M metered (3M support, 1M knowledge): 80% split 3:1, 20% held
+  const rows = allocate([bill({ dep: 'shared', model: 'gpt-5.4-mini', dir: 'Input', qty: 5e6, cost: 125 })], gw, requests, org);
+  const by = (pred) =&gt; sum(rows.filter(pred).map((r) =&gt; r.BilledCost));
+  close(by((r) =&gt; r.x_UseCase === 'support-assistant'), 75);
+  close(by((r) =&gt; r.x_UseCase === 'knowledge-assistant'), 25);
+  close(by((r) =&gt; r.AllocatedMethodId === 'unmetered-remainder' &amp;&amp; r.x_Owner === 'unallocated'), 25);
+  close(by(() =&gt; true), 125);
+  // a CCU line of $60 against $50 of metered estimate: $10 held
+  const ccu = allocate([bill({ id: CCU_ID, name: 'ccu', unit: 'CCU', qty: 6000, cost: 60 })], gw, requests, org);
+  close(sum(ccu.filter((r) =&gt; r.AllocatedMethodId === 'unmetered-remainder').map((r) =&gt; r.BilledCost)), 10);
+  close(sum(ccu.filter((r) =&gt; r.x_Owner === 'fincrime').map((r) =&gt; r.BilledCost)), 40);
+});
+
+test('the AI gateway pool is split by gateway requests across all deployments', () =&gt; {
+  const o = { ...org, allocation: { ...org.allocation, pools: { ...org.allocation.pools, 'ai-gateway': { method: 'gateway-request-share' } } } };
+  const req = { [D + '|embed']: { 'support-assistant': 100, 'knowledge-assistant': 300 }, [D + '|shared']: { 'support-assistant': 600 } };
+  const rows = allocate([bill({ name: 'apim', category: 'Integration', cost: 10, tags: { 'cost-pool': 'ai-gateway' } })], gw, req, o);
+  // 700 support requests and 300 knowledge requests of $10: 7 and 3
+  const by = Object.fromEntries(rows.map((r) =&gt; [r.x_UseCase, r]));
+  close(by['support-assistant'].BilledCost, 7);
+  close(by['knowledge-assistant'].BilledCost, 3);
+  assert.equal(by['support-assistant'].AllocatedMethodId, 'gateway-request-share');
 });</code></pre></details>
         <details class="code" open><summary>Test run: <code>node --test</code> in the pack folder</summary><pre><code>$ cd pack &amp;&amp; node --test
 ok 1  every billed dollar is allocated once: the split sums to 100% of the bill
@@ -2143,50 +2514,57 @@ ok 6  a token line the gateway never saw falls back to its tags
 ok 7  summary: owners, unallocated and the Crawl, Walk, Run stage
 ok 8  reconciliation: the gap is unmetered usage minus the discount, and the residual is zero
 ok 9  reconciliation: a stale price row shows up as a residual and a mismatch
-ok 10  baseline is the mean of the two prior months; budget is 115% of it
-ok 11  driver forecast: runs x cost per run for the days left
-ok 12  alerts fire on the expected days (raised the day after the data crosses)
-ok 13  no alert when spend stays under budget
-ok 14  variance: volume, price and mix add up to the change, with platform cost apart
-ok 15  the generator is reproducible: same seed, byte-identical files
-ok 16  every price row is cited and dated
-ok 17  outcomes add up: successful + failed + discarded = runs; retries are modelled on their own
-ok 18  the synthetic bill keeps one unit price per SKU and a unit that fits the service
-ok 19  allocation sums to 100% of billed cost in every month
-ok 20  the invoice is the source of truth: allocated AI cost equals billed AI cost
-ok 21  reconciliation gap is explained and the bypass is found
-ok 22  cost per successful outcome includes failed and discarded runs
-ok 23  October carries one dated price change and the variance adds up
-ok 24  budgets: 115% of baseline, alerts in a sensible order
-ok 25  levers: savings never exceed eligible cost or the remaining base
-ok 26  each decision follows the rule from its own avoidable cost, value and quality bar
-ok 27  the what-if at the measured defaults is finite and shows review outweighing the model bill
-ok 28  levers apply in sequence on the remaining base
-ok 29  a saving never exceeds its eligible cost, and the pipeline never exceeds the base
-ok 30  cache lever effect from the price sheet: 18% to 40% hit rate at a 90% read discount
-ok 31  the achievable cache hit rate comes from the stable prefix share of the prompt
-ok 32  only measured levers can be validated or realised
-ok 33  stopping a use case re-spreads its share of the fixed tier over the other users
-ok 34  evidence grades follow the weakest input
-ok 35  scale, fix or stop from cost per outcome against value per outcome
-ok 36  cost per task across providers at the same token counts (no tokenizer conversion)
-ok 37  percentile interpolates between closest ranks
-ok 38  failed, retried and discarded runs are counted as cost
-ok 39  cache hit rate and cache cost efficiency, including writes never read back
-ok 40  unit economics: monthly cost per success and P50, P90 of daily cost per success
-ok 41  csv: quoted fields, doubled quotes and JSON tags survive a round trip
-ok 42  meter names become FOCUS 1.5-shaped token columns
-ok 43  FOCUS 1.2 export columns are renamed to FOCUS 1.4 and typed
-ok 44  gateway metrics become estimate rows per token class at list price
-ok 45  priceOn picks the latest row in effect on the date
-ok 46  hand-computed fixture: one mini call per ticket
-ok 47  failed attempts and review time are paid for by each accepted draft
-ok 48  cache, batch, hard-case share and triage move the cost the right way
-ok 49  inputs are clamped: no negative, infinite or NaN results at the extremes
-ok 50  defaults passed in replace missing or broken inputs
+ok 10  what the gateway did not meter stays unallocated
+ok 11  the AI gateway pool is split by gateway requests across all deployments
+ok 12  baseline is the mean of the two prior months; budget is 115% of it
+ok 13  driver forecast: runs x cost per run for the days left
+ok 14  alerts fire on the expected days (raised the day after the data crosses)
+ok 15  no alert when spend stays under budget
+ok 16  variance: volume, price and mix add up to the change, with platform cost apart
+ok 17  the generator is reproducible: same seed, byte-identical files
+ok 18  every price row is cited and dated
+ok 19  outcomes add up: successful + failed + discarded = runs; retries are modelled on their own
+ok 20  the synthetic bill keeps one unit price per SKU and a unit that fits the service
+ok 21  allocation sums to 100% of billed cost in every month
+ok 22  the invoice is the source of truth: allocated AI cost equals billed AI cost
+ok 23  reconciliation gap is explained and the bypass is found
+ok 24  cost per successful outcome includes failed and discarded runs
+ok 25  October carries one dated price change and the variance adds up
+ok 26  budgets: 115% of baseline, alerts in a sensible order
+ok 27  levers: savings never exceed eligible cost or the remaining base
+ok 28  each decision follows the rule from its own avoidable cost, value and quality bar
+ok 29  the what-if at the measured defaults is finite and shows review outweighing the model bill
+ok 30  unmetered usage is held as unallocated, never charged to a team
+ok 31  the AI gateway is AI spend, split by gateway requests
+ok 32  the KYC incident is found from the data and its retry cap is a guardrail, not a saving
+ok 33  commitment: pay-as-you-go floor times (1 - d), d from the savings plan price
+ok 34  routing is priced from the price sheet: GPT-5.4 mini at 30% of GPT-5.4
+ok 35  levers apply in sequence on the remaining base
+ok 36  a saving never exceeds its eligible cost, and the pipeline never exceeds the base
+ok 37  cache lever effect from the price sheet: 18% to 40% hit rate at a 90% read discount
+ok 38  the achievable cache hit rate comes from the stable prefix share of the prompt
+ok 39  only measured levers can be validated or realised
+ok 40  stopping a use case re-spreads its share of the fixed tier over the other users
+ok 41  evidence grades follow the weakest input
+ok 42  scale, fix or stop from cost per outcome against value per outcome
+ok 43  cost per task across providers at the same token counts (no tokenizer conversion)
+ok 44  percentile interpolates between closest ranks
+ok 45  failed, retried and discarded runs are counted as cost
+ok 46  cache hit rate and cache cost efficiency, including writes never read back
+ok 47  unit economics: monthly cost per success and P50, P90 of daily cost per success
+ok 48  csv: quoted fields, doubled quotes and JSON tags survive a round trip
+ok 49  meter names become FOCUS 1.5-shaped token columns
+ok 50  FOCUS 1.2 export columns are renamed to FOCUS 1.4 and typed
+ok 51  gateway metrics become estimate rows per token class at list price
+ok 52  priceOn picks the latest row in effect on the date
+ok 53  hand-computed fixture: one mini call per ticket
+ok 54  failed attempts and review time are paid for by each accepted draft
+ok 55  cache, batch, hard-case share and triage move the cost the right way
+ok 56  inputs are clamped: no negative, infinite or NaN results at the extremes
+ok 57  defaults passed in replace missing or broken inputs
 
-# tests 50
-# pass 50
+# tests 57
+# pass 57
 # fail 0</code></pre></details>
         <details class="code"><summary><code>azure/kql/tokens-by-team.kql</code> and <code>azure/kql/cost-per-outcome.kql</code>: the near-real-time views (assumed table names stated)</summary><pre><code>// tokens-by-team.kql: daily tokens by team, use case, environment and deployment, from the gateway's
 // llm-emit-token-metric output (namespace ai-spend-ledger, see ../apim-ai-gateway.policy.xml).
@@ -2313,26 +2691,23 @@ const P = {
   knowledge: { weekday: 950, weekend: 80, growth: -0.06,
     tokens: { input: 38000, cached: 0.05, output: 800 }, outcome: { failed: 0.03, discarded: 0.59, retryFailed: 0.60, retryDiscarded: 0.22 }, retrievalPerRun: 3 },
   embedTokensPerCall: 350,
-  embedUsdPerMTok: 0.13,                      // illustrative billed rate; no embeddings price in the research
+  embedUsdPerMTok: 0.13,                      // text-embedding-3-large, global (prices.json)
   miniUnmeteredShare: 0.015,                  // an internal job calls the shared deployment directly
   sandbox: { from: '2026-09-15', sepInput: 2.0e6, sepOutput: 1.5e5, octInput: 1.8e7, octOutput: 1.2e6 },
   aoaiDiscount: 0.05,                         // illustrative negotiated discount on Azure OpenAI meters
-  // Cloud estate. Illustrative constant unit rates close to retail list prices; none is sourced in
-  // this pack's research, so confirm any of them from the Azure Retail Prices API before relying on
-  // it. One rate per SKU for the whole window: quantities move from day to day, unit prices do not.
-  rates: {
-    'd16s-v5': { usd: 0.84, unit: 'Hours', meter: 'D16s v5' },
-    'd8s-v5': { usd: 0.42, unit: 'Hours', meter: 'D8s v5' },
-    'd4s-v5': { usd: 0.21, unit: 'Hours', meter: 'D4s v5' },
-    'sql-gp-vcore': { usd: 0.50, unit: 'vCore Hours', meter: 'General Purpose vCore' },
-    'storage-hot-lrs': { usd: 0.02, unit: 'GB-Months', meter: 'Hot LRS Data Stored' },
-    'log-analytics-ingest': { usd: 2.30, unit: 'GB', meter: 'Analytics Logs Data Ingestion' },
-    'apim-standard-v2': { usd: 1.90, unit: 'Unit Hours', meter: 'Standard v2 Unit' },
-    'search-s2': { usd: 1.34, unit: 'Search Unit Hours', meter: 'Standard S2 Unit' },
-  },
+  // Cloud estate. Unit rates are the Azure Retail Prices API's UK South pay-as-you-go prices, read
+  // on 4 Nov 2026 (prices.json, azureRetail). One rate per SKU for the whole window: quantities move
+  // from day to day, unit prices do not.
+  rates: Object.fromEntries([
+    ['d16s-v5', 'Hours'], ['d8s-v5', 'Hours'], ['d4s-v5', 'Hours'], ['sql-gp-vcore', 'vCore Hours'],
+    ['storage-hot-lrs', 'GB-Months'], ['log-analytics-ingest', 'GB'], ['apim-standard-v2', 'Unit Hours'], ['search-s2', 'Search Unit Hours'],
+  ].map(([key, unit]) =&gt; {
+    const r = prices.azureRetail.rows.find((x) =&gt; x.key === key);
+    return [key, { usd: r.usd, unit, meter: r.meter }];
+  })),
   cloud: {
     aksProdWeekdayNodes: 42, aksProdWeekendNodes: 36, aksNonprodNodes: 20, aksNonprodSystemNodes: 2, scheduleFrom: '2026-10-13',
-    sqlVcores: 8, storageGb: 58000, storageGrowth: 0.06, logGbPerDay: 55, appInsightsGbPerDay: 8, apimUnits: 2, searchUnits: 6,
+    sqlVcores: 8, storageGb: 42000, storageGrowth: 0.06, logGbPerDay: 55, appInsightsGbPerDay: 8, apimUnits: 2, searchUnits: 6,
   },
 };
 
@@ -2547,8 +2922,11 @@ for (const d of dates) {
     ['log-shared-uks', 'Microsoft.OperationalInsights/workspaces', 'Log Analytics', 'Management and Governance', 'log-analytics-ingest', C.logGbPerDay * jitter(0.08)],
     ['appi-shared-uks', 'Microsoft.Insights/components', 'Application Insights', 'Management and Governance', 'log-analytics-ingest', C.appInsightsGbPerDay * jitter(0.1)],
     ['apim-ai-gateway', 'Microsoft.ApiManagement/service', 'API Management', 'Integration', 'apim-standard-v2', C.apimUnits * 24]]) {
+    // The gateway and the Application Insights it reports to carry the AI gateway pool tag; the
+    // shared Log Analytics workspace has no owner and no pool.
+    const tags = name === 'log-shared-uks' ? { environment: 'prod' } : { 'cost-pool': 'ai-gateway', environment: 'prod' };
     cloudLine(d, { sub: 'sub-shared', rg: 'rg-shared-observability', id: `/subscriptions/sub-shared/resourceGroups/rg-shared-observability/providers/${provider}/${name}`,
-      category, service, rate, qty, tags: { environment: 'prod' } });
+      category, service, rate, qty, tags });
   }
 }
 
@@ -2578,10 +2956,10 @@ if (!process.env.QUIET) console.log(`focus_export.csv ${bill.length} rows; token
               <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/focus_export.csv"><code>focus_export.csv</code></a></th><td role="cell" data-label="Grain"><div class="v">Day by billed line</div></td><td role="cell" data-label="Columns"><div class="v">Shaped like an Azure Cost Management FOCUS export, with <span data-src="S7">FOCUS 1.2</span> names and one constant illustrative rate per SKU; see the mapping above</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/token_metrics.csv"><code>token_metrics.csv</code></a></th><td role="cell" data-label="Grain"><div class="v">Day by subscription, use case and deployment</div></td><td role="cell" data-label="Columns"><div class="v"><code>date, apim_subscription, team, use_case, environment, model, deployment, input_tokens, cached_input_tokens, cache_write_tokens, output_tokens, requests, batch_requests</code>; input includes cached and cache-write tokens</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/outcomes.csv"><code>outcomes.csv</code></a></th><td role="cell" data-label="Grain"><div class="v">Day by use case</div></td><td role="cell" data-label="Columns"><div class="v"><code>runs, successful, failed, retried, discarded, review_minutes</code>; successful, failed and discarded add up to runs, and retried counts runs that were retries</div></td></tr>
-              <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/prices.json"><code>prices.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Model by token class</div></td><td role="cell" data-label="Columns"><div class="v">USD per million tokens, effective date, source id and read date on every row; batch, cache and CCU rules with sources</div></td></tr>
+              <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/prices.json"><code>prices.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Model by token class</div></td><td role="cell" data-label="Columns"><div class="v">USD per million tokens, effective date, source id and read date on every row; batch, cache and CCU rules with sources; Azure Retail Prices API rows for the cloud services, each with its query and savings-plan prices</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/value.json"><code>value.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Use case</div></td><td role="cell" data-label="Columns"><div class="v">Illustrative minutes saved, loaded cost per minute, the assumption in words, and the owner's quality bar</div></td></tr>
               <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/levers.json"><code>levers.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Lever</div></td><td role="cell" data-label="Columns"><div class="v">Scope, order, eligible share and effect with their kind, quality gate, owner and status</div></td></tr>
-              <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/org.json"><code>org.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Organisation</div></td><td role="cell" data-label="Columns"><div class="v">Owners, use cases, gateway wiring, allocation rules, budget and decision thresholds</div></td></tr>
+              <tr role="row"><th role="rowheader" scope="row" data-label="File"><a href="pack/data/org.json"><code>org.json</code></a></th><td role="cell" data-label="Grain"><div class="v">Organisation</div></td><td role="cell" data-label="Columns"><div class="v">Owners, use cases, gateway wiring, the two AI pools and their split rules, allocation rules, budget, anomaly and decision thresholds</div></td></tr>
             </tbody>
           </table>
         </div>
@@ -2612,7 +2990,7 @@ if (!process.env.QUIET) console.log(`focus_export.csv ${bill.length} rows; token
 <tr role="row" id="src-S8" data-src="S8"><th role="rowheader" scope="row" data-label="Id">S8</th><td role="cell" data-label="Source"><div class="v">Microsoft Learn: budgets, anomaly alerts, cost allocation, tag inheritance, savings plans or reservations</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets</span><br><span class="url">https://learn.microsoft.com/en-us/azure/cost-management-billing/understand/analyze-unexpected-charges</span><br><span class="url">https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/allocate-costs</span><br><span class="url">https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/enable-tag-inheritance</span><br><span class="url">https://learn.microsoft.com/en-us/azure/cost-management-billing/savings-plan/decide-between-savings-plan-reservation</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
 <tr role="row" id="src-S9" data-src="S9"><th role="rowheader" scope="row" data-label="Id">S9</th><td role="cell" data-label="Source"><div class="v">Microsoft Learn: API Management llm-emit-token-metric and llm-token-limit policies</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://learn.microsoft.com/en-us/azure/api-management/llm-emit-token-metric-policy</span><br><span class="url">https://learn.microsoft.com/en-us/azure/api-management/llm-token-limit-policy</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
 <tr role="row" id="src-S10" data-src="S10"><th role="rowheader" scope="row" data-label="Id">S10</th><td role="cell" data-label="Source"><div class="v">Anthropic: Claude pricing (list prices, batch, caching, tokenizer, Claude in Microsoft Foundry billing)</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://platform.claude.com/docs/en/about-claude/pricing</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
-<tr role="row" id="src-S11" data-src="S11"><th role="rowheader" scope="row" data-label="Id">S11</th><td role="cell" data-label="Source"><div class="v">Azure Retail Prices API: Foundry Models, UK South, retail</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://prices.azure.com/api/retail/prices</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
+<tr role="row" id="src-S11" data-src="S11"><th role="rowheader" scope="row" data-label="Id">S11</th><td role="cell" data-label="Source"><div class="v">Azure Retail Prices API: Foundry Models and cloud services (VMs, SQL, storage, Log Analytics, API Management, AI Search), UK South, retail and savings plan</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://prices.azure.com/api/retail/prices</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026 (Foundry Models);<br>4 Nov 2026 (cloud services)</div></td></tr>
 <tr role="row" id="src-S12" data-src="S12"><th role="rowheader" scope="row" data-label="Id">S12</th><td role="cell" data-label="Source"><div class="v">OpenAI: API pricing and the Batch guide</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://developers.openai.com/api/docs/pricing</span><br><span class="url">https://developers.openai.com/api/docs/guides/batch</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
 <tr role="row" id="src-S13" data-src="S13"><th role="rowheader" scope="row" data-label="Id">S13</th><td role="cell" data-label="Source"><div class="v">Microsoft FinOps toolkit</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/finops-toolkit-overview</span><br><span class="url">https://github.com/microsoft/finops-toolkit</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
 <tr role="row" id="src-S14" data-src="S14"><th role="rowheader" scope="row" data-label="Id">S14</th><td role="cell" data-label="Source"><div class="v">Bank of England PRA SS1/23; FCA AI approach; FCA operational resilience</div></td><td role="cell" data-label="URL"><div class="v"><span class="url">https://www.bankofengland.co.uk/prudential-regulation/publication/2023/may/model-risk-management-principles-for-banks-ss</span><br><span class="url">https://www.fca.org.uk/firms/innovation/ai-approach</span><br><span class="url">https://www.fca.org.uk/firms/operational-resilience</span></div></td><td role="cell" data-label="Read"><div class="v">3 Nov 2026</div></td></tr>
@@ -2629,6 +3007,7 @@ if (!process.env.QUIET) console.log(`focus_export.csv ${bill.length} rows; token
           <li><a href="pack.zip"><code>pack.zip</code></a> data, engine, tests, Azure artefacts and the generator</li>
           <li><a href="pack/README.md"><code>README.md</code></a> what is in the pack and how to run it</li>
           <li><a href="pack/azure/apim-ai-gateway.policy.xml"><code>apim-ai-gateway.policy.xml</code></a> gateway policy</li>
+          <li><a href="pack/azure/policy-close-bypass.bicep"><code>policy-close-bypass.bicep</code></a> Azure Policy assignments that close the bypass</li>
           <li><a href="pack/azure/budget.bicep"><code>budget.bicep</code></a>, <a href="pack/azure/budget-ccu-subscription.bicep"><code>budget-ccu-subscription.bicep</code></a> and <a href="pack/azure/budget.parameters.json"><code>budget.parameters.json</code></a> budgets</li>
           <li><a href="pack/azure/kql/tokens-by-team.kql"><code>tokens-by-team.kql</code></a>, <a href="pack/azure/kql/cost-per-outcome.kql"><code>cost-per-outcome.kql</code></a>, <a href="pack/azure/kql/soft-quota-alert.kql"><code>soft-quota-alert.kql</code></a></li>
           <li><a href="pack/azure/focus-mapping.md"><code>focus-mapping.md</code></a> column mapping</li>

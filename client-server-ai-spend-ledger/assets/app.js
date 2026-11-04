@@ -114,6 +114,7 @@ function wireBuild(vm) {
   setRegion('compare-bars', cmp.bars);
   setRegion('compare-table', cmp.table);
   setRegion('commitment', R.renderCommitment(vm));
+  setRegion('scenario', R.renderScenario(vm));
 }
 
 compute().then(({ vm, ms, mainThread }) => {

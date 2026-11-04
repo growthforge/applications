@@ -68,10 +68,16 @@ test('variance: volume, price and mix add up to the change, with platform cost a
   const o = { ...org, useCases: { 'support-assistant': org.useCases['support-assistant'] } };
   const v = variance({ allocated, gw: [], outcomes, prices, org: o, month: '2026-10' });
   const r = v.rows[0];
-  close(r.volume, 20 * (1.75 / 100));                 // 0.35
+  // October has 31 days, September 30: one more day at September's level is the calendar effect
+  close(r.calendar, 1.75 / 30);                       // 0.0583
+  close(r.volume, (120 - 100 * 31 / 30) * (1.75 / 100));   // 0.2917: runs per day, not the extra day
   close(r.price, 0.8 * (2.50 - 1.75));                // 0.60: only the GPT-5.4 tokens changed price
-  close(r.mix, (3.05 - 1.75) - 0.35 - 0.60);          // 0.35: 0.2M more tokens than volume explains, at $1.75
-  close(v.platform, 2);
+  close(r.mix, (3.05 - 1.75) - 1.75 / 30 - (120 - 100 * 31 / 30) * 0.0175 - 0.60);   // 0.35, as before
+  close(r.mix, 0.35);
+  // the fixed platform: $10 a day-equivalent month becomes $12; one more day explains 0.333 of it
+  close(v.calendarFixed, 10 / 30);
+  close(v.fixedPlatform, 12 - 10 * 31 / 30);
+  close(v.unattributed, 0);
   close(v.change, 3.30);
-  close(v.volume + v.price + v.mix + v.platform, v.change);
+  close(v.calendar + v.volume + v.price + v.mix + v.platform, v.change);
 });

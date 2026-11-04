@@ -70,6 +70,10 @@
       "shared-ai-platform": {
         "method": "retrieval-call-share",
         "about": "AI Search and the embeddings deployment, split by each use case's share of retrieval calls (embedding requests through the gateway) on the day."
+      },
+      "ai-gateway": {
+        "method": "gateway-request-share",
+        "about": "The API Management gateway and its Application Insights, split by each use case's share of gateway requests (model and embedding calls) on the day."
       }
     },
     "resourceGroupTags": {
@@ -103,7 +107,12 @@
       "walk": 0.85,
       "run": 0.9,
       "src": "S5"
-    }
+    },
+    "aiPools": [
+      "shared-ai-platform",
+      "ai-gateway"
+    ],
+    "about": "AI spend is every billed line in ServiceCategory 'AI and Machine Learning' plus the AI cost pools (the shared AI platform and the AI gateway). Fixed shared cost is what the two pools split by retrieval calls or gateway requests: it stays if one use case stops. What the gateway did not meter stays unallocated until someone explains it."
   },
   "budget": {
     "multiple": 1.15,
@@ -125,6 +134,12 @@
   },
   "commitment": {
     "savingsPlanDiscount": null,
-    "about": "Savings plans and reservations are bought at discounted hourly rates, so the hourly commitment is the steady pay-as-you-go floor times (1 - discount). The discount comes from Microsoft's savings plan recommendation for the actual SKU mix (Cost Management), not from this pack's sources, so it is left as a parameter: set it here to size the commitment."
+    "term": "1 Year",
+    "about": "Savings plans are bought at discounted hourly rates, so the hourly commitment is the steady pay-as-you-go floor times (1 - d). d comes from the Azure Retail Prices API's savingsPlan price for the SKU (1-year term, Dsv5) unless savingsPlanDiscount is set here, for example from Microsoft's recommendation for the actual SKU mix."
+  },
+  "anomaly": {
+    "sdMultiple": 4,
+    "minRatioToBaseline": 2,
+    "about": "A day is an anomaly when its failure rate is more than 4 standard deviations above, and at least twice, the mean daily failure rate of the two prior months."
   }
 }

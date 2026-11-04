@@ -18,8 +18,13 @@
        the monthly allowance is watched by an alert on the emitted metric at 80% and 100%
        (kql/soft-quota-alert.kql). A high tokens-per-minute ceiling (429) still stops runaway loops.
     3. Outside production: hard limits. Tokens per minute (429) and a monthly token quota (403).
-    4. Emits token counts to Application Insights with those four dimensions, which the ledger joins
-       to the bill to split shared lines between teams.
+    4. Emits token counts to Application Insights with five dimensions (team, use case, environment,
+       deployment or model, provider), which the ledger joins to the bill to split shared lines.
+    5. Never guesses the model: a call with no deployment in the URL and no model in the body is
+       refused (400), so nothing is metered under the wrong model or provider.
+  Closing the bypass needs the other half too: key access disabled on the AI resources and their
+  network restricted to this gateway (see policy-close-bypass.bicep). The gateway then calls Azure
+  OpenAI with its managed identity, below.
 -->
 <policies>
   <!-- inbound: runs before the request is forwarded to the model backend -->
@@ -32,8 +37,41 @@
     <set-variable name="useCase" value="@{ var p = (context.Subscription?.Name ?? &quot;&quot;).Split('.'); return p.Length == 3 ? p[1] : &quot;unknown&quot;; }" />
     <!-- environment: third part; anything other than prod is treated as non-production, so the hard limits apply -->
     <set-variable name="environment" value="@{ var p = (context.Subscription?.Name ?? &quot;&quot;).Split('.'); return p.Length == 3 &amp;&amp; p[2] == &quot;prod&quot; ? &quot;prod&quot; : &quot;nonprod&quot;; }" />
-    <!-- deployment: the Azure OpenAI deployment from the URL template /openai/deployments/{deployment-id}/...; the Claude API uses a single named backend -->
-    <set-variable name="deployment" value="@(context.Request.MatchedParameters.ContainsKey(&quot;deployment-id&quot;) ? context.Request.MatchedParameters[&quot;deployment-id&quot;] : &quot;claude-sonnet-55-kyc&quot;)" />
+    <!-- provider: which API this call came in on. The Azure OpenAI API is published under the path openai and
+         the Anthropic Messages API (Claude in Foundry) under anthropic; adjust the prefix to your API paths. -->
+    <set-variable name="provider" value="@(context.Api.Path.StartsWith(&quot;anthropic&quot;) ? &quot;anthropic&quot; : &quot;azure-openai&quot;)" />
+    <!-- deployment: from the URL template /openai/deployments/{deployment-id}/... when there is one; otherwise
+         the model field in the JSON body, which the Azure OpenAI v1 paths (/openai/v1/chat/completions,
+         /openai/v1/responses) and the Anthropic Messages API both carry. The body is read with
+         preserveContent so the backend still receives it. Nothing found: unknown, and refused below. -->
+    <set-variable name="deployment" value="@{
+      if (context.Request.MatchedParameters.ContainsKey(&quot;deployment-id&quot;)) { return context.Request.MatchedParameters[&quot;deployment-id&quot;]; }
+      var body = context.Request.Body?.As&lt;JObject&gt;(preserveContent: true);
+      var model = body?[&quot;model&quot;]?.ToString();
+      return string.IsNullOrEmpty(model) ? &quot;unknown&quot; : model;
+    }" />
+    <!-- choose: refuse calls the gateway cannot attribute to a model, instead of labelling them as one -->
+    <choose>
+      <!-- when: no deployment and no model -->
+      <when condition="@((string)context.Variables[&quot;deployment&quot;] == &quot;unknown&quot;)">
+        <!-- return-response: 400 with a short reason; nothing reaches a model and nothing is metered -->
+        <return-response>
+          <!-- set-status: client error -->
+          <set-status code="400" reason="Bad Request" />
+          <!-- set-body: the reason, as JSON -->
+          <set-body>{"error": "A deployment in the path or a model in the body is required so the call can be metered."}</set-body>
+        </return-response>
+      </when>
+    </choose>
+    <!-- choose: Azure OpenAI calls authenticate with the gateway's managed identity, so the AI resources can
+         have key access disabled; the Claude backend's credentials are set on its backend entity -->
+    <choose>
+      <!-- when: the Azure OpenAI API -->
+      <when condition="@((string)context.Variables[&quot;provider&quot;] == &quot;azure-openai&quot;)">
+        <!-- authentication-managed-identity: a token for Azure AI services, sent as the Authorization header -->
+        <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+      </when>
+    </choose>
     <!-- choose: pick the limit by environment -->
     <choose>
       <!-- when: production traffic -->
@@ -55,11 +93,11 @@
     </choose>
     <!-- llm-emit-token-metric: sends prompt, completion and total token counts (cached tokens in preview) to
          Application Insights in the ai-spend-ledger namespace. Needs Application Insights integration with
-         custom metrics enabled. Four custom dimensions (the limit is five per policy). Subscription ID is not
-         added because the three labels already identify the subscription, and fewer dimensions keep the
-         product of unique values well under the 1,000 active time series API Management tracks per namespace
-         (beyond that, data is silently discarded). For OpenAI streaming calls set include_usage to true, or
-         counts can be missing. -->
+         custom metrics enabled. Five custom dimensions, the limit per policy. Subscription ID is not added
+         because the three labels already identify the subscription; the product of unique values (about 4
+         teams, 4 use cases, 2 environments, 8 deployments, 2 providers) stays under the 1,000 active time
+         series API Management tracks per namespace (beyond that, data is silently discarded). For OpenAI
+         streaming calls set include_usage to true, or counts can be missing. -->
     <llm-emit-token-metric namespace="ai-spend-ledger">
       <!-- dimension: owning team, from the subscription name -->
       <dimension name="team" value="@((string)context.Variables[&quot;team&quot;])" />
@@ -67,8 +105,10 @@
       <dimension name="use-case" value="@((string)context.Variables[&quot;useCase&quot;])" />
       <!-- dimension: prod or nonprod, so production and experiments are never mixed in one figure -->
       <dimension name="environment" value="@((string)context.Variables[&quot;environment&quot;])" />
-      <!-- dimension: model deployment, the key the ledger matches to the billed line -->
+      <!-- dimension: model deployment (or model name on the v1 and Anthropic paths), the key the ledger matches to the billed line -->
       <dimension name="deployment" value="@((string)context.Variables[&quot;deployment&quot;])" />
+      <!-- dimension: provider, so Azure OpenAI and Claude calls never share a line in the metrics -->
+      <dimension name="provider" value="@((string)context.Variables[&quot;provider&quot;])" />
     </llm-emit-token-metric>
   </inbound>
   <!-- backend: forward to the model; nothing extra here -->

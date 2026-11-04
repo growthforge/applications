@@ -14,27 +14,27 @@
       "value": [
         {
           "owner": "customer-ops",
-          "amount": 1419
+          "amount": 1631
         },
         {
           "owner": "fincrime",
-          "amount": 354
+          "amount": 374
         },
         {
           "owner": "fraud-analytics",
-          "amount": 2465
+          "amount": 2575
         },
         {
           "owner": "engineering",
-          "amount": 40903
+          "amount": 40493
         }
       ]
     },
     "sharedPlatformAmount": {
-      "value": 9325
+      "value": 11903
     },
-    "allAiAmount": {
-      "value": 17315
+    "aiServicesAmount": {
+      "value": 19641
     },
     "aiServiceNames": {
       "value": [
@@ -47,7 +47,7 @@
       "value": "00000000-0000-0000-0000-000000000000"
     },
     "claudeCcuAmount": {
-      "value": 4761
+      "value": 5833
     },
     "claudeResourceGroup": {
       "value": "rg-ai-prod"

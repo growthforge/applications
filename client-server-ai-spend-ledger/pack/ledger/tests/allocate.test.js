@@ -122,3 +122,28 @@ test('reconciliation: a stale price row shows up as a residual and a mismatch', 
   close(r.lines[0].unmetered, 0); close(r.lines[0].residual, 0.05);
   assert.equal(r.priceMismatches.length, 1);
 });
+
+test('what the gateway did not meter stays unallocated', () => {
+  // 5M tokens billed for $125, 4M metered (3M support, 1M knowledge): 80% split 3:1, 20% held
+  const rows = allocate([bill({ dep: 'shared', model: 'gpt-5.4-mini', dir: 'Input', qty: 5e6, cost: 125 })], gw, requests, org);
+  const by = (pred) => sum(rows.filter(pred).map((r) => r.BilledCost));
+  close(by((r) => r.x_UseCase === 'support-assistant'), 75);
+  close(by((r) => r.x_UseCase === 'knowledge-assistant'), 25);
+  close(by((r) => r.AllocatedMethodId === 'unmetered-remainder' && r.x_Owner === 'unallocated'), 25);
+  close(by(() => true), 125);
+  // a CCU line of $60 against $50 of metered estimate: $10 held
+  const ccu = allocate([bill({ id: CCU_ID, name: 'ccu', unit: 'CCU', qty: 6000, cost: 60 })], gw, requests, org);
+  close(sum(ccu.filter((r) => r.AllocatedMethodId === 'unmetered-remainder').map((r) => r.BilledCost)), 10);
+  close(sum(ccu.filter((r) => r.x_Owner === 'fincrime').map((r) => r.BilledCost)), 40);
+});
+
+test('the AI gateway pool is split by gateway requests across all deployments', () => {
+  const o = { ...org, allocation: { ...org.allocation, pools: { ...org.allocation.pools, 'ai-gateway': { method: 'gateway-request-share' } } } };
+  const req = { [D + '|embed']: { 'support-assistant': 100, 'knowledge-assistant': 300 }, [D + '|shared']: { 'support-assistant': 600 } };
+  const rows = allocate([bill({ name: 'apim', category: 'Integration', cost: 10, tags: { 'cost-pool': 'ai-gateway' } })], gw, req, o);
+  // 700 support requests and 300 knowledge requests of $10: 7 and 3
+  const by = Object.fromEntries(rows.map((r) => [r.x_UseCase, r]));
+  close(by['support-assistant'].BilledCost, 7);
+  close(by['knowledge-assistant'].BilledCost, 3);
+  assert.equal(by['support-assistant'].AllocatedMethodId, 'gateway-request-share');
+});

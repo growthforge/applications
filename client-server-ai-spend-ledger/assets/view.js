@@ -4,7 +4,7 @@
 import { datesOfMonth } from '../pack/ledger/dates.js';
 
 const pick = (o, keys) => Object.fromEntries(keys.map((k) => [k, o[k]]));
-const UE_KEYS = ['useCase', 'name', 'owner', 'month', 'spend', 'avoidableSpend', 'fixedSharedSpend', 'embeddingSpend', 'tokenSpend', 'avoidableCostPerSuccess', 'runs', 'successful', 'failed', 'retried', 'discarded',
+const UE_KEYS = ['useCase', 'name', 'owner', 'month', 'spend', 'avoidableSpend', 'fixedSharedSpend', 'searchShareSpend', 'gatewayShareSpend', 'embeddingSpend', 'tokenSpend', 'avoidableCostPerSuccess', 'runs', 'successful', 'failed', 'retried', 'discarded',
   'reviewMinutes', 'successRate', 'costPerRun', 'costPerSuccess', 'p50', 'p90', 'failedShareOfCost', 'failedCost', 'cacheHitRate', 'cacheCostEfficiency',
   'tokens', 'tokensPerSuccess', 'costPerMTok', 'reviewMinutesPerSuccess'];
 
@@ -30,7 +30,7 @@ export function viewModel(L) {
   const owners = L.budget.filter((b) => b.id.startsWith('owner:')).map((b) => ({ id: b.owner, name: b.label, baseline: b.baseline, budget: b.budget, actual: b.actual,
     pct: b.pctOfBudget, alerts: b.alerts, forecastEnd: b.path[b.path.length - 1].forecast, monthly: b.monthly }));
   const ccu = L.budget.find((b) => b.id === 'ccu-meter');
-  const allocation = Object.fromEntries(L.months.map((m) => [m, pick(L.allocation[m], ['billedTotal', 'allocatedTotal', 'byOwner', 'byMethod', 'unallocated', 'owned', 'ownedPct', 'stage', 'targets', 'unallocatedGroups'])]));
+  const allocation = Object.fromEntries(L.months.map((m) => [m, pick(L.allocation[m], ['billedTotal', 'allocatedTotal', 'byOwner', 'byMethod', 'unallocated', 'owned', 'ownedPct', 'stage', 'targets', 'unallocatedGroups', 'unallocatedByCause'])]));
   const rec = L.reconciliation[L.month];
   return {
     generatedFrom: { billedRows: L.billed.length, metricRows: L.gw.length, outcomeRows: L.outcomes.length, allocatedRows: L.allocated.length },
@@ -47,12 +47,13 @@ export function viewModel(L) {
     reconciliation: { lines: rec.lines, totals: rec.totals, bypass: rec.bypass.map((b) => b.label), partial: rec.partial.map((b) => b.label), priceMismatches: rec.priceMismatches.length },
     levers: L.levers.levers, leverTotals: L.levers.totals,
     stopLine: stopOf(L),
+    anomalies: L.anomalies, scenario: L.scenario,
     reallocation: L.reallocation,
     commitment: L.commitment,
     compare: L.compare,
     whatif: { defaults: L.whatifDefaults, base: L.whatifBase, ledgerCostPerSuccess: L.ue[L.month]['support-assistant'].costPerSuccess,
       ledgerTokenCostPerSuccess: L.ue[L.month]['support-assistant'].tokenSpend / L.ue[L.month]['support-assistant'].successful },
     coverageOfAllAi: rec.totals.coverageOfAllAi,
-    prices: { rows: L.prices.rows, rules: L.prices.rules, models: L.prices.models, readOn: L.prices.readOn },
+    prices: { rows: L.prices.rows, rules: L.prices.rules, models: L.prices.models, readOn: L.prices.readOn, retail: L.prices.azureRetail.rows.map((r) => ({ key: r.key, sku: r.sku, meter: r.meter, usd: r.usd, unit: r.unit, savingsPlan: r.savingsPlan || null, readOn: r.readOn })) },
   };
 }

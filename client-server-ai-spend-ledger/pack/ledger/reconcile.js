@@ -11,6 +11,7 @@
 // restates it over all AI spend, including the AI Search tier, which is not token-billed); a bypass is a billed line
 // with no metered calls at all.
 import { tokenClassOf, priceOn } from './normalise.js';
+import { isAi } from './allocate.js';
 
 const BYPASS_FLOOR = 1;          // dollars: ignore rounding-size lines
 const PARTIAL_BELOW = 0.98;      // coverage below this is flagged as partial
@@ -88,7 +89,7 @@ export function reconcile(billed, gw, prices, org, month) {
     coverage: totBilled ? out.reduce((s, x) => s + x.billed * x.coverage, 0) / totBilled : 0,
   };
   totals.gap = pricedRows.reduce((s, x) => s + x.billed, 0) - totals.estimate;
-  const notTokenBilled = billed.filter((r) => r.x_Month === month && r.ServiceCategory === 'AI and Machine Learning' && r.ConsumedUnit !== 'Tokens' && !org.gateway.ccuLines[r.ResourceId]);
+  const notTokenBilled = billed.filter((r) => r.x_Month === month && isAi(r) && r.ConsumedUnit !== 'Tokens' && !org.gateway.ccuLines[r.ResourceId]);
   totals.notTokenBilled = notTokenBilled.reduce((s, r) => s + r.BilledCost, 0);
   // The same explained cost as a share of all AI spend, including lines that are not token-billed.
   totals.coverageOfAllAi = (totBilled + totals.notTokenBilled) ? (totals.coverage * totBilled) / (totBilled + totals.notTokenBilled) : 0;

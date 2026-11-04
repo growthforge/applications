@@ -13,6 +13,7 @@
 // no caching. It goes negative when cache writes are not read back.
 import { priceOn } from './normalise.js';
 import { num } from './csv.js';
+import { isAi, FIXED_METHODS } from './allocate.js';
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 
@@ -69,23 +70,25 @@ export function cacheStats(gwRows, prices) {
 export function unitEconomics({ allocated, gw, outcomes, prices, org, month }) {
   const out = {};
   for (const [uc, meta] of Object.entries(org.useCases)) {
-    const rows = allocated.filter((r) => r.x_Month === month && r.x_UseCase === uc && r.ServiceCategory === 'AI and Machine Learning');
+    const rows = allocated.filter((r) => r.x_Month === month && r.x_UseCase === uc && isAi(r));
     const spend = sum(rows.map((r) => r.EffectiveCost));
-    const fixedShared = sum(rows.filter((r) => r.AllocatedMethodId === 'retrieval-call-share').map((r) => r.EffectiveCost));
+    const fixedShared = sum(rows.filter((r) => FIXED_METHODS.includes(r.AllocatedMethodId)).map((r) => r.EffectiveCost));
+    const searchShare = sum(rows.filter((r) => r.AllocatedMethodId === 'retrieval-call-share').map((r) => r.EffectiveCost));
+    const gatewayShare = sum(rows.filter((r) => r.AllocatedMethodId === 'gateway-request-share').map((r) => r.EffectiveCost));
     const embeddings = sum(rows.filter((r) => r.x_ModelId === 'text-embedding').map((r) => r.EffectiveCost));
     const oc = outcomes.filter((o) => o.date.slice(0, 7) === month && o.use_case === uc);
     const t = outcomeTotals(oc);
     const g = gw.filter((x) => x.x_Month === month && x.x_UseCase === uc && x.x_ModelId !== 'text-embedding');
     const tokens = sum(g.map((x) => x.ConsumedQuantity));
     const daily = {};
-    for (const r of rows) if (r.AllocatedMethodId !== 'retrieval-call-share') daily[r.x_Date] = (daily[r.x_Date] || 0) + r.EffectiveCost;
+    for (const r of rows) if (!FIXED_METHODS.includes(r.AllocatedMethodId)) daily[r.x_Date] = (daily[r.x_Date] || 0) + r.EffectiveCost;
     const dailyCps = oc.filter((o) => num(o.successful) > 0).map((o) => ({ date: o.date, value: (daily[o.date] || 0) / num(o.successful) }));
     const cache = cacheStats(g, prices);
     const cps = costPerSuccess(spend, t.successful);
     const avoidable = spend - fixedShared;
     out[uc] = {
       useCase: uc, name: meta.name, owner: meta.owner, month,
-      spend, avoidableSpend: avoidable, fixedSharedSpend: fixedShared, embeddingSpend: embeddings, tokenSpend: avoidable - embeddings,
+      spend, avoidableSpend: avoidable, fixedSharedSpend: fixedShared, searchShareSpend: searchShare, gatewayShareSpend: gatewayShare, embeddingSpend: embeddings, tokenSpend: avoidable - embeddings,
       ...t,
       successRate: t.runs ? t.successful / t.runs : 0,
       costPerRun: t.runs ? avoidable / t.runs : null,
@@ -111,8 +114,51 @@ export function unitEconomics({ allocated, gw, outcomes, prices, org, month }) {
 export function aiSpendByOwner(allocated, month) {
   const out = {};
   for (const r of allocated) {
-    if (r.x_Month !== month || r.ServiceCategory !== 'AI and Machine Learning') continue;
+    if (r.x_Month !== month || !isAi(r)) continue;
     out[r.x_Owner] = (out[r.x_Owner] || 0) + r.EffectiveCost;
+  }
+  return out;
+}
+
+// Failure anomalies: days whose failure rate is far above the two prior months' daily pattern.
+// For each use case with such days: the run of days, failures a day, the failure rate against the
+// baseline, the share of the month's excess failures those days explain, cost per successful outcome
+// on those days against the month's normal days, and how far retries rose (the data's own pointer to
+// a root cause).
+export function failureAnomalies({ outcomes, allocated, org, month, prior }) {
+  const cfg = org.anomaly || { sdMultiple: 4, minRatioToBaseline: 2 };
+  const out = [];
+  for (const uc of Object.keys(org.useCases)) {
+    const base = outcomes.filter((o) => o.use_case === uc && prior.includes(o.date.slice(0, 7)) && num(o.runs) > 0);
+    const now = outcomes.filter((o) => o.use_case === uc && o.date.slice(0, 7) === month && num(o.runs) > 0);
+    if (!base.length || !now.length) continue;
+    const rate = (o) => num(o.failed) / num(o.runs);
+    const rates = base.map(rate);
+    const mean = sum(rates) / rates.length;
+    const sd = Math.sqrt(sum(rates.map((r) => (r - mean) ** 2)) / rates.length);
+    const flagged = now.filter((o) => rate(o) > mean + cfg.sdMultiple * sd && rate(o) >= cfg.minRatioToBaseline * mean);
+    if (!flagged.length) continue;
+    const dayCost = {};
+    for (const r of allocated) if (r.x_Month === month && r.x_UseCase === uc && isAi(r) && !FIXED_METHODS.includes(r.AllocatedMethodId)) dayCost[r.x_Date] = (dayCost[r.x_Date] || 0) + r.EffectiveCost;
+    const excess = (o) => Math.max(0, num(o.failed) - mean * num(o.runs));
+    const monthExcess = sum(now.map(excess));
+    const flaggedDates = new Set(flagged.map((o) => o.date));
+    const cps = (o) => (num(o.successful) ? (dayCost[o.date] || 0) / num(o.successful) : null);
+    const normal = now.filter((o) => !flaggedDates.has(o.date)).map(cps).filter((x) => x !== null);
+    const retryShare = (rows) => { const r = sum(rows.map((o) => num(o.runs))); return r ? sum(rows.map((o) => num(o.retried))) / r : 0; };
+    out.push({
+      useCase: uc,
+      dates: flagged.map((o) => o.date),
+      from: flagged[0].date, to: flagged[flagged.length - 1].date,
+      failuresPerDay: sum(flagged.map((o) => num(o.failed))) / flagged.length,
+      rate: sum(flagged.map((o) => num(o.failed))) / sum(flagged.map((o) => num(o.runs))),
+      baselineRate: mean,
+      shareOfMonthExcess: monthExcess ? sum(flagged.map(excess)) / monthExcess : 0,
+      costPerSuccessRange: [Math.min(...flagged.map(cps)), Math.max(...flagged.map(cps))],
+      normalCostPerSuccess: percentile(normal, 0.5),
+      excessCost: sum(flagged.map((o) => excess(o) * ((dayCost[o.date] || 0) / num(o.runs)))),
+      retryMultiple: retryShare(base) ? retryShare(flagged) / retryShare(base) : null,
+    });
   }
   return out;
 }

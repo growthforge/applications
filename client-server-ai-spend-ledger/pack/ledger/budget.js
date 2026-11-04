@@ -8,7 +8,8 @@
 // drives. A trailing-mean forecast (month to date / days elapsed x days in month) is kept only as a
 // cross-check.
 // Variance, September to October, for each use case's avoidable cost (model tokens and embeddings):
-//   volume = change in runs x September cost per run
+//   calendar = one more (or fewer) day at September's daily level (October has 31 days, September 30)
+//   volume = change in runs per day x September cost per run
 //   price  = October tokens x change in published list price (zero unless a price row changes)
 //   mix    = the rest: tokens per run, model mix and success rates
 // plus two buckets that runs do not drive, kept apart: the fixed shared platform (the AI Search
@@ -16,6 +17,7 @@
 import { datesOfMonth, prevMonth, isWeekend, addDays } from './dates.js';
 import { priceOn } from './normalise.js';
 import { num } from './csv.js';
+import { isAi, FIXED_METHODS } from './allocate.js';
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 
@@ -103,22 +105,23 @@ export function evaluateBudget(series, month, budget, cfg) {
 // The month-on-month variance split for AI cost.
 export function variance({ allocated, gw, outcomes, prices, org, month }) {
   const prev = prevMonth(month, 1);
-  const isToken = (r) => r.ServiceCategory === 'AI and Machine Learning' && r.AllocatedMethodId !== 'retrieval-call-share'
+  const isToken = (r) => isAi(r) && !FIXED_METHODS.includes(r.AllocatedMethodId)
     && (r.ConsumedUnit === 'Tokens' || org.gateway.ccuLines[r.ResourceId]);
-  const isFixed = (r) => r.ServiceCategory === 'AI and Machine Learning' && r.AllocatedMethodId === 'retrieval-call-share';
-  const isAi = (r) => r.ServiceCategory === 'AI and Machine Learning';
+  const isFixed = (r) => isAi(r) && FIXED_METHODS.includes(r.AllocatedMethodId);
   const cost = (m, pred) => sum(allocated.filter((r) => r.x_Month === m && pred(r)).map((r) => r.EffectiveCost));
   const runs = (m, uc) => sum(outcomes.filter((o) => o.date.slice(0, 7) === m && o.use_case === uc).map((o) => num(o.runs) || 0));
   // The model each deployment ran on the last day of the previous month: the reference price.
   const refModel = {};
   for (const r of allocated) if (r.x_Month === prev && r.x_Deployment && r.x_ModelId) refModel[r.x_Deployment] = r.x_ModelId;
   const refDate = datesOfMonth(prev).slice(-1)[0];
+  const dayFactor = datesOfMonth(month).length / datesOfMonth(prev).length;
   const rows = [];
   for (const uc of Object.keys(org.useCases)) {
     const pred = (r) => r.x_UseCase === uc && isToken(r);
     const cPrev = cost(prev, pred); const cNow = cost(month, pred);
     const rPrev = runs(prev, uc); const rNow = runs(month, uc);
-    const volume = rPrev ? (rNow - rPrev) * (cPrev / rPrev) : 0;
+    const calendar = cPrev * (dayFactor - 1);
+    const volume = rPrev ? (rNow - rPrev * dayFactor) * (cPrev / rPrev) : 0;
     let price = 0;
     for (const r of allocated) {
       if (r.x_Month !== month || !pred(r) || !r.x_ModelId || r.ConsumedUnit !== 'Tokens') continue;
@@ -138,14 +141,17 @@ export function variance({ allocated, gw, outcomes, prices, org, month }) {
       if (now && ref) price += (g.ConsumedQuantity / 1e6) * (now.usdPerMTok - ref.usdPerMTok);
     }
     const change = cNow - cPrev;
-    rows.push({ useCase: uc, previous: cPrev, current: cNow, change, volume, price, mix: change - volume - price, runsPrevious: rPrev, runsCurrent: rNow });
+    rows.push({ useCase: uc, previous: cPrev, current: cNow, change, calendar, volume, price, mix: change - calendar - volume - price, runsPrevious: rPrev, runsCurrent: rNow,
+      runsPerDayChange: rPrev ? (rNow / datesOfMonth(month).length) / (rPrev / datesOfMonth(prev).length) - 1 : null });
   }
   const aiPrev = cost(prev, isAi); const aiNow = cost(month, isAi);
   const tokenChange = sum(rows.map((r) => r.change));
   const fixedPrev = cost(prev, isFixed); const fixedNow = cost(month, isFixed);
-  const fixedPlatform = fixedNow - fixedPrev;
-  const unattributed = (aiNow - aiPrev) - tokenChange - fixedPlatform;
+  const calendarFixed = fixedPrev * (dayFactor - 1);
+  const fixedPlatform = fixedNow - fixedPrev * dayFactor;
+  const unattributed = (aiNow - aiPrev) - tokenChange - fixedPlatform - calendarFixed;
   const platform = fixedPlatform + unattributed;
+  const calendar = sum(rows.map((r) => r.calendar)) + calendarFixed;
   // What sits in the two buckets, by resource: fixed shared platform, and unattributed AI cost.
   const ucs = Object.keys(org.useCases);
   const other = {};
@@ -159,6 +165,7 @@ export function variance({ allocated, gw, outcomes, prices, org, month }) {
   return {
     month, previousMonth: prev, previous: aiPrev, current: aiNow, change: aiNow - aiPrev, rows,
     volume: sum(rows.map((r) => r.volume)), price: sum(rows.map((r) => r.price)), mix: sum(rows.map((r) => r.mix)), platform, otherByResource,
+    calendar, calendarFixed, dayFactor, daysCurrent: datesOfMonth(month).length, daysPrevious: datesOfMonth(prev).length,
     fixedPlatform, unattributed, fixedPrevious: fixedPrev, fixedCurrent: fixedNow,
     unattributedPrevious: aiPrev - fixedPrev - sum(rows.map((r) => r.previous)), unattributedCurrent: aiNow - fixedNow - sum(rows.map((r) => r.current)),
   };

@@ -52,6 +52,7 @@ export function normaliseExport(rows) {
     o.x_Date = String(o.ChargePeriodStart).slice(0, 10);
     o.x_Month = monthOf(o.x_Date);
     o.x_Deployment = deploymentOf(o.ResourceId);
+    o.x_CostPool = o.Tags['cost-pool'] || null;
     const meter = o.ConsumedUnit === 'Tokens' ? parseMeter(o.SkuMeter) : null;
     if (meter) {
       o.x_ModelId = meter.modelId;

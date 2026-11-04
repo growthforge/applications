@@ -14,19 +14,17 @@
         "text": "40% of hard-case tickets are simple enough for the mini model by the triage rule (assumption; confirm on a labelled sample)"
       },
       "effect": {
-        "kind": "prior",
-        "range": [
-          0.6,
-          0.9
-        ],
-        "point": 0.6,
-        "src": "S3",
-        "text": "low end of the Foundation range for right-sizing and routing"
+        "kind": "price-sheet",
+        "from": "gpt-5.4",
+        "to": "gpt-5.4-mini",
+        "src": "S11",
+        "text": "the same hard-path tokens priced on GPT-5.4 mini instead of GPT-5.4 (Azure list prices)"
       },
       "qualityGate": "Acceptance on routed tickets within 2 points of GPT-5.4 in a 200-ticket shadow test",
       "caution": "Routing starts a new prompt cache on the mini deployment, so the caching lever is priced after it.",
       "owner": "customer-ops",
-      "status": "identified"
+      "status": "identified",
+      "deployment": "gpt-support-hard"
     },
     {
       "id": "support-caching",
@@ -75,10 +73,30 @@
       "status": "identified"
     },
     {
+      "id": "fraud-on-demand",
+      "name": "Generate explanations only when an analyst opens the alert",
+      "useCase": "fraud-explain",
+      "order": 1,
+      "type": "discard-avoid",
+      "component": "all",
+      "eligible": {
+        "kind": "measured",
+        "text": "explanations generated but never used in a decision (measured from the outcome log)"
+      },
+      "effect": {
+        "kind": "assumption",
+        "value": 0.8,
+        "text": "80% of unused explanations are on alerts nobody opens (assumption; confirm from the case tool's open events)"
+      },
+      "qualityGate": "Explanation shown within a few seconds of the analyst opening the alert",
+      "owner": "fraud-analytics",
+      "status": "identified"
+    },
+    {
       "id": "fraud-batch",
       "name": "Send the overnight explanation backlog through the Batch API",
       "useCase": "fraud-explain",
-      "order": 1,
+      "order": 2,
       "type": "batch",
       "component": "all",
       "eligible": {
@@ -123,19 +141,18 @@
     },
     {
       "id": "kyc-retry-cap",
-      "name": "Pre-check documents and cap retries on long PDFs",
+      "name": "Pre-check documents and cap retries on long PDFs (guardrail)",
       "useCase": "kyc-review",
       "order": 2,
-      "type": "failure",
+      "type": "guardrail",
       "component": "all",
       "eligible": {
         "kind": "measured",
-        "text": "cost of failed runs above the August to September failure rate"
+        "text": "failed runs above the normal failure rate during the incident"
       },
       "effect": {
-        "kind": "assumption",
-        "value": 0.8,
-        "text": "a page-count pre-check and a two-retry cap remove 80% of the excess failures (assumption)"
+        "kind": "measured",
+        "text": "the incident's excess cost, shown once; a guardrail, not a recurring monthly saving"
       },
       "qualityGate": "Approval rate on documents that pass the pre-check does not fall",
       "owner": "fincrime",
@@ -176,18 +193,22 @@
       "resource": "srch-shared-uks",
       "group": "platform",
       "order": 1,
-      "type": "unpriced",
+      "type": "search-tier",
       "eligible": {
         "kind": "measured",
-        "text": "the fixed S2 tier (six search units) that both retrieval users share"
+        "text": "the fixed S2 tier both retrieval users share, from the bill"
       },
       "effect": {
-        "kind": "none",
-        "text": "no AI Search price in this pack's research: measure query load and index size, then price the smaller tier from the Azure Retail Prices API"
+        "kind": "assumption",
+        "src": "S11",
+        "text": "three S1 search units instead of six S2 units, priced from the Azure Retail Prices API, if the index and query load fit (sizing assumption)"
       },
-      "qualityGate": "Retrieval latency and answer quality hold for both users of the index",
+      "qualityGate": "Index size and query latency within S1 limits for both users before the move",
       "owner": "engineering",
-      "status": "identified"
+      "status": "identified",
+      "fromSku": "search-s2",
+      "toSku": "search-s1",
+      "toUnits": 3
     },
     {
       "id": "aks-nonprod-schedule",
@@ -216,13 +237,13 @@
       "type": "rightsize",
       "cpuThresholdPct": 20,
       "eligible": {
-        "kind": "measured",
-        "text": "October cost of VMs whose monthly P95 CPU stayed under 20% (illustrative telemetry and threshold)"
+        "kind": "assumption",
+        "text": "VMs whose monthly P95 CPU stayed under 20% all quarter (illustrative telemetry), assuming memory also fits one size down"
       },
       "effect": {
-        "kind": "assumption",
-        "value": 0.5,
-        "text": "one size down in the same series (D16s v5 to D8s v5, D8s v5 to D4s v5) halves the hourly rate in this illustrative rate card; confirm both rates from the Azure Retail Prices API before counting it"
+        "kind": "price-sheet",
+        "src": "S11",
+        "text": "one size down priced from the Azure Retail Prices API"
       },
       "qualityGate": "P95 CPU on the new size stays under the owner's limit for two weeks",
       "owner": "fraud-analytics, fincrime",
@@ -233,16 +254,38 @@
       "name": "Lifecycle tiering for logs and cost exports",
       "resource": "stexportsuks",
       "order": 1,
-      "type": "unpriced",
+      "type": "storage-tier",
       "eligible": {
-        "kind": "measured",
-        "text": "hot-tier storage of logs and exports older than 30 days"
+        "kind": "assumption",
+        "text": "hot-tier logs and exports older than 30 days (assumed 70% of the data)"
       },
       "effect": {
-        "kind": "none",
-        "text": "no storage price in this pack's research: to be priced from the Azure Retail Prices API"
+        "kind": "price-sheet",
+        "src": "S11",
+        "text": "Cool LRS against Hot LRS per GB-month (Azure Retail Prices API)"
       },
       "qualityGate": "Audit retention periods still met",
+      "owner": "engineering",
+      "status": "identified",
+      "olderShare": 0.7
+    },
+    {
+      "id": "compute-commitment",
+      "name": "Savings plan for the steady compute floor",
+      "resource": "production compute",
+      "order": 1,
+      "type": "commitment",
+      "term": "1 Year",
+      "eligible": {
+        "kind": "measured",
+        "text": "the lowest day of production compute across the quarter, after rightsizing"
+      },
+      "effect": {
+        "kind": "price-sheet",
+        "src": "S11",
+        "text": "1-year savings plan price against pay-as-you-go for Dsv5 (Azure Retail Prices API)"
+      },
+      "qualityGate": "Rightsizing done first; the commitment is reviewed when the floor moves",
       "owner": "engineering",
       "status": "identified"
     }

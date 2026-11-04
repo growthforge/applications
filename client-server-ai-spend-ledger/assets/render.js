@@ -1,15 +1,14 @@
 // render.js: HTML for every computed region of the two pages, as strings, from the view model.
 // The same functions run in Node (tools/gen-pages.mjs writes the no-JS view into the HTML) and in the
 // browser (assets/app.js redraws after the ledger has run on the data at load).
-import { usd, signedUsd, unitUsd, pct, int, compact, ratio, monthName, longDate, shortDate, esc, words, fixed } from './fmt.js';
+import { usd, signedUsd, unitUsd, pct, int, compact, ratio, monthName, longDate, shortDate, esc, fixed } from './fmt.js';
 
 const DECISION_LABEL = { scale: 'Scale', fix: 'Fix', stop: 'Stop' };
 const GRADE_CLASS = { measured: 'grade--measured', 'assumption-based': 'grade--assumption', 'Foundation prior': 'grade--prior' };
-const STATUS_CLASS = { realised: 'status--realised', validated: 'status--validated', identified: 'status--identified', blocked: 'status--blocked', 'on hold': 'status--hold', recommended: 'status--validated', 'not yet': 'status--hold' };
+const STATUS_CLASS = { realised: 'status--realised', validated: 'status--validated', identified: 'status--identified', blocked: 'status--blocked', 'on hold': 'status--hold', recommended: 'status--validated', 'not yet': 'status--hold', guardrail: 'status--guardrail' };
 const taskUsd = (x) => '$' + fixed(x, 3);
 const modelLabel = (vm, id) => (vm.prices.models[id] ? vm.prices.models[id].label : id);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
-const daysBetween = (a, b) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
 
 export function dchip(decision) {
   return `<span class="dchip dchip--${decision}">${DECISION_LABEL[decision]}</span>`;
@@ -25,27 +24,29 @@ export function renderMemo(vm) {
   const act = al.actual1;
   let alertLine;
   if (f && f.raisedOn && act && act.raisedOn) {
-    alertLine = `The ledger's forecast alert (not Azure's) went out on ${longDate(f.raisedOn)}, ${words(daysBetween(f.raisedOn, act.raisedOn))} days before the actual-spend alert.`;
+    alertLine = `The ledger's forecast alert fired ${longDate(f.raisedOn)}; actual spend crossed the budget ${longDate(act.raisedOn)}.`;
   } else if (f && f.raisedOn) {
     alertLine = `The forecast alert went out on ${longDate(f.raisedOn)}; actual spend did not reach the budget.`;
   } else alertLine = 'Neither the forecast nor actual spend reached the budget.';
   const over = a.pct >= 1;
-  const lead = `<p class="memo__lead"><strong>AI spend landed at ${usd(a.actual)}, ${pct(a.pct)} of its ${usd(a.budget)} budget${over ? '' : ', inside it'}</strong> `
-    + `(${pct(vm.budgetRules.multiple)} of the ${monthName(vm.months[0])} and ${prev} average). ${alertLine}</p>`;
+  const lead = `<p class="memo__lead"><strong>AI spend landed at ${usd(a.actual)}, ${pct(a.pct)} of its ${usd(a.budget)} budget${over ? '' : ', inside it'}.</strong> `
+    + `The budget is ${pct(vm.budgetRules.multiple)} of the ${monthName(vm.months[0])} and ${prev} average <a class="cite" href="build.html#src-S3">S3</a>; spend was ${pct(a.actual / a.baseline)} of that average. ${alertLine}</p>`;
 
   const v = vm.variance;
   const byVol = v.rows.slice().sort((x, y) => Math.abs(y.volume) - Math.abs(x.volume))[0];
   const byMix = v.rows.slice().sort((x, y) => Math.abs(y.mix) - Math.abs(x.mix))[0];
   const topFixed = v.otherByResource.filter((o) => o.kind === 'fixed')[0];
   const topUnattr = v.otherByResource.filter((o) => o.kind === 'unattributed')[0];
-  const volNote = byVol && byVol.runsPrevious ? `mostly ${vm.useCases[byVol.useCase].name}, runs ${byVol.runsCurrent >= byVol.runsPrevious ? 'up' : 'down'} ${pct(Math.abs(byVol.runsCurrent / byVol.runsPrevious - 1))}` : '';
+  const volNote = byVol && byVol.runsPerDayChange !== null ? `per day; mostly ${vm.useCases[byVol.useCase].name}, runs a day ${byVol.runsPerDayChange >= 0 ? 'up' : 'down'} ${pct(Math.abs(byVol.runsPerDayChange))}` : 'per day';
+  const calNote = `${v.daysCurrent} days against ${v.daysPrevious}, at ${prev}'s daily level`;
   const priceNote = vm.modelChanges.length
     ? vm.modelChanges.map((c) => `<code>${esc(c.deployment)}</code> moved from ${esc(modelLabel(vm, c.from))} to ${esc(modelLabel(vm, c.to))} on ${longDate(c.date)}, at list price`).join('; ')
     : 'no published price changed';
   const mixNote = byMix ? `largest in ${vm.useCases[byMix.useCase].name}: tokens and billed cost per run` : '';
-  const fixedNote = topFixed ? `<code>${esc(topFixed.resource)}</code>, a fixed daily charge shared by its users` : 'none';
-  const unattrNote = topUnattr ? `<code>${esc(topUnattr.resource)}</code>, billed AI with no use case${vm.reconciliation.bypass.includes(topUnattr.resource) ? ' and no gateway calls' : ''}` : 'none';
-  const steps = [['Volume', v.volume, volNote], ['Unit price', v.price, priceNote], ['Mix and consumption', v.mix, mixNote], ['Fixed shared platform', v.fixedPlatform, fixedNote], ['Unattributed AI', v.unattributed, unattrNote]];
+  const fixedNote = 'AI Search and the AI gateway, fixed daily charges; beyond the extra day';
+  const unattr = v.otherByResource.filter((o) => o.kind === 'unattributed' && Math.abs(o.change) >= 1);
+  const unattrNote = unattr.length ? `billed AI with no use case: ${unattr.map((o) => `<code>${esc(o.resource)}</code> ${signedUsd(o.change)}`).join(', ')}` : 'none';
+  const steps = [['Volume', v.volume, volNote], ['Calendar', v.calendar, calNote], ['Unit price', v.price, priceNote], ['Mix and consumption', v.mix, mixNote], ['Fixed shared platform', v.fixedPlatform, fixedNote], ['Unattributed AI', v.unattributed, unattrNote]];
   const maxAbs = Math.max(...steps.map((s) => Math.abs(s[1])), 1);
   const bridge = `<table class="bridge">
   <caption>${prev} to ${m}, AI spend (${signedUsd(v.change)})</caption>
@@ -59,10 +60,13 @@ export function renderMemo(vm) {
 
   const al2 = vm.allocation[vm.month];
   const rec = vm.reconciliation;
-  const unGroups = Object.keys(al2.unallocatedGroups);
+  const untagged = Object.keys(al2.unallocatedByCause.untagged);
+  const an = (vm.anomalies || [])[0];
+  const anomaly = an ? `<li class="memo__anomaly"><strong>Anomaly, ${shortRange(an.from, an.to)}:</strong> ${esc(vm.useCases[an.useCase].short || vm.useCases[an.useCase].name)} failures rose to ${pct(an.rate)} of runs from ${pct(an.baselineRate)}, retries ${ratio(an.retryMultiple)} usual (illustrative cause: a retry storm on long documents). The retry cap is a guardrail, not a saving.</li>` : '';
   const controls = `<ul class="memo__checks">
-    <li><strong>${pct(al2.ownedPct)} of spend has a named owner</strong> (${al2.stage}; target ${pct(al2.targets.walk)}); ${unGroups.map((g) => `<code>${esc(g)}</code>`).join(', ')} ${unGroups.length === 1 ? 'has' : 'have'} none.</li>
-    <li><strong>Gateway metering explains ${pct(rec.totals.coverage)} of token-billed AI cost;</strong> ${rec.bypass.map((b) => `<code>${esc(b)}</code>`).join(', ')} ${rec.bypass.length === 1 ? 'is' : 'are'} billed with no gateway calls.</li>
+    <li><strong>${pct(al2.ownedPct)} of spend has a named owner</strong> (${al2.stage}; Walk ${pct(al2.targets.walk)} <a class="cite" href="build.html#src-S5">S5</a>); ${untagged.map((g) => `<code>${esc(g)}</code>`).join(', ')} is untagged and ${usd(al2.unallocatedByCause.unmetered)} of unmetered AI use is held.</li>
+    <li><strong>Gateway metering explains ${pct(rec.totals.coverage)} of token-billed AI cost;</strong> ${rec.bypass.map((b) => `<code>${esc(b)}</code>`).join(', ')} ${rec.bypass.length === 1 ? 'bypasses' : 'bypass'} the gateway.</li>
+    ${anomaly}
   </ul>`;
 
   const order = ['scale', 'fix', 'stop'];
@@ -73,7 +77,7 @@ export function renderMemo(vm) {
     const meta = vm.useCases[uc];
     return `<li class="decision decision--${d.decision}" data-uc="${uc}">
       <div class="decision__top">${dchip(d.decision)}<h4>${esc(meta.name)}</h4></div>
-      <p class="decision__nums"><span><b>${unitUsd(u.avoidableCostPerSuccess)}</b> avoidable per ${esc(meta.outcomeNoun)}</span><span>value ${unitUsd(d.valuePerSuccess)}</span>${u.fixedSharedSpend > 0.5 * u.spend ? `<span>${unitUsd(u.costPerSuccess)} with the shared tier</span>` : ''}<span>${pct(u.successRate)} succeed (bar ${pct(d.qualityBar)})</span></p>
+      <p class="decision__nums"><span><b>${unitUsd(u.avoidableCostPerSuccess)}</b> avoidable per ${esc(meta.outcomeNoun)}</span><span>value ${unitUsd(d.valuePerSuccess)}</span>${u.fixedSharedSpend > 0.5 * u.spend ? `<span>${unitUsd(u.costPerSuccess)} with fixed shared cost</span>` : ''}<span>${pct(u.successRate)} succeed (bar ${pct(d.qualityBar)})</span></p>
       <p class="decision__why">${decisionWhy(vm, uc)}</p>
     </li>`;
   }).join('\n');
@@ -90,25 +94,26 @@ export function renderMemo(vm) {
 export function decisionWhy(vm, uc) {
   const d = vm.decisions[uc];
   const u = vm.ue[vm.month][uc];
-  const levers = vm.levers.filter((l) => l.useCase === uc && l.check && !['on hold', 'blocked'].includes(l.status));
-  const target = levers.length ? levers[levers.length - 1].check.target : null;
-  // A large fixed share is reported with where it would go: stopping would not remove it.
   const re = vm.reallocation && vm.reallocation[uc];
   const big = u.fixedSharedSpend > 0.5 * u.spend && re && re.to.length;
-  const moves = big ? ` Stopping would shift its search-tier share to the ${re.to.map((t) => esc(vm.useCases[t.useCase].name.toLowerCase())).join(' and ')} (${re.to.map((t) => `${unitUsd(t.from)} to ${unitUsd(t.to)} per ${esc(vm.useCases[t.useCase].outcomeNoun)}`).join(', ')}).` : '';
-  if (d.decision === 'stop') {
-    return `Avoidable cost is at or above its value.${moves} Stop, and right-size the shared tier.`;
-  }
+  const top = big ? re.to[0] : null;
+  const moves = big ? ` Stopping would move its ${usd(u.fixedSharedSpend)} of fixed shared cost, mostly to the ${esc(vm.useCases[top.useCase].name.toLowerCase())} (${unitUsd(top.from)} to ${unitUsd(top.to)} per ${esc(vm.useCases[top.useCase].outcomeNoun)}).` : '';
+  const sc = vm.scenario && vm.scenario.useCase === uc ? vm.scenario : null;
+  if (d.decision === 'stop') return `Avoidable cost is at or above its value.${moves} Stop, and right-size the shared tier.`;
   if (d.decision === 'fix') {
     const bits = [];
+    const an = (vm.anomalies || []).find((x) => x.useCase === uc);
     if (u.successRate < d.qualityBar) bits.push(`${pct(u.failedShareOfCost)} of cost went on failed or rejected runs`);
     if (d.ratio < vm.decisionRules.scaleFromValueToCost) bits.push(`value is only ${ratio(d.ratio)} avoidable cost`);
-    const next = vm.levers.find((l) => l.useCase === uc && !['blocked', 'on hold'].includes(l.status) && l.saving !== null);
+    const next = vm.levers.find((l) => l.useCase === uc && !['blocked', 'on hold'].includes(l.status));
     const action = next ? next.name.charAt(0).toLowerCase() + next.name.slice(1) : 'find the cause';
-    return (big ? `${bits.join(' and ')}.${moves} Fix retrieval; right-size the tier.` : `${bits.join(' and ')}. Next: ${esc(action)}.`).replace(/^./, (c) => c.toUpperCase());
+    if (big && sc) return `${sc.now.loaded >= d.valuePerSuccess ? 'Full cost is above value. ' : ''}Fix retrieval and downsize the tier: ${unitUsd(sc.fixedAndDownsized.loaded)} fully loaded.`;
+    return `${bits.join(' and ')}. Next: ${esc(action)}.`.replace(/^./, (c) => c.toUpperCase());
   }
-  return `Value is ${ratio(d.ratio)} avoidable cost; bar met.${target ? ` Levers below take it to ${unitUsd(target)}.` : ''}`;
+  return `Value ${ratio(d.ratio)} avoidable cost, bar met.`;
 }
+
+const shortRange = (a, b) => `${Number(a.slice(8, 10))} to ${Number(b.slice(8, 10))} ${monthName(a.slice(0, 7)).slice(0, 3)}`;
 
 // ---- index.html: unit economics chart, detail and table -------------------------------------
 const LOG_MIN = -3; const LOG_MAX = 2;
@@ -127,12 +132,17 @@ export function renderUnitChart(vm, month, focus) {
     const xc = xPos(cost); const xv = xPos(value);
     const lo = Math.min(xc, xv); const w = Math.abs(xv - xc);
     const losing = cost >= value;
-    const loaded = u.fixedSharedSpend > 0 ? `<span class="db-loaded" style="left:${fixed(xPos(u.costPerSuccess), 2)}%" title=""></span>` : '';
+    const xl = xPos(u.costPerSuccess);
+    const loadedLoss = u.fixedSharedSpend > 0 && u.costPerSuccess >= value;
+    // Full cost above value: an amber tick drawn over the value marker, taller than it, plus a dashed
+    // amber segment from value to full cost, so the loss shows even when the two nearly coincide.
+    const lossLink = loadedLoss && !losing ? `<span class="db-link db-link--loss" style="left:${fixed(xv, 2)}%;width:${fixed(Math.max(xl - xv, 0), 2)}%"></span>` : '';
+    const loaded = u.fixedSharedSpend > 0 ? `<span class="db-loaded${loadedLoss ? ' db-loaded--loss' : ''}" style="left:${fixed(xl, 2)}%"></span>` : '';
     return `<div class="db-row${uc === focus ? ' is-focus' : ''}" data-uc="${uc}">
       <div class="db-name">${d ? dchip(d) : ''}<span>${esc(vm.useCases[uc].name)}</span></div>
       <div class="db-track">
         <span class="db-link${losing ? ' db-link--loss' : ''}" style="left:${fixed(lo, 2)}%;width:${fixed(w, 2)}%"></span>
-        ${loaded}<span class="db-dot db-dot--value" style="left:${fixed(xv, 2)}%"></span>
+        ${lossLink}<span class="db-dot db-dot--value" style="left:${fixed(xv, 2)}%"></span>${loaded}
         <span class="db-dot db-dot--cost${losing ? ' db-dot--loss' : ''}" style="left:${fixed(xc, 2)}%"></span>
         <span class="db-lab db-lab--value" style="left:${fixed(labPos(xv), 2)}%">value ${unitUsd(value)}</span>
         <span class="db-lab db-lab--cost" style="left:${fixed(labPos(xc), 2)}%">avoidable ${unitUsd(cost)}</span>
@@ -151,10 +161,12 @@ export function renderUnitDetail(vm, month, focus) {
   const u = vm.ue[month][focus];
   const meta = vm.useCases[focus];
   const shared = u.fixedSharedSpend > 0
-    ? `its share of the fixed search tier is ${usd(u.fixedSharedSpend)} (${pct(u.fixedSharedSpend / u.spend)} of allocated cost), which stays if it stops; `
+    ? `its share of fixed shared cost (AI Search and the AI gateway) is ${usd(u.fixedSharedSpend)}, ${pct(u.fixedSharedSpend / u.spend)} of allocated cost, which stays if it stops; `
     : '';
+  const an = month === vm.month ? (vm.anomalies || []).find((x) => x.useCase === focus) : null;
+  const skew = an ? ` The ${shortRange(an.from, an.to)} incident days ran at ${unitUsd(an.costPerSuccessRange[0])} to ${unitUsd(an.costPerSuccessRange[1])} per ${esc(meta.outcomeNoun)} against ${unitUsd(an.normalCostPerSuccess)} normally, and explain ${pct(an.shareOfMonthExcess)} of the month's excess failures${u.avoidableCostPerSuccess > u.p90 ? '; they lift the monthly figure above the daily P90' : ''}.` : '';
   return `<strong>${esc(meta.name)}, ${monthName(month)}:</strong> P50 ${unitUsd(u.p50)} and P90 ${unitUsd(u.p90)} of daily avoidable cost per ${esc(meta.outcomeNoun)}; `
-    + `${pct(u.failedShareOfCost)} of cost on failed or rejected runs; ${shared}cache hit rate ${pct(u.cacheHitRate)}; ${compact(u.tokensPerSuccess)} tokens per ${esc(meta.outcomeNoun)}.`;
+    + `${pct(u.failedShareOfCost)} of cost on failed or rejected runs; ${shared}cache hit rate ${pct(u.cacheHitRate)}; ${compact(u.tokensPerSuccess)} tokens per ${esc(meta.outcomeNoun)}.${skew}`;
 }
 
 export function renderUnitTable(vm, month, focus) {
@@ -167,7 +179,7 @@ export function renderUnitTable(vm, month, focus) {
       <td class="num" data-label="Allocated AI spend">${usd(u.spend)}</td>
       <td class="num" data-label="Successful outcomes">${int(u.successful)}<span class="sub">${esc(meta.outcomePlural || meta.outcomeNoun)}</span></td>
       <td class="num" data-label="Avoidable cost per outcome"><b>${unitUsd(u.avoidableCostPerSuccess)}</b></td>
-      <td class="num" data-label="With shared tier">${u.fixedSharedSpend > 0 ? unitUsd(u.costPerSuccess) : '<span class="muted">same</span>'}</td>
+      <td class="num" data-label="With fixed shared cost">${u.fixedSharedSpend > 0 ? unitUsd(u.costPerSuccess) : '<span class="muted">same</span>'}</td>
       <td class="num" data-label="Daily P50 to P90">${unitUsd(u.p50)} to ${unitUsd(u.p90)}</td>
       <td class="num" data-label="Value per outcome">${unitUsd(vm.decisions[uc].valuePerSuccess)}</td>
       <td class="num" data-label="Failed or rejected">${pct(u.failedShareOfCost)}</td>
@@ -178,9 +190,9 @@ export function renderUnitTable(vm, month, focus) {
   const fixedShared = sum(Object.values(ue).map((u) => u.fixedSharedSpend));
   const unattributed = vm.aiTotals[month] - total;
   return `<caption id="ue-caption">Unit economics, ${monthName(month)}. Illustrative: a made-up organisation. Avoidable cost is what stops if the use case stops (model tokens and embeddings); every run counts, including failed, retried and discarded ones. The daily range is of avoidable cost.</caption>
-  <thead><tr><th scope="col">Use case</th><th scope="col" class="num">Allocated AI spend</th><th scope="col" class="num">Successful outcomes</th><th scope="col" class="num">Avoidable cost per outcome</th><th scope="col" class="num">With shared tier</th><th scope="col" class="num">Daily P50 to P90</th><th scope="col" class="num">Value per outcome</th><th scope="col" class="num">Failed or rejected</th><th scope="col" class="num">Cache hit rate</th></tr></thead>
+  <thead><tr><th scope="col">Use case</th><th scope="col" class="num">Allocated AI spend</th><th scope="col" class="num">Successful outcomes</th><th scope="col" class="num">Avoidable cost per outcome</th><th scope="col" class="num">With fixed shared cost</th><th scope="col" class="num">Daily P50 to P90</th><th scope="col" class="num">Value per outcome</th><th scope="col" class="num">Failed or rejected</th><th scope="col" class="num">Cache hit rate</th></tr></thead>
   <tbody>${rows}</tbody>
-  <tfoot><tr><th scope="row" data-label="Total">Use-case AI spend</th><td class="num" data-label="Allocated AI spend">${usd(total)}</td><td colspan="7" class="tfoot-note" data-label="Note">includes ${usd(fixedShared)} of fixed shared platform (the AI Search tier, split by retrieval calls); unattributed AI (no use case) ${usd(unattributed)}; all AI spend ${usd(vm.aiTotals[month])}</td></tr></tfoot>`;
+  <tfoot><tr><th scope="row" data-label="Total">Use-case AI spend</th><td class="num" data-label="Allocated AI spend">${usd(total)}</td><td colspan="7" class="tfoot-note" data-label="Note">includes ${usd(fixedShared)} of fixed shared platform (AI Search by retrieval calls, the AI gateway by requests); unattributed AI (no use case: the sandbox and unmetered use) ${usd(unattributed)}; all AI spend ${usd(vm.aiTotals[month])}</td></tr></tfoot>`;
 }
 
 // ---- index.html: the savings pipeline ------------------------------------------------------
@@ -195,7 +207,7 @@ export function renderPipelineTotals(vm) {
 function leverRow(vm, l) {
   const grade = l.grade ? `<span class="grade ${GRADE_CLASS[l.grade]}">${esc(l.grade)}</span>` : '<span class="grade grade--none">not graded</span>';
   const status = `<span class="status ${STATUS_CLASS[l.status] || ''}">${esc(l.status)}</span>`;
-  const saving = l.saving === null ? '<span class="muted">not priced</span>' : l.status === 'blocked' || l.status === 'on hold' ? '<span class="muted">not counted</span>' : usd(l.saving);
+  const saving = l.status === 'guardrail' ? `<span class="muted">${usd(l.guardrailCost)} once, not counted</span>` : l.saving === null ? '<span class="muted">not priced</span>' : l.status === 'blocked' || l.status === 'on hold' ? '<span class="muted">not counted</span>' : usd(l.saving);
   const check = l.check ? `${esc(l.check.metric)}: ${unitUsd(l.check.current)} now, ${unitUsd(l.check.target)} or less next bill` : '<span class="muted">none until priced</span>';
   const ways = l.waysRound ? `<ul class="ways">${l.waysRound.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '';
   const caution = l.caution ? `<span class="caution">${esc(l.caution)}</span>` : '';
@@ -210,14 +222,6 @@ function leverRow(vm, l) {
 }
 const ownerNames = (vm, s) => String(s).split(',').map((x) => vm.owners[x.trim()] || x.trim()).join(', ');
 
-// The commitment is bought at discounted rates, so it is the pay-as-you-go floor times (1 - d).
-export function commitmentText(c) {
-  const base = `${c.baselineDays} days of baseline, past the 60 to 90 days the Foundation asks for before committing. Production compute never fell below ${usd(c.computeFloorPerDay)} a day at pay-as-you-go rates (${unitUsd(c.computeFloorPerHour)} an hour) after the rightsizing above, so commit to that floor, not the mean.`;
-  return c.commitmentPerHour === null
-    ? `${base} A savings plan commits a discounted hourly amount: ${unitUsd(c.computeFloorPerHour)} \u00d7 (1 \u2212 d), where d is the discount Microsoft's savings plan recommendation gives for this SKU mix. d is not in this pack's sources, so the commitment stays a formula, not a number.`
-    : `${base} At a ${pct(c.savingsPlanDiscount)} discount from Microsoft's recommendation for this SKU mix, commit ${unitUsd(c.commitmentPerHour)} an hour.`;
-}
-
 export function renderPipelineBody(vm, whatifRow) {
   const groups = [];
   for (const uc of Object.keys(vm.useCases)) {
@@ -228,15 +232,7 @@ export function renderPipelineBody(vm, whatifRow) {
   if (platform.length) groups.push({ title: 'Shared AI platform', ls: platform, uc: 'platform' });
   groups.push({ title: 'Cloud estate', ls: vm.levers.filter((l) => !l.useCase && l.group !== 'platform'), uc: null });
   const c = vm.commitment;
-  const commitRows = `<tr data-lever="compute-commitment">
-    <th scope="row" data-label="Lever">Savings plan for the steady compute floor<span class="sub">Owner: Engineering</span></th>
-    <td class="num" data-label="Saving a month"><span class="muted">not priced</span></td>
-    <td data-label="Evidence"><span class="grade grade--measured">measured floor</span></td>
-    <td data-label="Method">${commitmentText(c)}<span class="gate">Gate: rightsizing done first, then size to the new floor</span></td>
-    <td data-label="Next-bill check">effective cost per compute hour falls</td>
-    <td data-label="Status"><span class="status status--validated">recommended</span></td>
-  </tr>
-  <tr data-lever="ptu">
+  const commitRows = `<tr data-lever="ptu">
     <th scope="row" data-label="Lever">Provisioned throughput (PTU) for AI<span class="sub">Owner: Engineering</span></th>
     <td class="num" data-label="Saving a month"><span class="muted">not priced</span></td>
     <td data-label="Evidence"><span class="grade grade--none">not graded</span></td>
@@ -269,7 +265,7 @@ export function renderWhatifForm(vm) {
       ${number('inputTokens', 'Input tokens', 500, 100000, 100, d.inputTokens)}
       ${number('outputTokens', 'Output tokens', 50, 8000, 10, d.outputTokens)}
       ${range('cacheHitRate', 'Cache hit rate', 0, 90, 1, Math.round(d.cacheHitRate * 100), '%')}
-      ${range('batchShare', 'Share sent by batch', 0, 100, 1, Math.round(d.batchShare * 100), '%')}
+      <p class="wi-hint">No batch option: a live reply draft cannot wait up to 24 hours.</p>
     </fieldset>
     <fieldset><legend>People and volume</legend>
       ${range('failureRate', 'Drafts not accepted', 0, 60, 1, Math.round(d.failureRate * 100), '%')}
@@ -301,7 +297,7 @@ export function renderWhatifOut(vm, r) {
 
 export function renderWhatifCheck(vm) {
   const w = vm.whatif;
-  return `At the ${monthName(vm.month)} defaults the model cost is ${unitUsd(w.base.modelPerSuccess)} per accepted draft at list price. The ledger's billed model-token cost is ${unitUsd(w.ledgerTokenCostPerSuccess)} (hard cases use longer prompts, and the bill carries the negotiated discount), and ${unitUsd(w.ledgerCostPerSuccess)} once embeddings and the shared search tier are added.`;
+  return `At the ${monthName(vm.month)} defaults the model cost is ${unitUsd(w.base.modelPerSuccess)} per accepted draft at list price. The ledger's billed model-token cost is ${unitUsd(w.ledgerTokenCostPerSuccess)} (hard cases use longer prompts, and the bill carries the negotiated discount), and ${unitUsd(w.ledgerCostPerSuccess)} once embeddings and fixed shared cost (AI Search and the AI gateway) are added.`;
 }
 
 // ---- build.html ---------------------------------------------------------------------------
@@ -309,10 +305,10 @@ export function renderSummary60(vm) {
   const a = vm.ai; const al = vm.allocation[vm.month]; const rec = vm.reconciliation; const t = vm.leverTotals;
   const dec = Object.entries(vm.decisions).map(([uc, d]) => `${vm.useCases[uc].name}: ${d.decision}`).join('; ');
   return `<li><strong>Bill first.</strong> ${int(vm.generatedFrom.billedRows)} illustrative rows shaped like an Azure FOCUS export (FOCUS 1.2 names, normalised to 1.4) are the only cost the ledger allocates; ${int(vm.generatedFrom.metricRows)} gateway estimate rows decide shares and check the bill.</li>
-    <li><strong>Reconciled.</strong> Gateway metering explains ${pct(rec.totals.coverage)} of token-billed AI cost (${pct(rec.totals.coverageOfAllAi)} of all AI spend: the AI Search tier is not token-billed and is split by retrieval calls). The ${usd(rec.totals.gap)} gap is ${usd(rec.totals.unmetered)} of unmetered usage less a ${usd(rec.totals.discount)} negotiated discount. One bypass found.</li>
-    <li><strong>Owned.</strong> ${pct(al.ownedPct)} of ${usd(al.billedTotal)} has a named owner (${al.stage}); the unallocated rest stays visible.</li>
-    <li><strong>Budgeted.</strong> AI spend ${usd(a.actual)} against ${usd(a.budget)} (${pct(a.pct)}); forecast alert ${longDate((a.alerts.find((x) => x.type === 'forecast') || {}).raisedOn)}.</li>
-    <li><strong>Decided on avoidable cost.</strong> ${esc(dec)}. Savings pipeline ${usd(t.measured)} measured, ${usd(t.all)} with assumptions and priors, ${usd(t.realised)} realised in ${monthName(vm.month)}.</li>`;
+    <li><strong>Reconciled.</strong> Gateway metering explains ${pct(rec.totals.coverage)} of token-billed AI cost (${pct(rec.totals.coverageOfAllAi)} of all AI spend: the two AI pools, AI Search and the AI gateway, are not token-billed and are split by retrieval calls and gateway requests). The ${usd(rec.totals.gap)} gap is ${usd(rec.totals.unmetered)} of unmetered usage less a ${usd(rec.totals.discount)} negotiated discount. One bypass found.</li>
+    <li><strong>Owned.</strong> ${pct(al.ownedPct)} of ${usd(al.billedTotal)} has a named owner (${al.stage}); the unallocated rest stays visible: an untagged Log Analytics workspace and ${usd(al.unallocatedByCause.unmetered)} of AI use the gateway never metered.</li>
+    <li><strong>Budgeted.</strong> AI spend, including the AI gateway, ${usd(a.actual)} against ${usd(a.budget)} (${pct(a.pct)}); the ledger's forecast alert ${longDate((a.alerts.find((x) => x.type === 'forecast') || {}).raisedOn)}.</li>
+    <li><strong>Decided on avoidable cost.</strong> ${esc(dec)}. Savings pipeline ${usd(t.measured)} measured, ${usd(t.all)} with assumptions and priors, ${usd(t.realised)} realised in ${monthName(vm.month)}; the KYC retry cap is a guardrail and is not counted.</li>`;
 }
 
 export function renderRecon(vm) {
@@ -349,7 +345,7 @@ export function renderRecon(vm) {
 
 export function renderAllocation(vm) {
   const months = vm.months;
-  const methods = ['gateway-token-share', 'gateway-cost-share', 'retrieval-call-share', 'resource-tag', 'inherited-tag', 'unallocated'];
+  const methods = ['gateway-token-share', 'gateway-cost-share', 'retrieval-call-share', 'gateway-request-share', 'resource-tag', 'inherited-tag', 'unmetered-remainder', 'unallocated'];
   const a = vm.allocation[vm.month];
   const rows = methods.map((k) => `<tr><th scope="row" data-label="Rule"><code>${k}</code></th><td class="num" data-label="${monthName(vm.month)}">${usd(a.byMethod[k] || 0)}</td><td class="num" data-label="Share">${pct((a.byMethod[k] || 0) / a.allocatedTotal, 1)}</td></tr>`).join('');
   const trend = months.map((m) => `<tr><th scope="row" data-label="Month">${monthName(m)}</th><td class="num" data-label="Total">${usd(vm.allocation[m].billedTotal)}</td><td class="num" data-label="With an owner">${pct(vm.allocation[m].ownedPct, 1)}</td><td data-label="Stage">${vm.allocation[m].stage}</td></tr>`).join('');
@@ -362,7 +358,7 @@ export function renderOwnerBudgets(vm) {
   const bars = vm.ownerBudgets.map((o) => {
     const over = o.actual > o.budget;
     return `<div class="bb-row${over ? ' is-over' : ''}">
-      <span class="bb-name">${esc(o.name)}${o.id === 'fincrime' ? '<span class="sub">budget at CCU meter scope</span>' : ''}</span>
+      <span class="bb-name">${esc(o.name)}${o.id === 'fincrime' ? '<span class="sub">metered share of the Claude line</span>' : ''}</span>
       <span class="bb-track">
         <span class="bb-bar" style="width:${fixed((o.actual / max) * 100, 2)}%"></span>
         <span class="bb-tick bb-tick--80" style="left:${fixed(((o.budget * 0.8) / max) * 100, 2)}%"></span>
@@ -375,7 +371,9 @@ export function renderOwnerBudgets(vm) {
     const a = Object.fromEntries(o.alerts.map((x) => [x.type + x.threshold, x]));
     return `<tr${o.actual > o.budget ? ' class="is-flag"' : ''}><th scope="row" data-label="Owner">${esc(o.name)}</th><td class="num" data-label="Baseline">${usd(o.baseline)}</td><td class="num" data-label="Budget">${usd(o.budget)}</td><td class="num" data-label="Actual">${usd(o.actual)}</td><td class="num" data-label="Of budget">${pct(o.pct)}</td><td data-label="Forecast 100%">${shortDate(a.forecast1 && a.forecast1.raisedOn)}</td><td data-label="Actual 80%">${shortDate(a['actual0.8'] && a['actual0.8'].raisedOn)}</td><td data-label="Actual 100%">${shortDate(a.actual1 && a.actual1.raisedOn)}</td></tr>`;
   }).join('');
-  return { bars, table: `<caption>AI budgets by owner, ${monthName(vm.month)}: 115% of the two-month baseline, with the day each alert would be raised. Illustrative.</caption><thead><tr><th scope="col">Owner</th><th scope="col" class="num">Baseline</th><th scope="col" class="num">Budget</th><th scope="col" class="num">Actual</th><th scope="col" class="num">Of budget</th><th scope="col">Forecast 100%</th><th scope="col">Actual 80%</th><th scope="col">Actual 100%</th></tr></thead><tbody>${rows}</tbody>` };
+  const c = vm.ccu; const ca = Object.fromEntries(c.alerts.map((x) => [x.type + x.threshold, x]));
+  const ccuRow = `<tfoot><tr><th scope="row" data-label="Scope">Claude CCU line, whole meter (Azure budget)</th><td class="num" data-label="Baseline">${usd(c.baseline)}</td><td class="num" data-label="Budget">${usd(c.budget)}</td><td class="num" data-label="Actual">${usd(c.actual)}</td><td class="num" data-label="Of budget">${pct(c.pct)}</td><td data-label="Forecast 100%">${shortDate(ca.forecast1 && ca.forecast1.raisedOn)}</td><td data-label="Actual 80%">${shortDate(ca['actual0.8'] && ca['actual0.8'].raisedOn)}</td><td data-label="Actual 100%">${shortDate(ca.actual1 && ca.actual1.raisedOn)}</td></tr></tfoot>`;
+  return { bars, table: `<caption>AI budgets by owner, ${monthName(vm.month)}: 115% of the two-month baseline, with the day each alert would be raised. The last row is the whole Claude line, including the unmetered use the ledger holds unallocated. Illustrative.</caption><thead><tr><th scope="col">Owner</th><th scope="col" class="num">Baseline</th><th scope="col" class="num">Budget</th><th scope="col" class="num">Actual</th><th scope="col" class="num">Of budget</th><th scope="col">Forecast 100%</th><th scope="col">Actual 80%</th><th scope="col">Actual 100%</th></tr></thead><tbody>${rows}</tbody>${ccuRow}` };
 }
 
 function burnSvg(vm, o) {
@@ -442,11 +440,11 @@ export function renderBurn(vm) {
 
 export function renderVarianceTable(vm) {
   const v = vm.variance;
-  const rows = v.rows.map((r) => `<tr><th scope="row" data-label="Use case">${esc(vm.useCases[r.useCase].name)}</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(r.previous)}</td><td class="num" data-label="Volume">${signedUsd(r.volume)}</td><td class="num" data-label="Price">${signedUsd(r.price)}</td><td class="num" data-label="Mix">${signedUsd(r.mix)}</td><td class="num" data-label="${monthName(vm.month)}">${usd(r.current)}</td></tr>`).join('');
+  const rows = v.rows.map((r) => `<tr><th scope="row" data-label="Use case">${esc(vm.useCases[r.useCase].name)}</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(r.previous)}</td><td class="num" data-label="Calendar">${signedUsd(r.calendar)}</td><td class="num" data-label="Volume per day">${signedUsd(r.volume)}</td><td class="num" data-label="Price">${signedUsd(r.price)}</td><td class="num" data-label="Mix">${signedUsd(r.mix)}</td><td class="num" data-label="${monthName(vm.month)}">${usd(r.current)}</td></tr>`).join('');
   const bucket = (kind) => v.otherByResource.filter((o) => o.kind === kind).map((o) => `<code>${esc(o.resource)}</code>`).join(', ') || 'none';
-  return `<caption>Avoidable AI cost by use case (model tokens and embeddings), ${monthName(vm.previousMonth)} to ${monthName(vm.month)}, and the two buckets runs do not drive. Illustrative.</caption><thead><tr><th scope="col">Use case</th><th scope="col" class="num">${monthName(vm.previousMonth)}</th><th scope="col" class="num">Volume</th><th scope="col" class="num">Price</th><th scope="col" class="num">Mix</th><th scope="col" class="num">${monthName(vm.month)}</th></tr></thead><tbody>${rows}</tbody>
-  <tfoot><tr><th scope="row" data-label="Bucket">Fixed shared platform</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(v.fixedPrevious)}</td><td colspan="3" data-label="Change">${signedUsd(v.fixedPlatform)}: ${bucket('fixed')}, a fixed daily charge split by retrieval calls</td><td class="num" data-label="${monthName(vm.month)}">${usd(v.fixedCurrent)}</td></tr>
-  <tr><th scope="row" data-label="Bucket">Unattributed AI</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(v.unattributedPrevious)}</td><td colspan="3" data-label="Change">${signedUsd(v.unattributed)}: ${bucket('unattributed')}, billed AI with no use case</td><td class="num" data-label="${monthName(vm.month)}">${usd(v.unattributedCurrent)}</td></tr></tfoot>`;
+  return `<caption>Avoidable AI cost by use case (model tokens and embeddings), ${monthName(vm.previousMonth)} to ${monthName(vm.month)}, and the two buckets runs do not drive. Calendar is one more day (${v.daysCurrent} against ${v.daysPrevious}) at ${monthName(vm.previousMonth)}'s daily level; volume is runs per day. Illustrative.</caption><thead><tr><th scope="col">Use case</th><th scope="col" class="num">${monthName(vm.previousMonth)}</th><th scope="col" class="num">Calendar</th><th scope="col" class="num">Volume per day</th><th scope="col" class="num">Price</th><th scope="col" class="num">Mix</th><th scope="col" class="num">${monthName(vm.month)}</th></tr></thead><tbody>${rows}</tbody>
+  <tfoot><tr><th scope="row" data-label="Bucket">Fixed shared platform</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(v.fixedPrevious)}</td><td class="num" data-label="Calendar">${signedUsd(v.calendarFixed)}</td><td colspan="3" data-label="Change">${signedUsd(v.fixedPlatform)} beyond the extra day: ${bucket('fixed')}, fixed daily charges split by retrieval calls or gateway requests</td><td class="num" data-label="${monthName(vm.month)}">${usd(v.fixedCurrent)}</td></tr>
+  <tr><th scope="row" data-label="Bucket">Unattributed AI</th><td class="num" data-label="${monthName(vm.previousMonth)}">${usd(v.unattributedPrevious)}</td><td class="num" data-label="Calendar">$0</td><td colspan="3" data-label="Change">${signedUsd(v.unattributed)}: ${bucket('unattributed')}, billed AI with no use case (the sandbox and unmetered use)</td><td class="num" data-label="${monthName(vm.month)}">${usd(v.unattributedCurrent)}</td></tr></tfoot>`;
 }
 
 export function renderCompare(vm) {
@@ -463,10 +461,24 @@ export function renderCompare(vm) {
 
 export function renderCommitment(vm) {
   const c = vm.commitment;
-  const moving = vm.variance.rows.filter((r) => r.runsPrevious).sort((a, b) => Math.abs(b.runsCurrent / b.runsPrevious - 1) - Math.abs(a.runsCurrent / a.runsPrevious - 1))[0];
+  const moving = vm.variance.rows.filter((r) => r.runsPerDayChange !== null).sort((a, b) => Math.abs(b.runsPerDayChange) - Math.abs(a.runsPerDayChange))[0];
+  const sp = (vm.prices.retail || []).find((r) => r.key === 'd16s-v5');
   return `<li><strong>Baseline:</strong> ${c.baselineDays} days of daily cost, past the 60 to 90 days the Foundation asks for before committing.</li>
-    <li><strong>Commit to the floor, not the mean, at discounted rates.</strong> Production compute (AKS and VMs, after the rightsizing lever) never fell below ${usd(c.computeFloorPerDay)} a day at pay-as-you-go rates (${unitUsd(c.computeFloorPerHour)} an hour), against a mean of ${usd(c.computeMeanPerDay)}. A savings plan commits a discounted hourly amount, so the commitment is ${unitUsd(c.computeFloorPerHour)} \u00d7 (1 \u2212 d)${c.commitmentPerHour === null ? ", where d is the discount Microsoft's savings plan recommendation gives for this SKU mix; it is not in this pack's sources, so it is a parameter in <code>org.json</code>, not a number here" : ` = ${unitUsd(c.commitmentPerHour)} an hour at d = ${pct(c.savingsPlanDiscount)}`}. Microsoft's own order is rightsize first, then reservations for stable workloads, then savings plans.</li>
-    <li><strong>No PTU yet.</strong> Daily production tokens swing ${ratio(c.tokensMaxToMin)} between the quietest and busiest day (P90 ${ratio(c.tokensP90toP50)} the median)${moving ? `, and ${esc(vm.useCases[moving.useCase].name)} runs moved ${pct(Math.abs(moving.runsCurrent / moving.runsPrevious - 1))} in a month` : ''}. Provisioned throughput pays only when it is busy; sizing it needs the Foundry capacity calculator, so it is not priced here.</li>`;
+    <li><strong>Commit to the floor, not the mean, at discounted rates.</strong> Production compute (AKS and VMs, after the rightsizing lever) never fell below ${usd(c.computeFloorPerDay)} a day at pay-as-you-go rates (${unitUsd(c.computeFloorPerHour)} an hour), against a mean of ${usd(c.computeMeanPerDay)}. The Azure Retail Prices API lists a 1-year savings plan for ${esc(sp ? sp.meter : 'Dsv5')} at ${unitUsd(sp ? sp.savingsPlan['1 Year'] : 0)} an hour against ${unitUsd(sp ? sp.usd : 0)} pay-as-you-go, so d = ${pct(c.savingsPlanDiscount, 1)} and the hourly commitment is ${unitUsd(c.computeFloorPerHour)} \u00d7 (1 \u2212 d) = ${unitUsd(c.commitmentPerHour)}, saving about ${usd(c.monthlySaving)} a month if the floor holds. Microsoft's own order is rightsize first, then reservations for stable workloads, then savings plans.</li>
+    <li><strong>No PTU yet.</strong> Daily production tokens swing ${ratio(c.tokensMaxToMin)} between the quietest and busiest day (P90 ${ratio(c.tokensP90toP50)} the median)${moving ? `, and ${esc(vm.useCases[moving.useCase].name)} runs a day moved ${pct(Math.abs(moving.runsPerDayChange))} in a month` : ''}. Provisioned throughput pays only when it is busy; sizing it needs the Foundry capacity calculator, so it is not priced here.</li>`;
+}
+
+export function renderScenario(vm) {
+  const sc = vm.scenario;
+  if (!sc) return '';
+  const meta = vm.useCases[sc.useCase];
+  const row = (label, x) => `<tr><th scope="row" data-label="Case">${label}</th><td class="num" data-label="Useful answers">${int(x.useful)}</td><td class="num" data-label="Avoidable per answer">${unitUsd(x.avoidable)}</td><td class="num" data-label="Full cost per answer">${unitUsd(x.loaded)}</td><td data-label="Against value">${x.loaded >= sc.value ? '<span class="warn">full cost above value</span>' : 'below value'}</td></tr>`;
+  const re = vm.reallocation && vm.reallocation[sc.useCase];
+  const top = re && re.to.length ? re.to[0] : null;
+  const stopNote = top ? ` Stopping instead would move its ${usd(vm.ue[vm.month][sc.useCase].fixedSharedSpend)} of fixed shared cost, mostly to the ${esc(vm.useCases[top.useCase].name.toLowerCase())} (${unitUsd(top.from)} to ${unitUsd(top.to)} per ${esc(vm.useCases[top.useCase].outcomeNoun)}).` : '';
+  return `<caption>${esc(meta.name)}, ${monthName(vm.month)}: value ${unitUsd(sc.value)} per ${esc(meta.outcomeNoun)}. Same runs and avoidable cost per run; useful answers raised to the ${pct(sc.bar)} bar; search tier from the priced lever.${stopNote} Illustrative.</caption>
+  <thead><tr><th scope="col">Case</th><th scope="col" class="num">Useful answers</th><th scope="col" class="num">Avoidable per answer</th><th scope="col" class="num">Full cost per answer</th><th scope="col">Against value</th></tr></thead>
+  <tbody>${row('As run in ' + monthName(vm.month), sc.now)}${row('Fix retrieval to the bar', sc.fixed)}${row('Fix retrieval and downsize the search tier', sc.fixedAndDownsized)}</tbody>`;
 }
 
 export const _test = { xPos };

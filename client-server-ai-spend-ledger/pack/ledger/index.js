@@ -3,9 +3,9 @@
 // the no-JS view; the tests call it on the committed data.
 import { parseCsv, num } from './csv.js';
 import { normaliseExport, gatewayRows, requestIndex, priceOn } from './normalise.js';
-import { allocate, allocationSummary } from './allocate.js';
+import { allocate, allocationSummary, isAi, markAiSpend, FIXED_METHODS } from './allocate.js';
 import { reconcile } from './reconcile.js';
-import { unitEconomics, aiSpendByOwner, percentile } from './metrics.js';
+import { unitEconomics, aiSpendByOwner, percentile, failureAnomalies } from './metrics.js';
 import { baselineOf, budgetOf, scopeSeries, evaluateBudget, variance } from './budget.js';
 import { decideAll } from './decision.js';
 import { priceLevers } from './levers.js';
@@ -38,35 +38,35 @@ export function modelChanges(billed, month) {
 // over the other users of the pool in proportion to their own share. Returns, per use case with a
 // fixed share, the cost that moves and each other user's fully loaded cost per outcome before and after.
 export function sharedReallocation(ueMonth, allocated, month) {
+  // Pool by pool: the search tier goes to the other retrieval users, the gateway to the other gateway users.
+  const pools = [['searchShareSpend', 'search tier'], ['gatewayShareSpend', 'AI gateway']];
+  const users = Object.values(ueMonth);
   const out = {};
-  const users = Object.values(ueMonth).filter((u) => u.fixedSharedSpend > 0);
   for (const u of users) {
-    const others = users.filter((x) => x.useCase !== u.useCase);
-    const base = others.reduce((s, x) => s + x.fixedSharedSpend, 0);
+    if (!(u.fixedSharedSpend > 0)) continue;
+    const added = {};
+    for (const [key] of pools) {
+      const mine = u[key] !== undefined ? u[key] : (key === 'searchShareSpend' ? u.fixedSharedSpend : 0);
+      if (!(mine > 0)) continue;
+      const others = users.filter((x) => x.useCase !== u.useCase && (x[key] !== undefined ? x[key] : (key === 'searchShareSpend' ? x.fixedSharedSpend : 0)) > 0);
+      const base = others.reduce((s, x) => s + (x[key] !== undefined ? x[key] : x.fixedSharedSpend), 0);
+      for (const x of others) added[x.useCase] = (added[x.useCase] || 0) + (base ? mine * ((x[key] !== undefined ? x[key] : x.fixedSharedSpend) / base) : 0);
+    }
     out[u.useCase] = {
       moved: u.fixedSharedSpend,
-      to: others.map((x) => {
-        const add = base ? u.fixedSharedSpend * (x.fixedSharedSpend / base) : 0;
-        return { useCase: x.useCase, added: add, from: x.costPerSuccess, to: x.successful ? (x.spend + add) / x.successful : null };
-      }),
+      to: Object.entries(added).map(([uc, add]) => {
+        const x = ueMonth[uc];
+        return { useCase: uc, added: add, from: x.costPerSuccess, to: x.successful ? (x.spend + add) / x.successful : null };
+      }).sort((a, b) => b.added - a.added),
     };
   }
   return out;
 }
 
-export function commitmentCall({ billed, gw, levers, org, months }) {
-  const discount = org.commitment && Number.isFinite(org.commitment.savingsPlanDiscount) ? org.commitment.savingsPlanDiscount : null;
-  const rightsized = new Set((levers.levers.find((l) => l.id === 'vm-rightsize') || {}).resources || []);
-  const effect = (levers.levers.find((l) => l.id === 'vm-rightsize') || {}).effect || 0;
-  const daily = {};
-  for (const r of billed) {
-    if (r.ServiceCategory !== 'Compute' || !/prod$/.test(r.SubAccountId) || /nonprod/.test(r.SubAccountId)) continue;
-    const c = rightsized.has(r.ResourceName) ? r.EffectiveCost * (1 - effect) : r.EffectiveCost;
-    daily[r.x_Date] = (daily[r.x_Date] || 0) + c;
-  }
-  const values = Object.values(daily);
-  const floor = Math.min(...values);
-  const days = values.length;
+// The commitment call: the priced savings-plan lever, plus why provisioned throughput waits.
+export function commitmentCall({ gw, levers }) {
+  const c = levers.levers.find((l) => l.id === 'compute-commitment') || {};
+  const f = c.floor || { floorPerDay: null, days: 0, meanPerDay: null };
   const tok = {};
   for (const g of gw) if (g.x_Environment === 'prod' && g.x_ModelId !== 'text-embedding') tok[g.x_Date] = (tok[g.x_Date] || 0) + g.ConsumedQuantity;
   const t = Object.values(tok);
@@ -75,17 +75,35 @@ export function commitmentCall({ billed, gw, levers, org, months }) {
   const minT = Math.min(...t);
   const maxT = Math.max(...t);
   return {
-    baselineDays: days, meetsBaselineRule: days >= 60, computeFloorPerDay: floor, computeFloorPerHour: floor / 24,
-    savingsPlanDiscount: discount, commitmentPerHour: discount === null ? null : (floor / 24) * (1 - discount),
-    computeMeanPerDay: sum(values) / Math.max(1, days),
+    baselineDays: f.days, meetsBaselineRule: f.days >= 60, computeFloorPerDay: f.floorPerDay, computeFloorPerHour: f.floorPerDay / 24,
+    savingsPlanDiscount: c.discount ?? null, commitmentPerHour: c.commitmentPerHour ?? null, monthlySaving: c.saving ?? null,
+    computeMeanPerDay: f.meanPerDay,
     tokensP50: p50, tokensP90: p90, tokensP90toP50: p50 ? p90 / p50 : null, tokensMaxToMin: minT ? maxT / minT : null,
     ptuRecommended: false,
   };
 }
 
+// Knowledge assistant scenario: fix retrieval up to the owner's quality bar, then downsize the search
+// tier. Same runs and avoidable cost per run; more useful answers; the tier's cost from the priced lever.
+export function knowledgeScenario({ ue, decisions, levers, uc = 'knowledge-assistant' }) {
+  const u = ue[uc]; const d = decisions[uc];
+  const tier = levers.levers.find((l) => l.id === 'search-tier');
+  if (!u || !d || !tier) return null;
+  const usefulNow = u.successful;
+  const usefulFixed = u.runs * Math.max(d.qualityBar, u.successRate);
+  const tierShare = u.searchShareSpend;
+  const tierAfterShare = tier.eligibleCost ? tierShare * (tier.costAfter / tier.eligibleCost) : tierShare;
+  return {
+    useCase: uc, value: d.valuePerSuccess, bar: d.qualityBar,
+    now: { useful: usefulNow, avoidable: u.avoidableSpend / usefulNow, loaded: u.spend / usefulNow },
+    fixed: { useful: usefulFixed, avoidable: u.avoidableSpend / usefulFixed, loaded: u.spend / usefulFixed },
+    fixedAndDownsized: { useful: usefulFixed, avoidable: u.avoidableSpend / usefulFixed, loaded: (u.spend - tierShare + tierAfterShare) / usefulFixed },
+  };
+}
+
 export function buildLedger(data) {
   const { prices, org, values } = data;
-  const billed = normaliseExport(rows(data.focus));
+  const billed = markAiSpend(normaliseExport(rows(data.focus)), org);
   const metrics = rows(data.tokens);
   const outcomes = rows(data.outcomes);
   const vmUtil = rows(data.vm || []);
@@ -106,7 +124,6 @@ export function buildLedger(data) {
   }
 
   const decisions = decideAll(ue[month], values, org);
-  const isAi = (r) => r.ServiceCategory === 'AI and Machine Learning';
   const ownersWithAi = Object.keys(org.owners).filter((o) => o !== 'unallocated');
   const ccuIds = Object.keys(org.gateway.ccuLines);
   const scopes = [
@@ -126,8 +143,10 @@ export function buildLedger(data) {
 
   const v = variance({ allocated, gw, outcomes, prices, org, month });
   const changes = modelChanges(billed, month);
-  const levers = priceLevers({ levers: data.levers.levers, allocated, billed, gw, metrics, outcomes, prices, org, ue: ue[month], decisions, vmUtil, month });
-  const commitment = commitmentCall({ billed, gw, levers, org, months });
+  const anomalies = failureAnomalies({ outcomes, allocated, org, month, prior: [prevMonth(month, 1), prevMonth(month, 2)] });
+  const levers = priceLevers({ levers: data.levers.levers, allocated, billed, gw, metrics, outcomes, prices, org, ue: ue[month], decisions, vmUtil, month, anomalies });
+  const commitment = commitmentCall({ gw, levers });
+  const scenario = knowledgeScenario({ ue: ue[month], decisions, levers });
 
   // Cost per KYC summary task across providers, from the measured October token counts.
   const kyc = ue[month]['kyc-review'];
@@ -166,7 +185,7 @@ export function buildLedger(data) {
     org, prices, values, month, months, previousMonth: prevMonth(month, 1), reallocation,
     billed, gw, allocated, outcomes,
     allocation, reconciliation, ue, decisions, aiTotals, aiByOwner, totals,
-    budget, variance: v, modelChanges: changes, levers, commitment, compare,
+    budget, variance: v, modelChanges: changes, levers, commitment, compare, anomalies, scenario,
     whatifDefaults, whatifBase,
     checks: {
       allocationSumsToBill: months.every((m) => Math.abs(allocation[m].allocatedTotal - allocation[m].billedTotal) < 1e-6 * Math.max(1, allocation[m].billedTotal)),

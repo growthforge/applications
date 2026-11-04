@@ -6,7 +6,7 @@ Every column the ledger reads or writes, the FOCUS version it comes from, and ho
 
 | Version | Status (read 3 Nov 2026) | What the ledger does with it |
 |---|---|---|
-| FOCUS 1.2 | Azure Cost Management's FOCUS export is documented up to the 1.2-preview dataset (some 1.2 fields not yet populated). | The illustrative export `data/focus_export.csv` is shaped like an Azure FOCUS export: FOCUS 1.2 column names, daily rows, one constant illustrative rate per SKU. It is synthetic, not an export. |
+| FOCUS 1.2 | Azure Cost Management's FOCUS export is documented up to the 1.2-preview dataset (some 1.2 fields not yet populated). | The illustrative export `data/focus_export.csv` is shaped like an Azure FOCUS export: FOCUS 1.2 column names, daily rows, cloud services at Azure Retail Prices API pay-as-you-go rates (one constant rate per SKU). It is synthetic, not an export. |
 | FOCUS 1.4 | Current specification, ratified 4 June 2026. No token columns. Removes ProviderName and PublisherName. | The ledger normalises every row to FOCUS 1.4 column names (`ledger/normalise.js`). |
 | FOCUS 1.5 | Planned for ratification on 3 Dec 2026, so not current. The working draft adds token direction, token cache action and model identity (ModelDeveloper, ModelFamily, ModelId, ModelVersion). | Token fields ride as `x_` extension columns shaped like the draft names, so moving to 1.5 is a rename. |
 
@@ -27,7 +27,7 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | InvoiceIssuerName | same | Entity that issues the invoice | Microsoft for every row: Anthropic usage through Foundry is invoiced by Microsoft |
 | SubAccountId | same | Grouping of resources (an Azure subscription here) | Subscription tags for tag inheritance |
 | RegionId | same | Region | uksouth |
-| ServiceCategory | same | Highest-level classification; "AI and Machine Learning" is an allowed value | Defines AI spend |
+| ServiceCategory | same | Highest-level classification; "AI and Machine Learning" is an allowed value | Defines AI spend, together with the two shared AI pools (see `x_AiSpend`) |
 | ServiceName | same | The purchasable offering | Labels |
 | ResourceId, ResourceName | same | Provider resource identifier and display name | Deployment name for Azure OpenAI lines (the end of ResourceId); the Claude line is matched on ResourceId |
 | SkuId, SkuMeter | same | SKU and usage meter | Meter names are parsed into the token extension columns |
@@ -38,7 +38,7 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | BilledCost | same | Cost as invoiced | The source of truth for allocation and reconciliation |
 | EffectiveCost | same | Cost with prepaid commitments amortised | Allocated and reported (equals BilledCost until a commitment is bought) |
 | CommitmentDiscountId | same | Commitment discount applied, if any | Empty: none bought yet |
-| Tags | same | Finalised user and provider tags (JSON) | Owner and cost-pool tags; resource tag wins over inherited ones |
+| Tags | same | Finalised user and provider tags (JSON) | Owner and cost-pool tags (`shared-ai-platform` for AI Search, `ai-gateway` for API Management and its Application Insights); resource tag wins over inherited ones |
 | x_ResourceGroupName | same (Azure extension) | Resource group | Resource group tags for tag inheritance |
 
 ## Columns the ledger adds
@@ -51,14 +51,16 @@ Sources: FOCUS 1.4 announcement and the 1.5 release scope page (focus.finops.org
 | x_ModelDeveloper | FOCUS 1.5 draft ModelDeveloper | OpenAI or Anthropic |
 | x_Deployment | ledger extension | Azure OpenAI deployment name |
 | x_Team, x_UseCase, x_Environment | ledger extension | Labels from the gateway's metric dimensions |
-| AllocatedMethodId | FOCUS 1.3+ column | gateway-token-share, gateway-cost-share, retrieval-call-share, resource-tag, inherited-tag or unallocated |
+| AllocatedMethodId | FOCUS 1.3+ column | gateway-token-share, gateway-cost-share, unmetered-remainder, retrieval-call-share, gateway-request-share, resource-tag, inherited-tag or unallocated |
 | AllocatedResourceId | FOCUS 1.3+ column | The billed resource whose cost was split |
 | AllocatedTags | FOCUS 1.3+ column | The owner (and use case) the split cost now belongs to |
-| x_Owner | ledger extension | Owner after allocation, or "unallocated" |
+| x_Owner | ledger extension | Owner after allocation, or "unallocated" (an untagged resource, or model use the gateway never metered) |
+| x_CostPool | ledger extension | The shared AI pool a row belongs to, from its cost-pool tag: shared-ai-platform or ai-gateway |
+| x_AiSpend | ledger extension | True for ServiceCategory "AI and Machine Learning" and for both AI pools: the one definition of AI spend used for budgets, variance and the memo |
 
 ## Gateway metrics, mapped
 
-The API Management policy emits prompt, completion and total tokens (cached tokens in preview) with four dimensions: team, use-case, environment and deployment. The daily aggregate in `data/token_metrics.csv` becomes FOCUS-aligned estimate rows: one row per token class, `ConsumedUnit` Tokens, `ServiceCategory` AI and Machine Learning, the `x_` columns above, and `ListCost` = tokens times the published list price. These rows never join the bill. They decide each team's share of a billed line and feed the reconciliation.
+The API Management policy emits prompt, completion and total tokens (cached tokens in preview) with five dimensions: team, use-case, environment, deployment (or the body's model field on the v1, Responses and Anthropic paths) and provider. The daily aggregate in `data/token_metrics.csv` becomes FOCUS-aligned estimate rows: one row per token class, `ConsumedUnit` Tokens, `ServiceCategory` AI and Machine Learning, the `x_` columns above, and `ListCost` = tokens times the published list price. These rows never join the bill. They decide each team's share of a billed line and feed the reconciliation.
 
 ## What is not modelled
 

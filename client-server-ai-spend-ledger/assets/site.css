@@ -284,6 +284,10 @@ a.cite { font-size: 0.8em; font-weight: 600; text-decoration: none; border-botto
 .status--identified { color: var(--text-muted); }
 .status--blocked { color: var(--warn); border-color: currentColor; background: var(--warn-bg); }
 .status--hold { color: var(--text-muted); border-style: dashed; }
+.status--guardrail { color: var(--ink); border-style: double; border-width: 3px; }
+.wi-hint { margin: 0; font-size: var(--step--2); color: var(--text-muted); }
+.memo__anomaly { border-left-color: var(--warn-fill) !important; }
+.db-loaded--loss { background: var(--warn-fill); height: 30px; width: 5px; z-index: 1; box-shadow: 0 0 0 1.5px var(--surface); }
 
 /* What-if ----------------------------------------------------------------------------------------- */
 .wi-row > td { padding: var(--space-3) !important; background: var(--surface-2); }
@@ -444,6 +448,8 @@ details.code .table-wrap { margin: 0; border: 0; }
   .ue-table tbody tr > :nth-child(6), .ue-table tbody tr > :nth-child(9), .ue-table thead tr > :nth-child(6), .ue-table thead tr > :nth-child(9) { display: none; }
   #unit .section__head, #unit h2 { break-after: avoid-page; page-break-after: avoid; }
   #unit { break-before: auto; }
+  #pipeline { break-before: page; }
+  .pipe-table tr.wi-row { display: none; }
   .db-track { height: 40px; }
   .db-row { padding: 0; }
   .db-fig { padding: 3mm; }
