@@ -1,0 +1,360 @@
+{
+  "title": "Skills-check item bank and scoring rubric: AI pathway for account managers",
+  "status": "Illustrative. A sample written for an independent job application. Not Vodafone material; not produced, reviewed or endorsed by Vodafone. Every customer, name and figure is fictional.",
+  "prepared_by": "Hemanth Vallamkonda",
+  "prepared_on": "2026-11-03",
+  "version": "0.4",
+  "owner": "Skill Lead (to be agreed); items drafted by the AI Enablement & Academy Specialist",
+  "review_by": "2027-02-01",
+  "companion_page": "https://growthforge.github.io/applications/vodafone-ai-pathway/",
+  "how_to_use": [
+    "Every item scores a decision about a real piece of work, not recall of a definition and not the learner’s confidence.",
+    "All items share one answer set, so the learner judges the work, not the wording of the options.",
+    "Per-option feedback names the rule, so the decision transfers to the next task.",
+    "Every module ends with one scored check item in this format, so item facility can be reported per module and a weak module is found, not hidden in an average.",
+    "Swap the fictional customers, currency and date formats for each market; keep the rule and the decision unchanged.",
+    "Before go-live, the Skill Lead signs off every item and two experienced account managers check that each scenario is realistic."
+  ],
+  "answer_sets": {
+    "send": [
+      {
+        "id": "send",
+        "label": "Send it"
+      },
+      {
+        "id": "fix",
+        "label": "Fix it, then send"
+      },
+      {
+        "id": "escalate",
+        "label": "Stop and escalate"
+      }
+    ],
+    "use": [
+      {
+        "id": "use",
+        "label": "Use it"
+      },
+      {
+        "id": "fix",
+        "label": "Fix it, then use"
+      },
+      {
+        "id": "escalate",
+        "label": "Stop and escalate"
+      }
+    ]
+  },
+  "rules": {
+    "R1": "A draft may commit only to what the notes or the contract support.",
+    "R2": "Names, dates and figures match the source.",
+    "R3": "Fix what your notes can put right; escalate what only someone else can decide (price, contract terms, where data is held, security).",
+    "R4": "Customer contracts and pricing are used only in approved company tools.",
+    "R5": "Nothing from another customer appears.",
+    "R6": "Every statement you rely on traces to a source you can open.",
+    "R7": "A question you said you would check is yours to route: send it to its owner the same day, whatever happens to the draft."
+  },
+  "sources": {
+    "larchmoor_notes": {
+      "label": "Larchmoor Freight (fictional): meeting notes, Tuesday",
+      "lines": [
+        "They want to renew the mobile plan for 60 drivers before the contract ends in March.",
+        "They asked about tracking for 25 trailers. No pricing was discussed.",
+        "They asked whether tracking data is stored in the UK. You said you would check.",
+        "Next step: a summary, and a call with a solutions specialist, who is free Thursday at 10:00 or Friday at 14:00."
+      ]
+    },
+    "harlow_notes": {
+      "label": "Harlow Kitchens (fictional): call notes, Monday",
+      "lines": [
+        "They want 12 new handsets delivered to their Leeds office.",
+        "You agreed to send a quote by Friday.",
+        "They asked whether their old handsets can be recycled. You said yes, through the standard recycling route.",
+        "Next step: the quote by Friday."
+      ]
+    },
+    "orwell_record": {
+      "label": "Orwell Dental Group (fictional): account record and meeting invite",
+      "lines": [
+        "Contract renewal date: 31 May 2027.",
+        "Meeting invite attendees: Priya Shah (Operations Manager), Tom Reid (Finance Lead).",
+        "Support tickets last quarter: 14, each with a ticket number in the service desk."
+      ]
+    },
+    "larchmoor_reply": {
+      "label": "Larchmoor Freight (fictional): the customer’s reply, Wednesday",
+      "lines": [
+        "Can the new plan start in January, at our current price? We need to know by Friday."
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "M3-P1",
+      "stage": 2,
+      "module": "M3 Notes to follow-up",
+      "screen": "5 (practice)",
+      "scored": false,
+      "ltem_tier": "Tier 5 format (decision-making), used here as practice",
+      "answer_set": "send",
+      "source": "larchmoor_notes",
+      "stem": "Copilot drafted the follow-up from these notes. What would you do with this draft?",
+      "draft": "Thank you for Tuesday. You would like to renew the mobile plan for your 60 drivers before March, and to know more about tracking for your 25 trailers, which we will include at no extra cost. I will confirm where tracking data is stored. Could we speak with our solutions specialist on Thursday at 10:00 or Friday at 14:00?",
+      "expected": "fix",
+      "rule": "R1",
+      "rationale": "Nobody offered tracking at no extra cost, and nobody asked for a price. Your notes can put this right on their own: delete the clause and send. The check: underline every commitment and find it in the source.",
+      "feedback": {
+        "send": "‘At no extra cost’ is a commitment nobody made.",
+        "fix": "Expected. Nobody offered tracking at no extra cost. Delete the clause and send.",
+        "escalate": "Close, but this one is yours to fix. Nobody asked for a price, so nobody needs to decide one: delete the offer and send."
+      }
+    },
+    {
+      "id": "M3-P2",
+      "stage": 2,
+      "module": "M3 Notes to follow-up",
+      "screen": "5 (practice)",
+      "scored": false,
+      "ltem_tier": "Tier 5 format (decision-making), used here as practice",
+      "answer_set": "send",
+      "source": "larchmoor_notes",
+      "stem": "Copilot drafted the follow-up from these notes. What would you do with this draft?",
+      "draft": "Thank you for Tuesday. You would like to renew the mobile plan for your 60 drivers before March, and to know more about tracking for your 25 trailers. I will confirm where tracking data is stored. Could we speak with our solutions specialist on Thursday at 10:00 or Friday at 14:00?",
+      "expected": "send",
+      "rule": "R1",
+      "rationale": "Every statement is in the notes, including the specialist’s two times, and the draft decides nothing that is not yours. The data question stays an action: route it to the right specialist today, whatever happens to the draft. Not every AI draft needs changing; the skill is knowing which ones do.",
+      "feedback": {
+        "send": "Expected. Each sentence traces to the notes. Route the data question to its specialist today.",
+        "fix": "There is nothing to fix: each sentence traces to the notes. Editing a good draft spends the time the tool saved.",
+        "escalate": "The draft makes no decision for anyone else. Route the data question to its specialist, and send this summary."
+      },
+      "related_rules": [
+        "R7"
+      ]
+    },
+    {
+      "id": "M3-P3",
+      "stage": 2,
+      "module": "M3 Notes to follow-up",
+      "screen": "5 (practice)",
+      "scored": false,
+      "ltem_tier": "Tier 5 format (decision-making), used here as practice",
+      "answer_set": "send",
+      "source": "larchmoor_notes",
+      "stem": "On Wednesday the customer replies: “Can the new plan start in January, at our current price? We need to know by Friday.” Copilot drafted your answer. What would you do with this draft?",
+      "draft": "Yes, we can start your new plan in January at your current price. I will send the paperwork today.",
+      "expected": "escalate",
+      "rule": "R3",
+      "rationale": "The customer is asking for a decision on price and contract dates, and the draft makes it for you. Nothing in your notes can put that right; only whoever approves pricing and terms can. Do not send. Take the request to them today, and tell the customer when to expect an answer. The rule: fix what your notes can put right; escalate what only someone else can decide.",
+      "feedback": {
+        "send": "It agrees a price and a start date that nobody with the authority has agreed.",
+        "fix": "Rewording cannot supply the decision. A reply saying you will check is the holding line that goes with escalating; the request itself still needs its owner.",
+        "escalate": "Expected. Price and contract dates are decisions you do not own. Take the request to whoever approves them, and tell the customer when to expect an answer."
+      },
+      "design_note": "Why this is not a fix: in draft 1 the notes alone tell you the right words (no pricing was discussed, so the offer goes). Here the right words depend on a decision nobody has made yet, so no edit by the account manager can make the draft correct.",
+      "reply_source": "larchmoor_reply"
+    },
+    {
+      "id": "M3-C1",
+      "stage": 2,
+      "module": "M3 Notes to follow-up",
+      "screen": "7 (check)",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "send",
+      "source": "harlow_notes",
+      "stem": "Copilot drafted the follow-up from these notes. What would you do with this draft?",
+      "draft": "Thank you for Monday. As agreed, I will send the quote for 12 new handsets for your Leeds office by Thursday, and I can confirm your old handsets can go through our standard recycling route. I will be in touch with the quote shortly.",
+      "expected": "fix",
+      "rule": "R2",
+      "rationale": "The notes say the quote goes by Friday; the draft promises Thursday. The recycling answer is yours to give: you gave it in the call. Correct the date and send.",
+      "feedback": {
+        "send": "Check the date against the notes. The quote was promised by Friday, not Thursday.",
+        "fix": "Expected. Correct the quote date to Friday; everything else traces to the notes.",
+        "escalate": "Nothing here needs another person’s decision. You agreed the recycling answer in the call. Correct the date and send."
+      }
+    },
+    {
+      "id": "S1-1",
+      "stage": 1,
+      "module": "M1 Brief me before the meeting",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": "orwell_record",
+      "stem": "Copilot prepared your brief for tomorrow’s meeting with Orwell Dental Group. One line reads: “Contract renewal date: 31 March 2027.” What would you do with the brief?",
+      "expected": "fix",
+      "rule": "R2",
+      "rationale": "The account record says 31 May 2027. A wrong renewal date in your head becomes a wrong date in the meeting. Correct it from the record, then use the brief.",
+      "feedback": {
+        "use": "Check the date against the account record first: it says 31 May 2027.",
+        "fix": "Expected. Correct the renewal date from the account record, then use the brief.",
+        "escalate": "This is yours to fix: the right date is in the record you already have."
+      }
+    },
+    {
+      "id": "S1-2",
+      "stage": 1,
+      "module": "M1 Brief me before the meeting",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": "orwell_record",
+      "stem": "The brief lists the attendees as Priya Shah (Operations Manager) and Tom Reid (Finance Lead), taken from the meeting invite. What would you do with the brief?",
+      "expected": "use",
+      "rule": "R6",
+      "rationale": "Both names and roles match the invite, which is the source the brief names. Use it.",
+      "feedback": {
+        "use": "Expected. The names and roles match the invite.",
+        "fix": "There is nothing to fix: both names and roles match the invite.",
+        "escalate": "Nothing here needs anyone else. The attendee list matches its source."
+      }
+    },
+    {
+      "id": "S1-3",
+      "stage": 1,
+      "module": "M1 Brief me before the meeting",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": "orwell_record",
+      "stem": "The brief summarises last quarter’s 14 support tickets. Each line cites a ticket number, and the three tickets you open match their lines. What would you do with the brief?",
+      "expected": "use",
+      "rule": "R6",
+      "rationale": "Every line traces to a ticket you can open, and your spot check matched. That is what checking against the source means for a summary.",
+      "feedback": {
+        "use": "Expected. Each line cites a ticket, and your spot check matched.",
+        "fix": "Nothing is wrong: each line traces to a ticket and the spot check matched.",
+        "escalate": "Nothing here needs another person’s decision."
+      }
+    },
+    {
+      "id": "S1-4",
+      "stage": 1,
+      "module": "M2 What stays out",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": null,
+      "stem": "A colleague pasted Orwell Dental Group’s signed contract into a free public AI chat to get a summary, and offers you the summary for your brief. What would you do?",
+      "expected": "escalate",
+      "rule": "R4",
+      "rationale": "The contract has already left approved company tools. Do not use the summary. Tell your manager and the data protection contact, then make the summary again in an approved tool.",
+      "feedback": {
+        "use": "The summary came from a contract placed in a public tool, against the data rule.",
+        "fix": "Editing the summary does not undo where the contract went. This needs your manager and the data protection contact.",
+        "escalate": "Expected. Report it, and redo the summary in an approved company tool."
+      }
+    },
+    {
+      "id": "S1-5",
+      "stage": 1,
+      "module": "M2 What stays out",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": "orwell_record",
+      "stem": "The brief ends: “Brightwater Logistics (fictional) is also reviewing its mobile contract this quarter.” Brightwater is another of your customers. The brief is for your own preparation. What would you do with the brief?",
+      "expected": "fix",
+      "rule": "R5",
+      "rationale": "Another customer’s details do not belong in this customer’s brief, where they could reach the meeting or a later email. Delete the line, then use the brief.",
+      "feedback": {
+        "use": "Not yet. The last line is about another customer.",
+        "fix": "Expected. Remove the other customer’s line, then use the brief.",
+        "escalate": "This one is yours to fix: nothing has left the brief. Delete the line."
+      }
+    },
+    {
+      "id": "S1-6",
+      "stage": 1,
+      "module": "M2 What stays out",
+      "screen": "stage one check",
+      "scored": true,
+      "ltem_tier": "Tier 5 (decision-making)",
+      "answer_set": "use",
+      "source": null,
+      "stem": "Orwell Dental Group emailed to ask whether their call recordings are used to train AI models. Copilot drafted a reply for you: “No, your recordings are never used for that.” What would you do?",
+      "expected": "escalate",
+      "rule": "R3",
+      "rationale": "This is a question about how customer data is used. You cannot confirm it from your own notes, and a wrong answer is a commitment on data. Send it to the right specialist and tell the customer when to expect a reply.",
+      "feedback": {
+        "use": "Nobody has confirmed the answer, and it is a commitment about customer data.",
+        "fix": "Rewording does not help: the answer itself must come from a specialist.",
+        "escalate": "Expected. Data-use answers belong to a specialist. Hold the reply and tell the customer when to expect one."
+      }
+    }
+  ],
+  "scoring": {
+    "decision_items": {
+      "points": "1 for the expected option, 0 for either other option. No partial credit.",
+      "reported_as": "The share of expected decisions, per learner and per cohort. This feeds the Quality term (capability growth).",
+      "stage_one_standard": "Illustrative: at least 5 of the 6 stage one items, with both escalate items (S1-4 and S1-6) answered as expected. Below the standard, the learner repeats M2 and retakes with parallel items.",
+      "practice_items": "M3-P1 to M3-P3 give feedback but are not scored."
+    },
+    "confidence": {
+      "how": "Optional, after each item: “How sure are you?” on a four-point scale (guessing, unsure, fairly sure, certain).",
+      "rule": "Never reported as capability, because confidence can rise without learning. Used only to find items where many learners are confidently wrong, which points to a misconception worth a new feedback line."
+    },
+    "item_review": {
+      "facility": "The share of learners choosing the expected option. Review any item outside 0.4 to 0.9 after the first cohort.",
+      "distractors": "Review any option that no learner chooses; it is not doing any work.",
+      "parallel_forms": "Keep at least two versions of each scored item (different fictional customer, same rule) so a retake is not a memory test."
+    },
+    "module_checks": "Each module’s screen 7 item is scored the same way. Report facility per module (the share choosing the expected option); a module whose check falls below 0.4 is revised before the next cohort."
+  },
+  "rubrics": {
+    "stage_two_observed_task": {
+      "ltem_tier": "Tier 6 (task performance): a realistic task in the learning setting, observed and scored",
+      "task": "The learner turns a set of supplied, realistic meeting notes (written by two experienced account managers, with no real customer data) into a follow-up, using the card, while a team leader or the Skill Lead observes or reviews the work. Real work is assessed at stage three, not here.",
+      "scale": "Each criterion scored 0, 1 or 2.",
+      "criteria": [
+        {
+          "id": "accuracy",
+          "name": "Accurate to the source",
+          "0": "One or more names, dates or figures do not match the notes or the contract.",
+          "1": "All match, but the learner did not check them against the source.",
+          "2": "All match, and the learner can show where each one is in the source."
+        },
+        {
+          "id": "commitments",
+          "name": "Commits only to what is supported",
+          "0": "Promises something nobody agreed (an offer, a date, a price).",
+          "1": "No unsupported promise, but an open question is answered vaguely instead of being kept as an action.",
+          "2": "Every commitment traces to the notes or the contract; open questions stay as actions with a date."
+        },
+        {
+          "id": "data_rule",
+          "name": "The data rule kept",
+          "0": "Customer contracts or pricing were used outside approved company tools, or another customer’s details appear.",
+          "1": "The rule was kept, but the learner cannot say which tool and source they used.",
+          "2": "The rule was kept, and the learner names the approved tool and the only source used."
+        },
+        {
+          "id": "fit",
+          "name": "Fit for the customer",
+          "0": "Unclear, or no next step.",
+          "1": "Clear, with a next step, but the tone or length does not suit this customer.",
+          "2": "Clear tone and length for this customer, with one next step the customer can act on."
+        }
+      ],
+      "standard": "6 of 8, with no zero on the data rule. A zero on the data rule triggers a review of M2 for the cohort, not only for the learner."
+    },
+    "stage_three_work_sample": {
+      "ltem_tier": "Tier 7 (transfer to work): confirmed in the learner’s real work",
+      "confirmed_by": "The learner’s manager, in a short conversation in week 12.",
+      "checklist": [
+        "The learner used an AI-assisted workflow from the pathway on real work in the past fortnight, and can show the result.",
+        "The learner improved one team prompt card, tested it on three real cases and recorded what changed.",
+        "The learner taught the card to a colleague, and the colleague used it once.",
+        "The improved card passed the card review (owner, version, review date, check, escalate, data rule)."
+      ],
+      "standard": "All four confirmed. The contributed card goes into the team library with the learner named as contributor."
+    }
+  },
+  "footer": "Prepared by Hemanth Vallamkonda as part of an application to Vodafone. Independent and illustrative; uses public information only."
+}

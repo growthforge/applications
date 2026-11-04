@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First Prompt, Weekly Habit</title>
+<meta name="description" content="A sample role-based AI capability pathway for account managers: a practice check you can take, one module screen by screen, its prompt card, a live kick-off run sheet, and how the pathway is measured, sourced and repeated. Independent; public information only.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Hemanth Vallamkonda">
+<meta property="og:type" content="website">
+<meta property="og:title" content="From first prompt to weekly habit: a sample AI capability pathway">
+<meta property="og:description" content="Take the practice check, walk through one module screen by screen, and see how the pathway is measured and repeated. Independent work by Hemanth Vallamkonda.">
+<meta property="og:url" content="https://growthforge.github.io/applications/vodafone-ai-pathway/">
+<meta property="og:image" content="https://growthforge.github.io/applications/vodafone-ai-pathway/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="From first prompt to weekly habit, a sample AI capability pathway by Hemanth Vallamkonda">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/source-sans-3-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* tokens.css */
+/*
+  Build Studio design tokens
+  ---------------------------------------------------------------------------
+  Load order: tokens.css, components.css, print.css (print last so it wins).
+
+  Per deliverable you normally set ONE variable, the brand accent:
+      :root { --brand: #1d5c8a; }
+  The light theme uses it as is (white text sits on it, so pick a colour with
+  at least 4.5:1 against white). The dark theme derives a lighter tint from it
+  automatically. Optional fine-tuning, only if axe flags contrast:
+      :root { --brand-dark: #9cc3e0; --brand-ink: #ffffff; --brand-ink-dark: #0d1117; }
+
+  Themes: follows prefers-color-scheme, and [data-theme="light"|"dark"] on
+  <html> overrides it. Print always renders light (see print.css).
+
+  Font families: at most two. --font-sans (system UI stack) for body and UI,
+  --font-display (system serif stack) for headings. A deliverable that wants a
+  single family sets  :root { --font-display: var(--font-sans); }
+*/
+
+:root {
+  /* ---- Brand hook (the only thing most deliverables change) ---- */
+  --brand: #1d5c8a;
+
+  /* ---- Type families (two at most) ---- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+
+  /* ---- Fluid type scale (ratio about 1.2 at small sizes, 1.25 at large) ---- */
+  --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --step--1: clamp(0.84rem, 0.81rem + 0.15vw, 0.92rem);
+  --step-0:  clamp(1.00rem, 0.96rem + 0.20vw, 1.10rem);
+  --step-1:  clamp(1.18rem, 1.10rem + 0.40vw, 1.38rem);
+  --step-2:  clamp(1.40rem, 1.26rem + 0.70vw, 1.75rem);
+  --step-3:  clamp(1.66rem, 1.44rem + 1.10vw, 2.25rem);
+  --step-4:  clamp(1.98rem, 1.62rem + 1.80vw, 2.90rem);
+  --step-5:  clamp(2.30rem, 1.80rem + 2.50vw, 3.60rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.6;
+  --measure: 68ch;
+  --weight-regular: 400;
+  --weight-medium: 550;
+  --weight-bold: 700;
+  --tracking-caps: 0.06em;
+
+  /* ---- Spacing: a 4 / 8 px scale ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --gutter: var(--space-4);          /* 16px side gutter on phones */
+  --content-max: 1120px;
+  --content-narrow: 760px;
+
+  /* ---- Radius and elevation ---- */
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* ---- Motion ---- */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Light theme colour roles (default) ---- */
+  color-scheme: light;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --surface-2: #f2f0ec;
+  --text: #1b1d21;
+  --text-muted: #53575e;
+  --border: #dcd8d1;
+  --border-strong: #8a867f;          /* 3:1 on bg, for control outlines */
+  --accent: var(--brand);
+  --accent-ink: var(--brand-ink, #ffffff);
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --focus: #b45309;
+
+  /* Work-allocation roles. -ink is text or fill, -bg is the tint behind it.
+     Every ink meets 4.5:1 on its own -bg, on --surface and on --bg. */
+  --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+  --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+  --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+  --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+
+  --shadow-1: 0 1px 2px rgb(20 22 26 / 0.06), 0 1px 1px rgb(20 22 26 / 0.04);
+  --shadow-2: 0 6px 18px rgb(20 22 26 / 0.08), 0 2px 4px rgb(20 22 26 / 0.05);
+}
+
+/* Dark theme, applied two ways: system preference (unless the page forces
+   light) and an explicit [data-theme="dark"] override. Keep both blocks equal. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121417;
+    --surface: #1a1d21;
+    --surface-2: #23272c;
+    --text: #ecebe7;
+    --text-muted: #a8acb2;
+    --border: #343a41;
+    --border-strong: #7d848c;
+    --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+    --accent-ink: var(--brand-ink-dark, #0d1117);
+    --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    --focus: #f5b84a;
+    --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+    --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+    --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+    --escalate: #f4a397;    --escalate-bg: #3d1d19;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121417;
+  --surface: #1a1d21;
+  --surface-2: #23272c;
+  --text: #ecebe7;
+  --text-muted: #a8acb2;
+  --border: #343a41;
+  --border-strong: #7d848c;
+  --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+  --accent-ink: var(--brand-ink-dark, #0d1117);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --focus: #f5b84a;
+  --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+  --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+  --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+  --escalate: #f4a397;    --escalate-bg: #3d1d19;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; }
+}
+
+/* components.css */
+/*
+  Build Studio components. Requires tokens.css first.
+  Every class is documented in design-system/demo.html, which uses all of them.
+
+  Contents
+    1. Base and typography      6. Matrices (2x2, allocation grid)
+    2. Layout primitives        7. Tables
+    3. Skip link, focus, a11y   8. Callouts, chips, badges
+    4. Header, hero, sections   9. Tabs and step-through (enhanced by components.js)
+    5. Cards, stats, timeline  10. Footer, buttons, theme toggle, motion
+*/
+
+/* 1. Base and typography ------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-5); letter-spacing: -0.01em; }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); line-height: var(--leading-snug); }
+h4 { font-size: var(--step-0); font-family: var(--font-sans); line-height: var(--leading-snug); }
+p, ul, ol, dl, figure, blockquote, pre, table { margin: 0; }
+p, li, dd { max-width: var(--measure); }
+ul, ol { padding-left: 1.25em; }
+li + li { margin-top: var(--space-1); }
+strong { font-weight: var(--weight-bold); }
+small, .small { font-size: var(--step--1); }
+.muted { color: var(--text-muted); }
+.lede { font-size: var(--step-1); line-height: var(--leading-snug); color: var(--text-muted); max-width: 60ch; }
+.eyebrow {
+  font-size: var(--step--1);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.num { font-variant-numeric: tabular-nums lining-nums; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+img, svg, video { max-width: 100%; height: auto; display: block; }
+code, kbd, samp, pre { font-size: 0.92em; }
+code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: var(--radius-1); }
+pre { background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-2); max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre code { background: none; padding: 0; }
+hr { border: 0; border-top: var(--border-width) solid var(--border); margin: var(--space-6) 0; }
+blockquote { border-left: 3px solid var(--accent); padding-left: var(--space-4); color: var(--text-muted); }
+
+/* 2. Layout primitives --------------------------------------------------- */
+.wrap { width: 100%; max-width: var(--content-max); margin-inline: auto; padding-inline: var(--gutter); }
+.wrap--narrow { max-width: var(--content-narrow); }
+.stack > * + * { margin-top: var(--stack-gap, var(--space-4)); }
+.stack--tight { --stack-gap: var(--space-2); }
+.stack--loose { --stack-gap: var(--space-6); }
+.cluster { display: flex; flex-wrap: wrap; gap: var(--cluster-gap, var(--space-2)); align-items: center; }
+.grid { display: grid; gap: var(--grid-gap, var(--space-5)); grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min, 240px)), 1fr)); }
+.grid--2 { --grid-min: 320px; }
+.grid--4 { --grid-min: 200px; }
+.split { display: grid; gap: var(--space-6); }
+@media (min-width: 880px) { .split { grid-template-columns: 1fr 1fr; align-items: start; } }
+
+/* 3. Skip link, focus, accessibility helpers ---------------------------- */
+.skip-link {
+  position: absolute; left: var(--space-2); top: var(--space-2); z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface); color: var(--text); border: 2px solid var(--text); border-radius: var(--radius-2);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); border-radius: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[tabindex="-1"]:focus { outline: none; }
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* 4. Header, hero, sections --------------------------------------------- */
+.site-header { border-bottom: var(--border-width) solid var(--border); background: var(--surface); }
+.site-header__inner { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding-block: var(--space-3); }
+.site-header__title { font-weight: var(--weight-bold); font-size: var(--step--1); color: var(--text); text-decoration: none; }
+.site-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.site-nav li + li { margin-top: 0; }
+.site-nav a { font-size: var(--step--1); color: var(--text); display: inline-block; padding-block: var(--space-1); }
+.hero { padding-block: var(--space-8) var(--space-7); border-bottom: var(--border-width) solid var(--border); }
+.hero h1 { max-width: 20ch; }
+.hero .lede { margin-top: var(--space-4); }
+.hero__meta { margin-top: var(--space-5); }
+.section { padding-block: var(--space-8); }
+.section + .section { border-top: var(--border-width) solid var(--border); }
+.section__head { margin-bottom: var(--space-6); max-width: var(--measure); }
+.section__head > * + * { margin-top: var(--space-2); }
+.section--alt { background: var(--surface-2); }
+
+/* 5. Cards, stat tiles, timeline ---------------------------------------- */
+.card {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-3);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+}
+.card > * + * { margin-top: var(--space-3); }
+.card--accent { border-top: 4px solid var(--accent); }
+.card--flat { box-shadow: none; background: var(--surface-2); border-color: transparent; }
+.card__kicker { font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+
+.stats { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.stat {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.stat__value { font-family: var(--font-display); font-size: var(--step-3); line-height: 1; font-weight: var(--weight-bold); font-variant-numeric: tabular-nums lining-nums; color: var(--text); }
+.stat__label { font-weight: var(--weight-medium); }
+.stat__note { font-size: var(--step--1); color: var(--text-muted); }
+
+.timeline { list-style: none; padding: 0; margin: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.timeline__item { position: relative; padding-left: var(--space-6); padding-bottom: var(--space-5); }
+.timeline__item + .timeline__item { margin-top: 0; }
+.timeline__item::before {
+  content: ""; position: absolute; left: 0; top: 0.35em; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--surface); border: 3px solid var(--accent);
+}
+.timeline__when { display: block; font-size: var(--step--1); font-weight: var(--weight-bold); color: var(--accent); letter-spacing: 0.02em; }
+.timeline__title { margin-top: var(--space-1); }
+.timeline__item > p { margin-top: var(--space-2); }
+
+/* 6. Matrices ------------------------------------------------------------ */
+/* 2x2: y axis label on the left, x axis label below, four quadrants. */
+.matrix { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 1fr auto; gap: var(--space-2); }
+.matrix__y { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__x { grid-column: 2; text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
+.matrix__cell { margin: 0; background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-2); padding: var(--space-4); min-height: 9rem; }
+.matrix__cell + .matrix__cell { margin-top: 0; }
+.matrix__cell h4 { margin-bottom: var(--space-2); }
+.matrix__cell ul { padding-left: 1.1em; font-size: var(--step--1); }
+.matrix__cell--focus { border: 2px solid var(--accent); background: var(--accent-soft); }
+@media (max-width: 520px) {
+  .matrix { grid-template-columns: 1fr; }
+  .matrix__y { writing-mode: horizontal-tb; transform: none; }
+  .matrix__x { grid-column: 1; }
+  .matrix__grid { grid-template-columns: 1fr; }
+  .matrix__cell { min-height: 0; }
+}
+
+/* Allocation grid: one lane per work-allocation role. */
+.alloc { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+.alloc__lane { border-radius: var(--radius-2); padding: var(--space-4); border-top: 4px solid var(--lane-ink); background: var(--lane-bg); color: var(--text); }
+.alloc__lane h4 { color: var(--lane-ink); display: flex; gap: var(--space-2); align-items: center; }
+.alloc__lane ul { list-style: none; padding: 0; margin-top: var(--space-3); }
+.alloc__lane li { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-1); padding: var(--space-2) var(--space-3); font-size: var(--step--1); }
+.alloc__lane li + li { margin-top: var(--space-2); }
+.alloc__lane--human    { --lane-ink: var(--human-led);   --lane-bg: var(--human-led-bg); }
+.alloc__lane--assist   { --lane-ink: var(--ai-assist);   --lane-bg: var(--ai-assist-bg); }
+.alloc__lane--automate { --lane-ink: var(--ai-automate); --lane-bg: var(--ai-automate-bg); }
+.alloc__lane--escalate { --lane-ink: var(--escalate);    --lane-bg: var(--escalate-bg); }
+
+/* 7. Tables -------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; max-width: 100%; border: var(--border-width) solid var(--border); border-radius: var(--radius-2); background: var(--surface); }
+.table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.table caption { text-align: left; padding: var(--space-3) var(--space-4); font-weight: var(--weight-medium); color: var(--text-muted); caption-side: top; }
+.table th, .table td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4); border-top: var(--border-width) solid var(--border); }
+.table thead th { background: var(--surface-2); font-weight: var(--weight-bold); border-top: 0; white-space: nowrap; }
+.table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table tbody tr:hover { background: var(--accent-soft); }
+
+/* 8. Callouts, chips, badges -------------------------------------------- */
+.callout { border-left: 4px solid var(--callout-ink, var(--accent)); background: var(--callout-bg, var(--accent-soft)); padding: var(--space-4) var(--space-5); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
+.callout > * + * { margin-top: var(--space-2); }
+.callout__title { font-weight: var(--weight-bold); font-family: var(--font-sans); font-size: var(--step-0); }
+.callout--note { --callout-ink: var(--human-led); --callout-bg: var(--human-led-bg); }
+.callout--caution { --callout-ink: var(--escalate); --callout-bg: var(--escalate-bg); }
+
+.chip, .badge {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  font-size: var(--step--1); font-weight: var(--weight-medium); line-height: 1.2;
+  padding: 0.3em 0.7em; border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--chip-ink, var(--border-strong));
+  color: var(--chip-ink, var(--text)); background: var(--chip-bg, var(--surface));
+  white-space: nowrap;
+}
+.badge { border-radius: var(--radius-1); text-transform: uppercase; letter-spacing: var(--tracking-caps); font-size: var(--step--2); font-weight: var(--weight-bold); }
+.badge--accent { --chip-ink: var(--accent); --chip-bg: var(--accent-soft); }
+/* The four work-allocation roles: colour plus a distinct shape, never colour alone. */
+.chip--human    { --chip-ink: var(--human-led);   --chip-bg: var(--human-led-bg); }
+.chip--assist   { --chip-ink: var(--ai-assist);   --chip-bg: var(--ai-assist-bg); }
+.chip--automate { --chip-ink: var(--ai-automate); --chip-bg: var(--ai-automate-bg); }
+.chip--escalate { --chip-ink: var(--escalate);    --chip-bg: var(--escalate-bg); }
+.chip--human::before, .chip--assist::before, .chip--automate::before, .chip--escalate::before {
+  content: ""; flex: none; width: 0.7em; height: 0.7em; border: 2px solid currentColor; border-radius: 50%;
+}
+.chip--assist::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.chip--automate::before { background: currentColor; }
+.chip--escalate::before { border-radius: 1px; transform: rotate(45deg) scale(0.85); background: currentColor; }
+
+/* 9. Tabs and step-through ---------------------------------------------- */
+/* Without JS: the tab list is a list of in-page links and every panel shows.
+   components.js upgrades [data-tabs] to the ARIA tabs pattern. */
+.tabs__list { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; gap: var(--space-2); border-bottom: var(--border-width) solid var(--border); }
+.tabs__list li + li { margin-top: 0; }
+.tabs__list a, .tabs__list [role="tab"] {
+  display: inline-block; padding: var(--space-2) var(--space-4); min-height: 44px; line-height: 28px;
+  color: var(--text-muted); text-decoration: none; font-weight: var(--weight-medium);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tabs__list [role="tab"][aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tabs__list a:hover { color: var(--text); }
+.tabs__panel > * + * { margin-top: var(--space-3); }
+.tabs:not(.is-enhanced) .tabs__panel + .tabs__panel { margin-top: var(--space-6); }
+.tabs__panel:focus-visible { outline-offset: 6px; }
+
+/* Step-through: an ordered list that components.js turns into one-step-at-a-time
+   with Previous / Next controls and a live status. All steps show without JS. */
+.stepper { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-3); padding: var(--space-5); }
+.stepper__steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.stepper__step { counter-increment: step; }
+.stepper__step + .stepper__step { margin-top: var(--space-5); padding-top: var(--space-5); border-top: var(--border-width) solid var(--border); }
+.stepper.is-enhanced .stepper__step + .stepper__step { margin-top: 0; padding-top: 0; border-top: 0; }
+.stepper__step > * + * { margin-top: var(--space-3); }
+.stepper__step h3 { outline: none; }
+.stepper__bar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; margin-top: var(--space-5); padding-top: var(--space-4); border-top: var(--border-width) solid var(--border); }
+.stepper__dots { display: flex; gap: var(--space-1); list-style: none; padding: 0; margin: 0; }
+.stepper__dots li + li { margin-top: 0; }
+.stepper__dot { width: 24px; height: 24px; border-radius: 50%; background: transparent; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.stepper__dot::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); }
+.stepper__dot[aria-current="step"]::before { background: var(--accent); }
+.stepper__status { font-size: var(--step--1); color: var(--text-muted); margin: 0; }
+
+/* 10. Footer, buttons, theme toggle, motion ----------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; padding: var(--space-2) var(--space-5);
+  font: inherit; font-weight: var(--weight-medium); line-height: 1.2;
+  border-radius: var(--radius-2); border: 2px solid var(--accent);
+  background: var(--accent); color: var(--accent-ink); text-decoration: none; cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, var(--text)); }
+.btn--ghost { background: transparent; color: var(--accent); }
+.btn--ghost:hover { background: var(--accent-soft); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+.theme-toggle { font: inherit; font-size: var(--step--1); min-height: 36px; padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); border: var(--border-width) solid var(--border-strong); background: var(--surface); color: var(--text); cursor: pointer; }
+
+.site-footer { border-top: var(--border-width) solid var(--border); background: var(--surface-2); padding-block: var(--space-7); font-size: var(--step--1); color: var(--text-muted); }
+.site-footer__inner > * + * { margin-top: var(--space-3); }
+.site-footer__disclaimer { color: var(--text); font-weight: var(--weight-medium); }
+.site-footer a { color: var(--text); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* print.css */
+/*
+  Build Studio print styles: portrait A4, light theme only, nothing clipped.
+  Load after tokens.css and components.css. Everything is wrapped in
+  @media print, so it can be linked normally or inlined.
+
+  pdf.mjs assumes the @page side margins below (16mm) when it checks that no
+  element is wider than the printable area. Change both together.
+
+  Opt-outs and helpers:
+    .no-print            hidden in print
+    .print-only          hidden on screen, shown in print
+    .page-break-before   force a new page before this element
+    a.no-url             do not print the URL after this link
+*/
+
+.print-only { display: none; }
+
+@media print {
+  @page { size: A4 portrait; margin: 18mm 16mm 20mm 16mm; }
+
+  /* Force the light palette whatever the system or [data-theme] says. Same
+     specificity as the dark selectors in tokens.css; this file loads later. */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f4f2ee;
+    --text: #111316;
+    --text-muted: #45494f;
+    --border: #cfcac2;
+    --border-strong: #7a766f;
+    --accent: var(--brand);
+    --accent-ink: var(--brand-ink, #ffffff);
+    --accent-soft: color-mix(in srgb, var(--brand) 8%, #ffffff);
+    --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+    --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+    --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+    --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+    --shadow-1: none;
+    --shadow-2: none;
+  }
+
+  html { font-size: 10.5pt; }
+  body { background: #ffffff; color: var(--text); line-height: 1.45; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Hide screen-only chrome. */
+  .skip-link, .site-nav, .theme-toggle, .stepper__bar, .tabs__list, .no-print,
+  button, [role="tablist"] { display: none !important; }
+  .print-only { display: block; }
+
+  /* Every tab panel and every step is visible in print. */
+  .tabs__panel, .tabs__panel[hidden], .stepper__step, .stepper__step[hidden] { display: block !important; }
+  .tabs__panel + .tabs__panel, .stepper__step + .stepper__step {
+    margin-top: 6mm !important; padding-top: 4mm !important; border-top: 1px solid var(--border) !important;
+  }
+  /* Closed <details> open in print: components.js and pdf.mjs set open on
+     beforeprint; this rule covers browsers that support ::details-content. */
+  details > summary { list-style: none; font-weight: var(--weight-bold); }
+
+  /* Nothing clipped: scrollers expand, wide things shrink to the page. */
+  .table-wrap, pre, .stepper, .card, .alloc, .matrix { overflow: visible !important; max-width: 100% !important; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  img, svg, canvas, video, iframe { max-width: 100% !important; height: auto !important; }
+  .wrap { max-width: none; padding-inline: 0; }
+  .table { width: 100%; table-layout: auto; font-size: 9pt; }
+  .table th, .table td { padding: 2mm 2.5mm; word-break: normal; overflow-wrap: anywhere; }
+  .table thead th { white-space: normal; }
+  .table thead { display: table-header-group; }
+
+  /* Denser grids on paper (the printable width is about 670 CSS px). */
+  .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .alloc { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .grid { --grid-min: 180px; gap: 4mm; }
+  .stat__value { font-size: 20pt; }
+
+  /* Compact vertical rhythm on paper. */
+  .hero { padding-block: 0 6mm; }
+  .section { padding-block: 6mm; }
+  .section--alt { background: none; }
+  .site-footer { padding-block: 6mm 0; background: none; }
+
+  /* Page-break rules. */
+  h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  .card, .stat, .callout, .timeline__item, .matrix, .alloc__lane, .stepper__step,
+  figure, tr, img, svg, blockquote, pre { break-inside: avoid-page; page-break-inside: avoid; }
+  .section { break-inside: auto; }
+  p, li { orphans: 3; widows: 3; }
+  .page-break-before { break-before: page; page-break-before: always; }
+
+  /* Print external link targets after the text, where that helps a reader. */
+  main a[href^="http"]:not(.no-url)::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em; color: var(--text-muted); overflow-wrap: anywhere; word-break: break-all;
+  }
+  a { color: var(--text); text-decoration: underline; }
+}
+
+@media print {
+  /* Separate block: an engine that does not know ::details-content drops only this. */
+  details::details-content { content-visibility: visible !important; display: block !important; }
+}
+</style>
+<script>
+/*
+  Build Studio progressive enhancement. Load with <script defer>.
+  Every component works without this file (all content visible, in order).
+
+  [data-tabs]          link list + panels  ->  ARIA tabs (arrow keys, Home, End)
+  [data-stepper]       ordered list        ->  one step at a time, Previous / Next,
+                                               live status, focus moves to the step
+  [data-theme-toggle]  button [hidden]     ->  shown, cycles system, light, dark on <html data-theme>
+  beforeprint          opens every <details>, so print and PDF show everything
+
+  Generated step counters ("Step 2 of 5") sit inside an element carrying
+  data-ordinal, so factcheck.py treats them as ordinals, not claims.
+*/
+(function () {
+  'use strict';
+
+  function initTabs(root) {
+    var list = root.querySelector('.tabs__list');
+    if (!list) return;
+    var links = Array.prototype.slice.call(list.querySelectorAll('a[href^="#"]'));
+    var panels = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+    if (!links.length || panels.some(function (p) { return !p; })) return;
+
+    list.setAttribute('role', 'tablist');
+    if (root.dataset.label) list.setAttribute('aria-label', root.dataset.label);
+    Array.prototype.forEach.call(list.children, function (li) { li.setAttribute('role', 'presentation'); });
+
+    links.forEach(function (tab, i) {
+      var panel = panels[i];
+      if (!tab.id) tab.id = panel.id + '-tab';
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', panel.id);
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.setAttribute('tabindex', '0');
+      tab.addEventListener('click', function (e) { e.preventDefault(); select(i, true); });
+      tab.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % links.length;
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + links.length) % links.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = links.length - 1;
+        if (next !== null) { e.preventDefault(); select(next, true); }
+      });
+    });
+
+    function select(index, focus) {
+      links.forEach(function (tab, i) {
+        var on = i === index;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.setAttribute('tabindex', on ? '0' : '-1');
+        panels[i].hidden = !on;
+      });
+      if (focus) links[index].focus();
+    }
+
+    var start = 0;
+    var hash = window.location.hash.slice(1);
+    panels.forEach(function (p, i) { if (p.id === hash) start = i; });
+    select(start, false);
+    root.classList.add('is-enhanced');
+  }
+
+  function initStepper(root) {
+    var steps = Array.prototype.slice.call(root.querySelectorAll('.stepper__step'));
+    if (steps.length < 2) return;
+    var label = root.dataset.label || 'Step';
+    var current = 0;
+
+    var bar = document.createElement('div');
+    bar.className = 'stepper__bar';
+    var prev = button('Previous', 'btn btn--ghost');
+    var next = button('Next', 'btn');
+    var status = document.createElement('p');
+    status.className = 'stepper__status';
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('data-ordinal', '');
+    var dots = document.createElement('ol');
+    dots.className = 'stepper__dots';
+    dots.setAttribute('data-ordinal', '');
+    steps.forEach(function (step, i) {
+      var heading = step.querySelector('h2, h3, h4');
+      var li = document.createElement('li');
+      var dot = button('', 'stepper__dot');
+      dot.setAttribute('aria-label', 'Go to ' + label.toLowerCase() + ' ' + (i + 1) + (heading ? ': ' + heading.textContent.trim() : ''));
+      dot.addEventListener('click', function () { show(i, true); });
+      li.appendChild(dot);
+      dots.appendChild(li);
+    });
+    var controls = document.createElement('div');
+    controls.className = 'cluster';
+    controls.appendChild(prev);
+    controls.appendChild(next);
+    bar.appendChild(dots);
+    bar.appendChild(status);
+    bar.appendChild(controls);
+    root.appendChild(bar);
+
+    prev.addEventListener('click', function () { show(current - 1, true); });
+    next.addEventListener('click', function () { show(current + 1, true); });
+
+    function button(text, cls) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = cls;
+      if (text) b.textContent = text;
+      return b;
+    }
+
+    function show(i, moveFocus) {
+      current = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach(function (s, k) { s.hidden = k !== current; });
+      Array.prototype.forEach.call(dots.querySelectorAll('button'), function (d, k) {
+        if (k === current) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current');
+      });
+      prev.disabled = current === 0;
+      next.disabled = current === steps.length - 1;
+      status.textContent = label + ' ' + (current + 1) + ' of ' + steps.length;
+      if (moveFocus) {
+        var h = steps[current].querySelector('h2, h3, h4') || steps[current];
+        h.setAttribute('tabindex', '-1');
+        h.focus({ preventScroll: false });
+      }
+    }
+
+    root.classList.add('is-enhanced');
+    show(0, false);
+  }
+
+  function initThemeToggle(btn) {
+    var order = ['system', 'light', 'dark'];
+    var html = document.documentElement;
+    function state() { return html.getAttribute('data-theme') || 'system'; }
+    function render() { btn.textContent = 'Theme: ' + state(); }
+    btn.hidden = false;   // ship the button with [hidden]; it only works with JS
+    btn.addEventListener('click', function () {
+      var nextState = order[(order.indexOf(state()) + 1) % order.length];
+      if (nextState === 'system') html.removeAttribute('data-theme'); else html.setAttribute('data-theme', nextState);
+      render();
+    });
+    render();
+  }
+
+  var openedForPrint = [];
+  window.addEventListener('beforeprint', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('details:not([open])'), function (d) { d.open = true; openedForPrint.push(d); });
+  });
+  window.addEventListener('afterprint', function () {
+    openedForPrint.forEach(function (d) { d.open = false; });
+    openedForPrint = [];
+  });
+
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tabs]'), initTabs);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-stepper]'), initStepper);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-theme-toggle]'), initThemeToggle);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/check.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="site-header__title" href="#top">From first prompt to weekly habit</a>
+    <nav class="site-nav" aria-label="Sections">
+      <ul>
+        <li><a href="#check">Check</a></li>
+        <li><a href="#module">Module</a></li>
+        <li><a href="#card">Card</a></li>
+        <li><a href="#pathway">Pathway</a></li>
+        <li><a href="#measures">Measures</a></li>
+        <li><a href="#scale">Scaling</a></li>
+        <li><a href="#pack">Pack</a></li>
+        <li><a href="#me">About</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a class="header-pdf" href="deliverable.pdf">PDF</a>
+      <button type="button" class="theme-toggle" data-theme-toggle hidden>Theme: system</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top" aria-labelledby="title">
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__main">
+        <p class="hero__by">A worked sample by Hemanth Vallamkonda</p>
+        <h1 id="title">From first prompt <span class="h1-line">to weekly habit</span></h1>
+        <p class="print-only print-url">PDF version of the page at <span class="nowrap">growthforge.github.io/applications/vodafone-ai-pathway/</span></p>
+        <p class="hero__lede">One role-based AI pathway for account managers, built far enough to judge: take its practice check, walk through one module screen by screen, and see how it is run, measured and repeated for the next role.</p>
+        <div class="hero__actions no-print">
+          <a class="btn" href="#check">Try the practice check</a>
+          <a class="btn btn--ghost" href="deliverable.pdf">Download the PDF</a>
+        </div>
+        <div class="cred" data-fact="hv">
+          <p><b>Who built this:</b> I build AI tools and train the teams that use them. At MTest Labs, test design fell from an 8-hour day, or 2 to 3 days, to 1 to 3 supervised hours, with a tester approving every case.</p>
+          <p>5+ years in finance and operations; Microsoft Azure AI Fundamentals (AI-900); MSc Finance and Banking. <a href="#me">What I have delivered</a></p>
+        </div>
+        <p class="hero__independent">Independent work for a job application. Not produced, reviewed or endorsed by Vodafone. Built from public information only.</p>
+      </div>
+      <aside class="plan90" aria-labelledby="plan90-h">
+        <h2 class="plan90__h" id="plan90-h">If I joined: the first <span data-plan>90</span> days</h2>
+        <ol class="plan90__list" data-plan>
+          <li><span class="plan90__when">Days 1 to 30</span> <span data-src="S1">Learn the AI learning strategy and impact framework<sup><a class="cite" href="#src-S1" data-src="S1" aria-label="Source 1: Vodafone careers, the listing for this role">1</a></sup></span>, map what exists, agree the reporting data. <b>Exit: the account-manager brief, signed.</b></li>
+          <li><span class="plan90__when">Days 31 to 60</span> Prototype stage one with five account managers and two team leaders; set the baseline. <b>Exit: a tested stage one.</b></li>
+          <li><span class="plan90__when">Days 61 to 90</span> First cohort live in one market. <b>Exit: its stage one report and the next brief.</b> A second market waits for the <span class="nowrap">week-12</span> report.</li>
+        </ol>
+        <p class="plan90__base" data-src="S42">This builds on what Vodafone has already built rather than starting fresh: Copilot Skill Labs, its champions and agents such as the RFP Assistant, recognised with a 2025 DWG award for AI Enablement at Scale.<sup><a class="cite" href="#src-S42" data-src="S42" aria-label="Source 2: Digital Workplace Group, DWG Awards 2025">2</a></sup></p>
+      </aside>
+    </div>
+
+    <nav class="shows" aria-labelledby="shows-h" data-src="S1">
+      <p class="shows__h" id="shows-h">What this shows, against the role’s responsibilities</p>
+      <ul class="shows__list">
+        <li><a href="#pathway"><span class="shows__k">Academy strategy and design</span><span class="shows__v">A blended pathway, from a live kick-off to a work sample, and where it sits in a portfolio across functions and markets</span></a></li>
+        <li><a href="#module"><span class="shows__k">Content development and curation</span><span class="shows__v">One module screen by screen, its prompt card with market notes, and a practice check to take</span></a></li>
+        <li><a href="#partners"><span class="shows__k">Vendor and partner management</span><span class="shows__v">Curate, buy or build for every module; partners held to one quality check and example service levels</span></a></li>
+        <li><a href="#measures"><span class="shows__k">Impact</span><span class="shows__v">Four reporting terms, what never counts as impact, and a <span class="nowrap" data-plan>week-12</span> report</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</section>
+
+<section class="section section--band" id="check" aria-labelledby="check-h" data-illustrative>
+  <div class="wrap">
+    <div class="section__head">
+      <div class="head-row">
+        <h2 id="check-h">Would you send this?</h2>
+        <span class="tag">Illustrative</span>
+      </div>
+      <p>The practice check from module <span data-ordinal>M3</span>, its fifth screen: three drafts, about three minutes. The customer is fictional.</p>
+    </div>
+
+    <div class="check">
+      <div class="notes" role="note" aria-labelledby="notes-h">
+        <h3 id="notes-h">Larchmoor Freight (fictional): meeting notes, Tuesday</h3>
+        <ul>
+          <li>Renew the mobile plan for 60 drivers before the contract ends in March.</li>
+          <li>Asked about tracking for 25 trailers. No pricing discussed.</li>
+          <li>Asked whether tracking data is stored in the UK. You said you would check.</li>
+          <li>Next step: a summary, and a call with a solutions specialist, who is free Thursday at 10:00 or Friday at 14:00.</li>
+        </ul>
+      </div>
+
+      <div class="check__items">
+        <p class="check__instruction">Copilot drafted each message from these notes. What would you do with each draft?</p>
+
+        <div class="item" data-expected="fix" id="item-1">
+          <fieldset>
+            <legend data-ordinal>Draft 1 of 3</legend>
+            <div class="draft">
+              <p>Thank you for Tuesday. You would like to renew the mobile plan for your 60 drivers before March, and to know more about tracking for your 25 trailers, which we will include at no extra cost. I will confirm where tracking data is stored. Could we speak with our solutions specialist on Thursday at 10:00 or Friday at 14:00?</p>
+            </div>
+            <div class="options">
+              <label class="option"><input type="radio" name="d1" value="send"><span>Send it</span></label>
+              <label class="option"><input type="radio" name="d1" value="fix"><span>Fix it, then send</span></label>
+              <label class="option"><input type="radio" name="d1" value="escalate"><span>Stop and escalate</span></label>
+            </div>
+          </fieldset>
+          <button type="button" class="btn btn--ghost item__check" hidden>Check my answer</button>
+          <div class="item__feedback" role="status" aria-live="polite"></div>
+          <details class="item__key">
+            <summary>Show the expected answer and why</summary>
+            <p class="fb fb--expected" data-opt="fix"><strong>Expected: Fix it, then send.</strong> <span class="fb__text">Nobody offered tracking at no extra cost, and nobody asked for a price. Your notes can put this right on their own: delete the clause and send. The check: underline every commitment and find it in the source.</span></p>
+            <p class="fb" data-opt="send"><strong>If you chose Send it:</strong> <span class="fb__text">‘At no extra cost’ is a commitment nobody made.</span></p>
+            <p class="fb" data-opt="escalate"><strong>If you chose Stop and escalate:</strong> <span class="fb__text">Close, but this one is yours to fix. Nobody asked for a price, so nobody needs to decide one: delete the offer and send.</span></p>
+          </details>
+        </div>
+
+        <div class="item" data-expected="send" id="item-2">
+          <fieldset>
+            <legend data-ordinal>Draft 2 of 3</legend>
+            <div class="draft">
+              <p>Thank you for Tuesday. You would like to renew the mobile plan for your 60 drivers before March, and to know more about tracking for your 25 trailers. I will confirm where tracking data is stored. Could we speak with our solutions specialist on Thursday at 10:00 or Friday at 14:00?</p>
+            </div>
+            <div class="options">
+              <label class="option"><input type="radio" name="d2" value="send"><span>Send it</span></label>
+              <label class="option"><input type="radio" name="d2" value="fix"><span>Fix it, then send</span></label>
+              <label class="option"><input type="radio" name="d2" value="escalate"><span>Stop and escalate</span></label>
+            </div>
+          </fieldset>
+          <button type="button" class="btn btn--ghost item__check" hidden>Check my answer</button>
+          <div class="item__feedback" role="status" aria-live="polite"></div>
+          <details class="item__key">
+            <summary>Show the expected answer and why</summary>
+            <p class="fb fb--expected" data-opt="send"><strong>Expected: Send it.</strong> <span class="fb__text">Every statement is in the notes, including the specialist’s two times, and the draft decides nothing that is not yours. The data question stays an action: route it to the right specialist today, whatever happens to the draft. Not every AI draft needs changing; the skill is knowing which ones do.</span></p>
+            <p class="fb" data-opt="fix"><strong>If you chose Fix it, then send:</strong> <span class="fb__text">There is nothing to fix: each sentence traces to the notes. Editing a good draft spends the time the tool saved.</span></p>
+            <p class="fb" data-opt="escalate"><strong>If you chose Stop and escalate:</strong> <span class="fb__text">The draft makes no decision for anyone else. Route the data question to its specialist, and send this summary.</span></p>
+          </details>
+        </div>
+
+        <div class="item" data-expected="escalate" id="item-3">
+          <fieldset>
+            <legend data-ordinal>Draft 3 of 3</legend>
+            <div class="draft draft--reply">
+              <p class="draft__note">On Wednesday the customer replies: “Can the new plan start in January, at our current price? We need to know by Friday.” Copilot drafts your answer:</p>
+              <p class="draft__answer">Yes, we can start your new plan in January at your current price. I will send the paperwork today.</p>
+            </div>
+            <div class="options">
+              <label class="option"><input type="radio" name="d3" value="send"><span>Send it</span></label>
+              <label class="option"><input type="radio" name="d3" value="fix"><span>Fix it, then send</span></label>
+              <label class="option"><input type="radio" name="d3" value="escalate"><span>Stop and escalate</span></label>
+            </div>
+          </fieldset>
+          <button type="button" class="btn btn--ghost item__check" hidden>Check my answer</button>
+          <div class="item__feedback" role="status" aria-live="polite"></div>
+          <details class="item__key">
+            <summary>Show the expected answer and why</summary>
+            <p class="fb fb--expected" data-opt="escalate"><strong>Expected: Stop and escalate.</strong> <span class="fb__text">The customer is asking for a decision on price and contract dates, and the draft makes it for you. Nothing in your notes can put that right; only whoever approves pricing and terms can. Do not send. Take the request to them today, and tell the customer when to expect an answer. The rule: fix what your notes can put right; escalate what only someone else can decide.</span></p>
+            <p class="fb" data-opt="send"><strong>If you chose Send it:</strong> <span class="fb__text">It agrees a price and a start date that nobody with the authority has agreed.</span></p>
+            <p class="fb" data-opt="fix"><strong>If you chose Fix it, then send:</strong> <span class="fb__text">Rewording cannot supply the decision. A reply saying you will check is the holding line that goes with escalating; the request itself still needs its owner.</span></p>
+          </details>
+        </div>
+
+        <div class="check__summary">
+          <p class="check__score" data-ordinal hidden>You matched the expected answer on <span class="check__n">0</span> of 3 items.</p>
+          <p>In the stage checks, items in this format score a decision, not a feeling, and the share of expected decisions feeds the quality measure below. The full module check adds an optional “How sure are you?” after each answer; it is used to review items and never reported as capability, because confidence can rise without learning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="module" aria-labelledby="module-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="module-h"><span class="h-light">Module <span data-ordinal>M3</span>, screen by screen</span><span class="visually-hidden">: </span> Notes to follow-up in <span data-plan>15</span> minutes</h2>
+      <p>Every module in the pathway follows this shape.</p>
+    </div>
+
+    <ol class="screens" data-plan aria-label="The eight screens of module M3">
+      <li class="screen"><span class="screen__n" aria-hidden="true">1</span><div class="screen__body"><h3>Objective</h3><p>“You will turn your own meeting notes into a follow-up that promises only what the notes support.”</p></div><span class="screen__min">1 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">2</span><div class="screen__body"><h3>Hook from a real task</h3><p>A follow-up that promised a delivery date nobody agreed reaches the customer’s finance director. “What went wrong?”</p></div><span class="screen__min">1 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">3</span><div class="screen__body"><h3>Worked example</h3><p>A captioned recording: the prompt built in four parts from the Larchmoor notes (goal, context, source, expectations).</p></div><span class="screen__min">3 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">4</span><div class="screen__body"><h3>Good and flawed output</h3><p>The same prompt, two drafts. “Underline every commitment and find it in the notes.”</p></div><span class="screen__min">2 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">5</span><div class="screen__body"><h3>Practice</h3><p>The three <a href="#check">“Would you send this?” drafts</a>.</p></div><span class="screen__min">3 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">6</span><div class="screen__body"><h3>Feedback</h3><p>Each choice gets its own feedback, naming the rule: fix what your notes can put right; escalate what only someone else can decide.</p></div><span class="screen__min">1 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">7</span><div class="screen__body"><h3>Check</h3><p>One new scored draft. The same rule returns in the stage two observed task.</p></div><span class="screen__min">2 min</span></li>
+      <li class="screen"><span class="screen__n" aria-hidden="true">8</span><div class="screen__body"><h3>Job aid handover</h3><p>Save <a href="#card">the card</a> to the team library and use it on your next real follow-up this week.</p></div><span class="screen__min">2 min</span></li>
+    </ol>
+
+    <p class="module__a11y" data-src="S107">Every screen: captions and a transcript for any recording, no timer, usable by keyboard alone, plain sentences. Designed to WCAG 2.2 AA.<sup><a class="cite" href="#src-S107" data-src="S107" aria-label="Source 3: W3C, WCAG 2.2">3</a></sup></p>
+    <p class="module__more">Reasoning, narration and build rules for each screen: <a href="pack/m3-storyboard.md" download><span data-ordinal>M3</span> storyboard</a> (Markdown, in the pack).</p>
+  </div>
+</section>
+
+<section class="section" id="card" aria-labelledby="card-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="card-h">The card <span data-ordinal>M3</span> hands over</h2>
+      <p>Every card has this anatomy. Support fades in order: a worked example in stage one, a guided template in stage two, your own prompt in stage three.</p>
+    </div>
+
+    <article class="pcard" data-illustrative aria-labelledby="pcard-h">
+      <div class="pcard__strip">
+        <div class="pcard__title">
+          <h3 id="pcard-h"><span data-ordinal>M3</span> Notes to follow-up</h3>
+          <span class="tag">Illustrative</span>
+        </div>
+        <dl class="pcard__meta">
+          <div><dt>For</dt><dd>Account managers, after any customer meeting</dd></div>
+          <div><dt>Owner</dt><dd data-src="S1">Skill Lead (to be agreed)</dd></div>
+          <div><dt>Version</dt><dd>0.4, review by 1 February 2027</dd></div>
+        </dl>
+      </div>
+
+      <div class="pcard__body">
+        <p class="pcard__task"><strong>Task.</strong> Turn your meeting notes into a follow-up the customer can act on.</p>
+
+        <div class="pcard__grid">
+          <div class="pcard__prompt">
+            <h4 class="pcard__label">Prompt</h4>
+            <div class="tabs" data-tabs data-label="Prompt support level" data-default-tab="pl-worked">
+              <ul class="tabs__list">
+                <li><a href="#pl-worked">Worked example</a></li>
+                <li><a href="#pl-guided">Guided</a></li>
+                <li><a href="#pl-own">On your own</a></li>
+              </ul>
+              <div class="tabs__panel" id="pl-worked">
+                <p class="panel-title">Worked example</p>
+                <div class="prompt">
+                  <p><b>Goal:</b> Draft a follow-up email to the Operations Director at Larchmoor Freight after today’s meeting.</p>
+                  <p><b>Context:</b> I am their account manager. They want to renew their mobile plan and asked about trailer tracking.</p>
+                  <p><b>Source:</b> use only my notes, ‘Larchmoor Freight notes, Tuesday’.</p>
+                  <p><b>Expectations:</b> under 150 words, plain British English, three bullet points, one next step offering the specialist’s two times from the notes, and a list of anything you were unsure about.</p>
+                </div>
+              </div>
+              <div class="tabs__panel" id="pl-guided">
+                <p class="panel-title">Guided</p>
+                <div class="prompt">
+                  <p><b>Goal:</b> Draft a [type of message] to [who] about [what].</p>
+                  <p><b>Context:</b> I am [your role]; they want [their aim].</p>
+                  <p><b>Source:</b> use only [the file or thread].</p>
+                  <p><b>Expectations:</b> [length], [tone], [structure], and a list of anything you were unsure about.</p>
+                </div>
+                <p class="hint" data-src="S67">The four parts follow Microsoft’s prompt guidance. Only the goal is required, but the source line is what stops the draft inventing.<sup><a class="cite" href="#src-S67" data-src="S67" aria-label="Source 4: Microsoft Support, writing prompts">4</a></sup></p>
+              </div>
+              <div class="tabs__panel" id="pl-own">
+                <p class="panel-title">On your own</p>
+                <div class="prompt">
+                  <p>Write the prompt yourself. It passes if it names the goal, names the only source Copilot may use, says what a good answer looks like, and asks Copilot to list what it was unsure about.</p>
+                </div>
+              </div>
+            </div>
+            <div class="pcard__markets">
+              <h4 class="pcard__label">Market notes</h4>
+              <p class="hint" data-src="S65">Illustrative markets; the academy’s own languages are not public. Language support as Microsoft lists it.<sup><a class="cite" href="#src-S65" data-src="S65" aria-label="Source 5: Microsoft Support, supported languages for Copilot">5</a></sup></p>
+              <div class="tabs" data-tabs data-label="Market notes">
+                <ul class="tabs__list">
+                  <li><a href="#mk-uk">UK</a></li>
+                  <li><a href="#mk-de">Germany</a></li>
+                  <li><a href="#mk-ke">Kenya</a></li>
+                </ul>
+                <div class="tabs__panel" id="mk-uk">
+                  <p class="panel-title">UK</p>
+                  <p>Currency GBP. Dates as 3 March 2027. Ask for plain British English in the expectations.</p>
+                </div>
+                <div class="tabs__panel" id="mk-de">
+                  <p class="panel-title">Germany</p>
+                  <p data-src="S65">Currency EUR. Dates as 03.03.2027. Formal address (Sie) for customer emails. Keep the notes in German and ask for German output, so the source and the draft match. German is on Microsoft’s supported-language list.</p>
+                </div>
+                <div class="tabs__panel" id="mk-ke">
+                  <p class="panel-title">Kenya</p>
+                  <p data-src="S65">Currency KES. Dates as 3 March 2027. Microsoft’s language list shows Swahili for voice on personal accounts only, not for text on work accounts, so the card and its checks stay in English, and a fluent colleague checks any customer message in Swahili before it is sent.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pcard__rules">
+            <div class="rule">
+              <h4 class="pcard__label">Check before you send</h4>
+              <ul class="ticks">
+                <li>Every commitment appears in the notes or the contract.</li>
+                <li>Names, dates and figures match the source.</li>
+                <li>Nothing from another customer appears.</li>
+                <li>The tone is one you would sign.</li>
+              </ul>
+            </div>
+            <div class="rule rule--escalate">
+              <h4 class="pcard__label">Stop and escalate when</h4>
+              <p>Putting the draft right needs a decision you do not own: price, contract terms, where data is held, or security. Do not send. Ask the owner, and tell the customer when to expect an answer.</p>
+              <p class="hint">A question you said you would check is yours to route: send it to its owner today, whatever happens to the draft.</p>
+            </div>
+            <div class="rule rule--data">
+              <h4 class="pcard__label">Data rule</h4>
+              <p data-src="S37">In line with Vodafone’s published approach of limiting public AI tools, customer contracts and pricing are used only in approved company tools.<sup><a class="cite" href="#src-S37" data-src="S37" aria-label="Source 6: Vodafone, Artificial intelligence">6</a></sup></p>
+            </div>
+          </div>
+        </div>
+
+        <details class="more more--card">
+          <summary>More on this card</summary>
+          <div class="more__grid">
+            <div>
+              <h4>A good and a flawed draft</h4>
+              <p><b>Good:</b> “...you would like to know more about tracking for your 25 trailers. I will confirm where tracking data is stored.”</p>
+              <p><b>Flawed:</b> “...tracking for your 25 trailers, which we will include at no extra cost.” <span class="muted">Commits to an offer nobody made.</span></p>
+            </div>
+            <div>
+              <h4>Tool notes</h4>
+              <p data-src="S67">Microsoft 365 Copilot in Outlook or Word: name the notes file in the Source line so the source is explicit. Other approved assistants: the same four parts apply; only the way you attach the source changes.</p>
+            </div>
+            <div>
+              <h4>Why each field is there</h4>
+              <ul>
+                <li>Task and role, because learning starts from the job.</li>
+                <li data-src="S67">Four-part prompt, because it matches Microsoft’s own prompt guidance.</li>
+                <li>Good and flawed draft, because a non-example teaches the check.</li>
+                <li>Check, because verification belongs at the point of use.</li>
+                <li>Escalate, because the learner needs a named route for decisions they do not own.</li>
+                <li data-src="S37">Data rule, because it carries Vodafone’s published guardrails.</li>
+                <li>Owner, version and review date, because feature names and guidance change, so every card expires.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="section print-break" id="pathway" aria-labelledby="pathway-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="pathway-h"><span class="h-light">The pathway</span><span class="visually-hidden">: </span> Three stages, twelve weeks</h2>
+      <p>Account managers, because their writing tasks are frequent, checkable against a source and carry customer-data risk. <span data-src="S54">Twelve weeks, because Microsoft’s Copilot Dashboard counts a Habitual or Power user only after use in at least 9 of the past 12 weeks, so the result can be read from existing data.<sup><a class="cite" href="#src-S54" data-src="S54" aria-label="Source 7: Microsoft Learn, Copilot Dashboard">7</a></sup></span></p>
+    </div>
+
+    <div class="track-wrap" data-plan>
+      <ol class="track" aria-label="Stages by week">
+        <li class="track__seg track__seg--1"><span class="track__n" aria-hidden="true">1</span><span class="track__weeks">Weeks 1 to 2</span></li>
+        <li class="track__seg track__seg--2"><span class="track__n" aria-hidden="true">2</span><span class="track__weeks">Weeks 3 to 9</span></li>
+        <li class="track__seg track__seg--3"><span class="track__n" aria-hidden="true">3</span><span class="track__weeks">Weeks 10 to 12</span></li>
+      </ol>
+      <div class="lane" role="group" aria-labelledby="lane-h">
+        <p class="lane__label" id="lane-h">Team leaders, on the same weeks</p>
+        <ol class="lane__list">
+          <li class="lane__i lane__i--b"><span class="lane__when">Before week 1</span> Briefed</li>
+          <li class="lane__i lane__i--w1"><span class="lane__when">Week 1</span> Model it</li>
+          <li class="lane__i lane__i--w3"><span class="lane__when">Week 3</span> Set the standard for ‘checked’</li>
+          <li class="lane__i lane__i--slot"><span class="lane__when">Weeks 3 to 9</span> Protect the 15-minute practice slot</li>
+          <li class="lane__i lane__i--w12"><span class="lane__when">Week 12</span> Confirm each work sample</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="stages">
+      <article class="stage" aria-labelledby="st1-h">
+        <div class="stage__top">
+          <span class="stage__badge" aria-hidden="true" data-ordinal>1</span>
+          <p class="stage__meta" data-plan><span class="stage__n">Stage 1</span><span>Weeks 1 to 2</span><span>About 90 minutes</span></p>
+        </div>
+        <h3 id="st1-h"><span class="visually-hidden" data-ordinal>Stage 1: </span>First useful result</h3>
+        <p class="stage__can">You can brief yourself for a customer meeting with Copilot, and check every name, date and figure against its source.</p>
+        <p class="stage__check" data-src="S96"><b>Check:</b> six decision items. Can you make the right call in a realistic case? LTEM Tier 5, decision-making.<sup><a class="cite" href="#src-S96" data-src="S96" aria-label="Source 8: Work-Learning Research, LTEM">8</a></sup></p>
+        <ul class="chips" data-ordinal aria-label="Stage 1 modules and their source">
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>Kick-off <b>Build</b></li>
+          <li class="src src--curate"><span class="shape" aria-hidden="true"></span>M1 <b>Curate</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>M2 <b>Build</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>Check <b>Build</b></li>
+        </ul>
+      </article>
+      <article class="stage" aria-labelledby="st2-h">
+        <div class="stage__top">
+          <span class="stage__badge" aria-hidden="true" data-ordinal>2</span>
+          <p class="stage__meta" data-plan><span class="stage__n">Stage 2</span><span>Weeks 3 to 9</span><span>About four hours</span></p>
+        </div>
+        <h3 id="st2-h"><span class="visually-hidden" data-ordinal>Stage 2: </span>A weekly workflow</h3>
+        <p class="stage__can">You can tell a draft you can send from one you must fix or escalate.</p>
+        <p class="stage__check" data-src="S96"><b>Check:</b> one observed task on supplied, realistic notes, scored on a four-part rubric. Can you do the task well? Tier 6, task performance.</p>
+        <ul class="chips" data-ordinal aria-label="Stage 2 modules and their source">
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>M3 <b>Build</b></li>
+          <li class="src src--curate"><span class="shape" aria-hidden="true"></span>M4 <b>Curate</b></li>
+          <li class="src src--buy"><span class="shape" aria-hidden="true"></span>M5 <b>Buy</b></li>
+          <li class="src src--curate"><span class="shape" aria-hidden="true"></span>Skill Lab <b>Curate</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>Practice slot <b>Build</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>Check <b>Build</b></li>
+        </ul>
+      </article>
+      <article class="stage" aria-labelledby="st3-h">
+        <div class="stage__top">
+          <span class="stage__badge" aria-hidden="true" data-ordinal>3</span>
+          <p class="stage__meta" data-plan><span class="stage__n">Stage 3</span><span>Weeks 10 to 12</span><span>About an hour</span></p>
+        </div>
+        <h3 id="st3-h"><span class="visually-hidden" data-ordinal>Stage 3: </span>Own and teach</h3>
+        <p class="stage__can">You can improve a team prompt card, test it on three real cases and teach it to a colleague.</p>
+        <p class="stage__check" data-src="S96"><b>Check:</b> a work sample your manager confirms. Do you do it in real work? Tier 7, transfer to work.</p>
+        <ul class="chips" data-ordinal aria-label="Stage 3 modules and their source">
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>M6 <b>Build</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>M7 <b>Build</b></li>
+          <li class="src src--build"><span class="shape" aria-hidden="true"></span>Check <b>Build</b></li>
+        </ul>
+      </article>
+    </div>
+    <p class="stages__note" data-src="S96">Tiers are from LTEM, Will Thalheimer’s Learning-Transfer Evaluation Model: the higher the tier, the closer the evidence is to real work. Attendance and completion sit at the bottom, so they never close a stage.</p>
+
+    <div class="runsheet" data-illustrative>
+      <div class="head-row">
+        <h3 id="run-h">Week 1, live: the <span data-plan>45</span>-minute kick-off</h3>
+        <span class="tag">Illustrative</span>
+      </div>
+      <p class="runsheet__note" data-plan>For a room or a video call, with a champion in every breakout of five. Then the blend: digital modules in the week, a <span class="nowrap">15-minute</span> practice slot in each team meeting, a cohort lab in week 6 and a work sample in week 12.</p>
+      <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-labelledby="run-h">
+        <table class="table table--run table--stack" role="table" aria-labelledby="run-h">
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Time</th><th scope="col" role="columnheader">What happens</th><th scope="col" role="columnheader">Facilitator moves</th></tr></thead>
+          <tbody role="rowgroup">
+            <tr role="row"><th scope="row" role="rowheader">0 to 5 min</th><td role="cell" data-label="What happens">Why this pathway: a follow-up that promised a delivery date nobody agreed</td><td role="cell" data-label="Facilitator moves">Ask who has had to correct a message like it; name the rule the twelve weeks teach</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">5 to 15 min</th><td role="cell" data-label="What happens">What stays out, in plain words, co-presented with a data protection colleague</td><td role="cell" data-label="Facilitator moves">Show three examples; the room sorts each into approved tools only, fine anywhere, or never</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">15 to 30 min</th><td role="cell" data-label="What happens">A first prompt together, then each person writes one for their next real meeting</td><td role="cell" data-label="Facilitator moves">Build the four parts live on the fictional notes; champions help in breakouts; customer data stays in approved tools</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">30 to 40 min</th><td role="cell" data-label="What happens">Check before you send, in pairs</td><td role="cell" data-label="Facilitator moves">Partners swap drafts and underline every commitment; collect one fix and one escalate for the whole room</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">40 to 45 min</th><td role="cell" data-label="What happens">Commit</td><td role="cell" data-label="Facilitator moves">Each person names the real meeting they will brief with M1 this week</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="runsheet__follow callout"><b>Follow-up task, by the week 1 team meeting:</b> complete M1 (20 minutes) and use it to brief yourself for one real meeting. The team leader opens that meeting by modelling one prompt of their own, then asks: which name, date or figure did you check?</p>
+      <p class="runsheet__more">Script lines, materials, the online variant and the team leader’s “Model it” briefing: <a href="pack/kickoff-run-sheet.md" download>kick-off run sheet</a> (Markdown, in the pack).</p>
+    </div>
+
+    <div class="sourcing">
+      <p class="rule-line">Curate first, buy second, build only what Vodafone alone can write: its data rules, checks and examples.</p>
+      <ul class="sourcing__list" data-src="S64 S51 S42 S1">
+        <li><b>Curate:</b> M1 and M4, from Microsoft’s training, including Copilot Academy, whose role-based paths include sales.<sup><a class="cite" href="#src-S64" data-src="S64" aria-label="Source 9: Microsoft Support, Copilot Academy guided learning">9</a></sup> The cohort lab runs inside Copilot Skill Labs if their format suits.<sup><a class="cite" href="#src-S42" data-src="S42" aria-label="Source 2: Digital Workplace Group, DWG Awards 2025">2</a></sup></li>
+        <li><b>Buy:</b> M5, from licensed library content. Skillsoft is a named partner for this role, and a 2023 award submission records the VLO licensing Skillsoft and Harvard content.<sup><a class="cite" href="#src-S51" data-src="S51" aria-label="Source 10: Brandon Hall Group, Grow with Vodafone">10</a></sup></li>
+        <li><b>Build:</b> the kick-off, M2, M3, M6, M7 and every check. About six and a half hours in all, over twelve weeks.</li>
+      </ul>
+      <p class="sourcing__more">Every module with its minutes, week, source and owner, and the stage two rubric: <a href="pack/module-plan.md" download>module plan</a> (Markdown, in the pack).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="measures" aria-labelledby="measures-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="measures-h">How would you know it worked?</h2>
+      <p data-src="S1">The VLO business impact framework is not public, so I would report in four terms and align them with it in my first weeks. Three answer the measures this role tracks: capability growth, AI adoption and productivity impact. Experience adds the learner’s view.</p>
+    </div>
+
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Four measurement terms">
+      <table class="table table--measures table--stack" role="table" aria-label="Four measurement terms">
+        <thead role="rowgroup">
+          <tr role="row"><th scope="col" role="columnheader">Term, and the question it answers</th><th scope="col" role="columnheader">Evidence I would use</th><th scope="col" role="columnheader">What it cannot show</th></tr>
+        </thead>
+        <tbody role="rowgroup">
+          <tr role="row"><th scope="row" role="rowheader">Experience <span class="muted">Learner reaction: did it help with the job?</span></th><td role="cell" data-label="Evidence I would use">“Useful for my task?” after each module, and “used it at work this week?” in the weekly practice slot</td><td role="cell" data-label="What it cannot show">Whether anything was learned</td></tr>
+          <tr role="row"><th scope="row" role="rowheader">Quality <span class="muted">Capability growth: can they make the call?</span></th><td role="cell" data-label="Evidence I would use">Module checks, stage checks and the observed task, scored</td><td role="cell" data-label="What it cannot show">Whether they do it at work, unprompted</td></tr>
+          <tr role="row"><th scope="row" role="rowheader">Learning transfer <span class="muted">AI adoption: is it a weekly habit?</span></th><td role="cell" data-label="Evidence I would use" data-src="S54">Novice to Habitual or Power users over twelve weeks in the Copilot Dashboard, against a comparison group</td><td role="cell" data-label="What it cannot show">Whether the use is good use</td></tr>
+          <tr role="row"><th scope="row" role="rowheader">Business impact <span class="muted">Productivity: did the work get better?</span></th><td role="cell" data-label="Evidence I would use">Time to a checked follow-up, and follow-up quality in a blind review, against a baseline and a comparison group</td><td role="cell" data-label="What it cannot show">Cause, without a designed comparison</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rules2">
+      <div class="callout" role="note" aria-label="Never reported as impact">
+        <p><b>Never reported as impact:</b> completions, logins, licences, satisfaction on its own, or self-reported minutes added together.</p>
+      </div>
+      <div class="callout" role="note" aria-label="Mind the baseline window" data-src="S54">
+        <p><b>Mind the baseline window.</b> Microsoft reports email draft and summary metrics were underestimated from 1 June 2025 to 18 February 2026. A baseline there understates the start; a comparison across it overstates the gain.<sup><a class="cite" href="#src-S54" data-src="S54" aria-label="Source 7: Microsoft Learn, Copilot Dashboard">7</a></sup></p>
+      </div>
+    </div>
+
+    <div class="report" data-illustrative>
+      <div class="head-row">
+        <h3 id="report-h">What a week-12 report would show</h3>
+        <span class="tag">Illustrative</span>
+      </div>
+      <figure class="rchart" aria-labelledby="report-h">
+        <figcaption class="rchart__cap">One cohort of 40 account managers against a comparison group of 40. Illustrative, not Vodafone figures.</figcaption>
+        <ul class="rchart__legend" aria-hidden="true"><li class="is-cohort"><span class="rchart__key"></span>Cohort</li><li class="is-comp"><span class="rchart__key"></span>Comparison group</li></ul>
+        <div class="rchart__grid">
+          <div class="rchart__m" role="group" aria-labelledby="rc-1">
+            <p class="rchart__name" id="rc-1">Habitual or Power users <span class="rchart__term">Learning transfer</span></p>
+            <p class="rchart__row is-cohort"><span class="rchart__who">Cohort</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 55%"></span></span><span class="rchart__val">22 of 40</span></p>
+            <p class="rchart__row is-comp"><span class="rchart__who">Comparison</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 22.5%"></span></span><span class="rchart__val">9 of 40</span></p>
+          </div>
+          <div class="rchart__m" role="group" aria-labelledby="rc-2">
+            <p class="rchart__name" id="rc-2">Follow-ups with no unsupported commitment (blind review) <span class="rchart__term">Business impact</span></p>
+            <p class="rchart__row is-cohort"><span class="rchart__who">Cohort</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 90%"></span></span><span class="rchart__val">36 of 40</span></p>
+            <p class="rchart__row is-comp"><span class="rchart__who">Comparison</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 67.5%"></span></span><span class="rchart__val">27 of 40</span></p>
+          </div>
+          <div class="rchart__m rchart__m--time" role="group" aria-labelledby="rc-3">
+            <p class="rchart__name" id="rc-3">Median minutes to a checked follow-up, down from 24 in both groups <span class="rchart__term">Business impact; shorter is better</span></p>
+            <p class="rchart__row is-cohort"><span class="rchart__who">Cohort</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 66.7%"></span></span><span class="rchart__val">16 min</span></p>
+            <p class="rchart__row is-comp"><span class="rchart__who">Comparison</span><span class="rchart__track" aria-hidden="true"><span class="rchart__bar" style="--v: 91.7%"></span></span><span class="rchart__val">22 min</span></p>
+          </div>
+        </div>
+        <p class="rchart__foot">A direction, not a cause, until a second cohort repeats it.</p>
+      </figure>
+      <p class="report__decision"><b>Recommendation:</b> revise M4 first. Fewer than 4 in 10 learners chose the expected answer on its module check (15 of 40, under the item bank’s review line), and it had the fewest learners using it at work (17 of 40), so the scenario or its feedback needs work. Then extend to a second market from <span class="nowrap">week 13</span>.</p>
+      <details class="more report__more">
+        <summary>Experience, quality and results by module</summary>
+      <dl class="report__rows">
+        <div><dt>Experience</dt><dd>Used it at work that week, asked in the weekly practice slot: from 31 of 40 (M1) down to 17 of 40 (M4). M4 was also rated least useful for the task.</dd></div>
+        <div><dt>Quality</dt><dd>Stage one standard met by 34 of 40; the observed-task standard by 29 of 40. Module checks are in the table below.</dd></div>
+      </dl>
+      <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-label="Illustrative results by module">
+        <table class="table table--report">
+          <thead><tr><th scope="col">Module</th><th scope="col">Module check: chose the expected decision</th><th scope="col">Used it at work that week</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">M1 Brief me before the meeting</th><td>35 of 40</td><td>31 of 40</td></tr>
+            <tr><th scope="row">M2 What stays out</th><td>33 of 40</td><td>24 of 40</td></tr>
+            <tr><th scope="row">M3 Notes to follow-up</th><td>31 of 40</td><td>30 of 40</td></tr>
+            <tr class="is-flag"><th scope="row">M4 Tailor the proposal section</th><td><b>15 of 40</b></td><td><b>17 of 40</b></td></tr>
+            <tr><th scope="row">M5 Account plan refresh</th><td>28 of 40</td><td>22 of 40</td></tr>
+            <tr><th scope="row">M7 Reviewing an agent’s draft</th><td>30 of 40</td><td>19 of 40</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="report__note">M6 is a team-meeting module with no digital check: learners improve a card and teach it back, so it is read from the cards contributed and the stage three work sample. The review line is a module check where fewer than 4 in 10 learners choose the expected answer.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="scale" aria-labelledby="scale-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="scale-h"><span class="h-light">How this scales</span><span class="visually-hidden">: </span> One brief per pathway</h2>
+      <p data-src="S1">In this design, every pathway starts as a one-page brief that the Skill Lead and the Learning and Performance Business Partner sign before anything is built. Here it is, filled for this pathway.</p>
+    </div>
+
+    <div class="scale">
+      <article class="brief" data-illustrative aria-labelledby="brief-h">
+        <div class="brief__bar">
+          <h3 id="brief-h">Pathway brief: account managers</h3>
+          <span class="tag">Illustrative</span>
+        </div>
+        <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-label="Pathway brief fields">
+          <table class="table table--brief">
+            <thead><tr><th scope="col">Field</th><th scope="col">This pathway</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Role and real tasks</th><td>Account managers: meeting brief, follow-up, proposal section, account plan</td></tr>
+              <tr><th scope="row">Pilot market</th><td>To be agreed</td></tr>
+              <tr><th scope="row">Data rule</th><td>Contracts and pricing only in approved company tools</td></tr>
+              <tr><th scope="row">The check</th><td>Every commitment traced to the notes or the contract</td></tr>
+              <tr><th scope="row">Escalate</th><td>Any reply that needs a decision on price, contract terms, where data is held or security</td></tr>
+              <tr><th scope="row">Team leaders</th><td>Model it, set the standard, protect the practice slot, confirm the work sample</td></tr>
+              <tr><th scope="row">Who owns what</th><td><ul class="owners"><li><b>Skill Lead:</b> tasks, standard, stage checks</li><li><b>Learning and Performance Business Partner:</b> market, cohort, team-leader time, local examples</li><li><b>Specialist:</b> design, curation, partners, quality check, report</li><li><b>The teams that own Copilot reporting and HR data:</b> the job-function data</li></ul></td></tr>
+              <tr><th scope="row">Signed</th><td><span class="sign">Skill Lead</span><span class="sign">Learning and Performance Business Partner</span><span class="sign">Date</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <div class="scale__side">
+        <h3>Choosing the next role and market</h3>
+        <ul class="ticks">
+          <li>Frequent tasks that can be checked against a source.</li>
+          <li>A real data or commitment risk the check can teach.</li>
+          <li>A Skill Lead and a Partner ready to own it.</li>
+          <li data-src="S54">Reporting is possible: job-function data loaded, and groups large enough to show, because the Copilot Dashboard hides small groups.</li>
+          <li>The tool supports the market’s language for the task.</li>
+        </ul>
+        <details class="more more--side">
+          <summary>Questions I would ask before drafting a brief</summary>
+          <ul class="questions">
+            <li>Which three writing tasks take the most time each week?</li>
+            <li>Which mistake would cost most with a customer?</li>
+            <li>What data does the role touch, and where may it go?</li>
+            <li>Who signs off a commitment, a price or a data answer?</li>
+            <li>What already exists for this role: library content, Skill Labs, Copilot Academy?</li>
+            <li>Which team leaders will give the practice slot fifteen minutes a week?</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+
+    <div class="roles" data-illustrative>
+      <div class="roles__main">
+      <div class="head-row">
+        <h3 id="roles-h">One pathway in an academy portfolio</h3>
+        <span class="tag">Illustrative</span>
+      </div>
+      <p class="roles__note"><span data-src="S1">How AI enters capability plans across all areas</span>: one brief per role, started in sequence, each gated by its own evidence.</p>
+      <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-labelledby="roles-h">
+        <table class="table table--portfolio table--stack" role="table" aria-labelledby="roles-h" data-plan>
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Pathway</th><th scope="col" role="columnheader">Quarter 1</th><th scope="col" role="columnheader">Quarter 2</th><th scope="col" role="columnheader">Quarter 3</th><th scope="col" role="columnheader">Quarter 4</th></tr></thead>
+          <tbody role="rowgroup">
+            <tr role="row" class="is-this"><th scope="row" role="rowheader">Account managers <span class="muted">this pathway</span></th><td role="cell" data-label="Quarter 1"><b>Discover</b>, then <b>Pilot</b> in one market</td><td role="cell" data-label="Quarter 2"><b>Pilot</b>: the week-12 report</td><td role="cell" data-label="Quarter 3"><b>Extend</b> to a second market</td><td role="cell" data-label="Quarter 4"><b>Scale</b> to further markets</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Customer care team leaders</th><td role="cell" data-label="Quarter 1" class="is-off">Not yet</td><td role="cell" data-label="Quarter 2"><b>Discover</b>: brief signed</td><td role="cell" data-label="Quarter 3"><b>Pilot</b> in one market</td><td role="cell" data-label="Quarter 4"><b>Extend</b> to a second market</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Network operations</th><td role="cell" data-label="Quarter 1" class="is-off">Not yet</td><td role="cell" data-label="Quarter 2" class="is-off">Not yet</td><td role="cell" data-label="Quarter 3"><b>Discover</b>: brief signed</td><td role="cell" data-label="Quarter 4"><b>Pilot</b> in one market</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">HR and finance business partners</th><td role="cell" data-label="Quarter 1" class="is-off">Not yet</td><td role="cell" data-label="Quarter 2" class="is-off">Not yet</td><td role="cell" data-label="Quarter 3" class="is-off">Not yet</td><td role="cell" data-label="Quarter 4"><b>Discover</b>: one brief each</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="roles__key"><b>Discover:</b> brief signed. <b>Pilot:</b> one cohort, one market. <b>Extend:</b> a second market, only after the week-12 report. <b>Scale:</b> further markets, cards localised. Every pathway reuses the data-rule module and the card anatomy; one new brief a quarter keeps quality ahead of reach.</p>
+      </div>
+      <details class="more roles__more">
+        <summary>The same brief applied to four more roles</summary>
+      <p class="roles__note">To be confirmed with each Skill Lead. The prompt and the check keep their shape whichever approved tool a role uses.</p>
+      <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-label="The same brief, four more roles">
+        <table class="table table--roles table--stack" role="table" aria-label="The same brief, four more roles">
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Role</th><th scope="col" role="columnheader">Top tasks</th><th scope="col" role="columnheader">Data rule</th><th scope="col" role="columnheader">The check</th><th scope="col" role="columnheader">Tool</th></tr></thead>
+          <tbody role="rowgroup">
+            <tr role="row"><th scope="row" role="rowheader">Customer care team leaders</th><td role="cell" data-label="Top tasks">Coaching notes from call reviews; shift handover summaries</td><td role="cell" data-label="Data rule">Customer account details only in approved tools</td><td role="cell" data-label="The check">Every coaching point traced to the call record</td><td role="cell" data-label="Tool">Microsoft 365 Copilot</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Network operations</th><td role="cell" data-label="Top tasks">Incident updates for stakeholders; change write-ups</td><td role="cell" data-label="Data rule">No network configuration or site details outside approved tools</td><td role="cell" data-label="The check">Every time and impact figure traced to the incident log</td><td role="cell" data-label="Tool" data-src="S1">Claude or ChatGPT Enterprise, where approved for the team</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">HR business partners</th><td role="cell" data-label="Top tasks">Policy answers; job descriptions</td><td role="cell" data-label="Data rule">No employee personal data in a prompt unless the tool is approved for it</td><td role="cell" data-label="The check">Every policy answer cites its clause</td><td role="cell" data-label="Tool">Microsoft 365 Copilot</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Finance business partners</th><td role="cell" data-label="Top tasks">Variance commentary; board-pack summaries</td><td role="cell" data-label="Data rule">Unpublished results only in approved tools</td><td role="cell" data-label="The check">Every figure ties to the ledger</td><td role="cell" data-label="Tool">Copilot in Excel</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </details>
+    </div>
+
+    <div class="partners" id="partners" data-illustrative>
+      <div class="head-row">
+        <h3 id="partners-h">Partners, held to one standard</h3>
+        <span class="tag">Illustrative</span>
+      </div>
+      <p class="partners__note">Curated and bought content passes a seven-question quality check before it goes live. Each partner is reviewed quarterly against written terms, and the review decides renewal. The service levels shown are examples to agree; no partner is scored.</p>
+      <div class="table-wrap table-wrap--plain" tabindex="0" role="region" aria-labelledby="partners-h">
+        <table class="table table--partners table--stack" role="table" aria-labelledby="partners-h">
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Partner</th><th scope="col" role="columnheader">Supplies</th><th scope="col" role="columnheader">Terms to agree</th><th scope="col" role="columnheader">The quarterly review decides</th></tr></thead>
+          <tbody role="rowgroup">
+            <tr role="row"><th scope="row" role="rowheader">Microsoft</th><td role="cell" data-label="Supplies" data-src="S63">Copilot Academy paths, duplicated and customised for M1 and M4<sup><a class="cite" href="#src-S63" data-src="S63" aria-label="Source 11: Microsoft Learn, Copilot Academy">11</a></sup></td><td role="cell" data-label="Terms to agree">Notice of feature changes; our copies re-checked within an agreed time</td><td role="cell" data-label="The quarterly review decides">Keep, adapt or drop each unit</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Licensed library</th><td role="cell" data-label="Supplies" data-src="S1 S51">Skills content such as Skillsoft’s, for M5</td><td role="cell" data-label="Terms to agree">For example: wrong or unsafe guidance fixed within 2 working days, other fixes within 10; 30 days’ notice of content changes; monthly usage data</td><td role="cell" data-label="The quarterly review decides">Renewal on use and usefulness, not seats</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">Google</th><td role="cell" data-label="Supplies" data-src="S48">The employee gen AI training programme committed in the 2024 partnership, where it suits a role<sup><a class="cite" href="#src-S48" data-src="S48" aria-label="Source 12: Google Cloud, Vodafone and Google partnership">12</a></sup></td><td role="cell" data-label="Terms to agree">Scope, languages and dates, per role</td><td role="cell" data-label="The quarterly review decides">Which pathways it serves</td></tr>
+            <tr role="row"><th scope="row" role="rowheader">A content agency</th><td role="cell" data-label="Supplies">Built modules, from our storyboards</td><td role="cell" data-label="Terms to agree" data-src="S107">For example: a built module within 15 working days of a signed storyboard; the same fix times; WCAG 2.2 AA sign-off; editable source files</td><td role="cell" data-label="The quarterly review decides">The next brief’s build</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="partners__more">The seven questions, example service levels by severity and the review agenda: <a href="pack/partner-quality-check.md" download>partner quality check</a> (Markdown, in the pack).</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section section--pack" id="pack" aria-labelledby="pack-h">
+  <div class="wrap">
+    <div class="pack">
+      <div class="pack__head">
+        <h2 id="pack-h">Take the pack with you</h2>
+        <p>The working files behind this page, ready to adapt. Illustrative content is labelled in each.</p>
+        <p class="print-only pack__print">Every file is linked from the Pack section of growthforge.github.io/applications/vodafone-ai-pathway/</p>
+      </div>
+      <ul class="pack__list">
+        <li><a href="pack/README.md" download><span class="pack__name">What is in the pack</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/prompt-card-m3.pdf"><span class="pack__name">Prompt card <span data-ordinal>M3</span>, printable</span> <span class="pack__fmt">PDF</span></a></li>
+        <li><a href="pack/prompt-card-m3.md" download><span class="pack__name">Prompt card <span data-ordinal>M3</span>, editable</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/skills-check-item-bank.json" download><span class="pack__name">Item bank and scoring rubrics</span> <span class="pack__fmt">JSON</span></a></li>
+        <li><a href="pack/m3-storyboard.md" download><span class="pack__name"><span data-ordinal>M3</span> storyboard and narration</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/module-plan.md" download><span class="pack__name">Module plan and stage rubric</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/kickoff-run-sheet.md" download><span class="pack__name">Kick-off run sheet and team-leader briefing</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/pathway-brief-template.md" download><span class="pack__name">Pathway brief template</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/pathway-brief-account-managers.md" download><span class="pack__name">Filled brief: account managers</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/partner-quality-check.md" download><span class="pack__name">Partner quality check</span> <span class="pack__fmt">Markdown</span></a></li>
+        <li><a href="pack/metric-dictionary.csv" download><span class="pack__name">Metric dictionary</span> <span class="pack__fmt">CSV</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="me" aria-labelledby="me-h">
+  <div class="wrap">
+    <div class="section__head">
+      <h2 id="me-h">Enablement I have delivered</h2>
+      <p class="me__lead">I build AI tools, train the people who use them, and write work up so others can reuse it.</p>
+    </div>
+    <ul class="delivered">
+      <li data-fact="hv"><b>MTest Labs.</b> I built a test-design tool on the firm’s own test-case library and issue logs, added an assistant the team could ask about the firm’s knowledge, and trained the team to run it. The testers stay the subject-matter experts: the tool drafts each case and a tester approves it before it reaches a client. Test design fell from an 8-hour day, or 2 to 3 days, to 1 to 3 supervised hours.</li>
+      <li data-fact="hv"><b>Bnk To The Future.</b> Templates I created were adopted across the firm. With redesigned case routing, triage and escalation, turnaround fell by ~25% across 100+ cases.</li>
+      <li data-fact="hv"><b>A university enterprise network.</b> I captured sessions as structured, reusable documentation with worked use cases, so others left with practical material.</li>
+      <li data-fact="hv"><b>AirTM.</b> In a remote team matching daily payment volumes across currencies, I wrote root-cause fixes up as standard procedures, held a 95%+ service level, and cleared a 150-case backlog in three weeks.</li>
+    </ul>
+    <p class="me__tools" data-fact="hv"><b>Across countries:</b> 5+ years in finance and operations, spanning client work for an accountancy practice in India, VAT return support for UK clients and the remote international team at AirTM. I use Microsoft Copilot and Copilot Studio, Claude, ChatGPT and Gemini, and hold Microsoft Azure AI Fundamentals (AI-900).</p>
+    <p class="me__contact"><a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a><a href="tel:+447553909828">+44 7553 909828</a><span>Right to work in the UK; no sponsorship required.</span></p>
+  </div>
+</section>
+
+<section class="section section--sources" id="sources" aria-labelledby="sources-h">
+  <div class="wrap">
+    <h2 id="sources-h" class="sources__h">Sources</h2>
+    <details class="more">
+      <summary>Public sources used on this page, accessed in November 2026</summary>
+      <ol class="sources">
+        <li data-src="S1" id="src-S1">Vodafone careers, “AI Enablement &amp; Academy Specialist”, the listing for this role (the VLO, Skill Leads, Learning and Performance Business Partners, the VLO business impact framework, named partners and platforms). <a class="no-url" href="https://vodafone.eightfold.ai/careers/job/563018698262883"><span class="src-short">vodafone.eightfold.ai</span><span class="src-full">https://vodafone.eightfold.ai/careers/job/563018698262883</span></a></li>
+        <li data-src="S42" id="src-S42">Digital Workplace Group, DWG Awards 2025: Vodafone Group Services, winner for AI Enablement at Scale. <a class="no-url" href="https://digitalworkplacegroup.com/?p=16238"><span class="src-short">digitalworkplacegroup.com</span><span class="src-full">https://digitalworkplacegroup.com/?p=16238</span></a></li>
+        <li data-src="S107" id="src-S107">W3C, “Web Content Accessibility Guidelines (WCAG) 2.2”. <a class="no-url" href="https://www.w3.org/TR/WCAG22/"><span class="src-short">w3.org/TR/WCAG22</span><span class="src-full">https://www.w3.org/TR/WCAG22/</span></a></li>
+        <li data-src="S67" id="src-S67">Microsoft Support, “Get started writing prompts in Microsoft Copilot”. <a class="no-url" href="https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-writing-prompts-in-microsoft-365-copilot"><span class="src-short">support.microsoft.com</span><span class="src-full">https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-writing-prompts-in-microsoft-365-copilot</span></a></li>
+        <li data-src="S65" id="src-S65">Microsoft Support, “Supported languages for Microsoft Copilot”. <a class="no-url" href="https://support.microsoft.com/en-au/microsoft-365-copilot/supported-languages-for-microsoft-365-copilot"><span class="src-short">support.microsoft.com</span><span class="src-full">https://support.microsoft.com/en-au/microsoft-365-copilot/supported-languages-for-microsoft-365-copilot</span></a></li>
+        <li data-src="S37" id="src-S37">Vodafone, “Artificial intelligence” (cyber security). <a class="no-url" href="https://www.vodafone.com/about-vodafone/how-we-operate/consumer-privacy-and-cyber-security/cyber-security/artificial-intelligence"><span class="src-short">vodafone.com</span><span class="src-full">https://www.vodafone.com/about-vodafone/how-we-operate/consumer-privacy-and-cyber-security/cyber-security/artificial-intelligence</span></a></li>
+        <li data-src="S54" id="src-S54">Microsoft Learn, “Connect to the Microsoft Copilot Dashboard for Microsoft 365 customers”. <a class="no-url" href="https://learn.microsoft.com/en-us/viva/insights/org-team-insights/copilot-dashboard"><span class="src-short">learn.microsoft.com</span><span class="src-full">https://learn.microsoft.com/en-us/viva/insights/org-team-insights/copilot-dashboard</span></a></li>
+        <li data-src="S96" id="src-S96">Work-Learning Research (Will Thalheimer), “LTEM”, version 13. <a class="no-url" href="https://www.worklearning.com/ltem/"><span class="src-short">worklearning.com</span><span class="src-full">https://www.worklearning.com/ltem/</span></a></li>
+        <li data-src="S64" id="src-S64">Microsoft Support, “Copilot Academy: Guided learning for Microsoft 365 Copilot”. <a class="no-url" href="https://support.microsoft.com/en-US/Microsoft-365-Copilot/copilot-academy-guided-learning-for-microsoft-365-copilot"><span class="src-short">support.microsoft.com</span><span class="src-full">https://support.microsoft.com/en-US/Microsoft-365-Copilot/copilot-academy-guided-learning-for-microsoft-365-copilot</span></a></li>
+        <li data-src="S51" id="src-S51">Brandon Hall Group award submission, “Grow with Vodafone” (Vodafone and TalenTeam). <a class="no-url" href="https://totaltech.brandonhall.com/wp-content/uploads/2024/12/BHG_ATR_Vodafone-and-TalenTeam_Best-Advance-in-Learning-Management-Technology_Learning-and-Development_Silver_2023.pdf"><span class="src-short">brandonhall.com</span><span class="src-full">https://totaltech.brandonhall.com/wp-content/uploads/2024/12/BHG_ATR_Vodafone-and-TalenTeam_Best-Advance-in-Learning-Management-Technology_Learning-and-Development_Silver_2023.pdf</span></a></li>
+        <li data-src="S63" id="src-S63">Microsoft Learn, “Microsoft Copilot Academy”. <a class="no-url" href="https://learn.microsoft.com/en-us/viva/learning/academy-copilot"><span class="src-short">learn.microsoft.com</span><span class="src-full">https://learn.microsoft.com/en-us/viva/learning/academy-copilot</span></a></li>
+        <li data-src="S48" id="src-S48">Google Cloud press release, “Vodafone and Google Deepen Strategic Partnership”, 8 October 2024. <a class="no-url" href="https://www.googlecloudpresscorner.com/2024-10-08-Vodafone-and-Google-Deepen-Strategic-Partnership-with-Ten-Year,-Billion-Dollar-Deal-including-Cloud,-Cybersecurity-and-Devices-Across-Europe-and-Africa"><span class="src-short">googlecloudpresscorner.com</span><span class="src-full">https://www.googlecloudpresscorner.com/2024-10-08-Vodafone-and-Google-Deepen-Strategic-Partnership-with-Ten-Year,-Billion-Dollar-Deal-including-Cloud,-Cybersecurity-and-Devices-Across-Europe-and-Africa</span></a></li>
+      </ol>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Vodafone. Independent and illustrative; uses public information only.</p>
+    <p>Each employer fact links to its public source; illustrative material is labelled where it appears.</p>
+    <p><time datetime="2026-11-03">3 November 2026</time></p>
+  </div>
+</footer>
+</body>
+</html>
