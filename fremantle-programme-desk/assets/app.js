@@ -207,9 +207,10 @@
     ['title', 'Title', 'text'], ['type', 'Type', ['Useful GPT', 'Claude Project', 'Copilot agent', 'Automation', 'Idea only']], ['owner', 'Owner', 'person'], ['rag', 'Status', ['Green', 'Amber', 'Red']],
     ['dataClass', 'Data class', Object.keys(R.DATA_RANK)], ['signOff', 'Sign-off date', 'date'], ['budget', 'Budget line', ['Programme', 'Function', 'None yet']],
     ['currentWorkflow', 'Current workflow, in three lines', 'area'], ['redesignedWorkflow', 'Redesigned workflow, in three lines', 'area'],
-    ['baselineMin', 'Minutes each time, today', 'number'], ['withAiMin', 'Minutes each time with the tool, including review', 'number'], ['runsPerMonth', 'Runs a month', 'number'], ['unusedShare', 'Share of output not used (0 to 1)', 'number'],
+    ['baselineMin', 'Minutes each time, today', 'number'], ['withAiMin', 'Minutes each time with the tool, including review', 'number'], ['runsPerMonth', 'Runs a month', 'number'], ['unusedShare', 'Share of output not used (0 to 1)', 'number'], ['failedMin', 'Minutes spent on an output that is then thrown away (blank: as long as a used one took)', 'number'],
     ['basis', 'How the estimate was made', ['Measured', 'Sampled', 'Self-reported', 'None yet']], ['dataSource', 'Where the usage data comes from', 'text'], ['exportedBy', 'Who exports it', 'text'],
-    ['nextMilestone', 'Next milestone', 'text'], ['nextMilestoneDate', 'Next milestone date', 'date'], ['howToUse', 'Staff page: use it for', 'area'], ['notFor', 'Staff page: not for', 'area']
+    ['nextMilestone', 'Next milestone', 'text'], ['nextMilestoneDate', 'Next milestone date', 'date'], ['howToUse', 'Staff page: use it for', 'area'], ['notFor', 'Staff page: not for', 'area'],
+    ['limitation', 'Staff page: known limitation (blank if none)', 'area'], ['workaround', 'Staff page: what to do until it is fixed', 'area']
   ];
   // Fields a request needs before it can be ranked (shown for ideas and triage).
   const IDEA_FIELDS = [['task', 'Kind of task', Object.keys(R.TASKS).filter((k) => k !== 'new-idea').map((k) => [k, R.TASKS[k]])], ['volumePerMonth', 'Times a month', 'number'], ['minutesPerRun', 'Minutes each time, today', 'number'], ['complexity', 'Effort (Low, Medium, High)', [['', 'Not set'], 'Low', 'Medium', 'High']], ['success', 'What good looks like', 'area']];
@@ -284,13 +285,14 @@
     const net = R.netHours(item);
     const flags = R.registerFlags(item, T(), holidays());
     const body = [h('div', { class: 'tags' }, ragTag(item.rag), tag(item.stage, 'accent'), flags.map((f) => tag(f.label, 'warn'))),
-      net ? h('p', { text: 'Estimated hours a month: ' + net.gross + ' gross, ' + net.net + ' net of unused output. Time with the tool includes review and correction.' }) : null,
+      net ? h('p', { text: 'Estimated hours a month: ' + net.gross + ' gross, ' + net.net + ' net (less ' + net.unused + ' for unused output and ' + net.failed + ' for discarded attempts). Time with the tool includes review and correction.' }) : null,
       form, h('h4', { text: 'History' }), hist.length ? h('ul', null, hist.map((x) => h('li', { text: hd(x.date) + ': ' + x.from + ' to ' + x.to + (x.note ? ', ' + x.note : '') }))) : h('p', { text: 'No moves yet.' })];
     const dlg = modal(item.id + ' ' + item.title, body, [btn('Cancel', () => dlg.close()), btn('Save', () => {
       FIELDS.concat(isIdea ? IDEA_FIELDS : []).forEach(([k, , kind]) => {
         let v = inputs[k].value;
         if (kind === 'number') { v = v === '' ? (isIdea && (k === 'volumePerMonth' || k === 'minutesPerRun') ? null : 0) : Math.max(0, Number(v) || 0); }
         if (k === 'unusedShare') v = v > 1 && v <= 100 ? v / 100 : Math.min(1, Math.max(0, v));   // 0 to 1, or a percentage
+        if (k === 'failedMin' && inputs[k].value === '') v = null;                                     // blank means the default
         if (kind === 'date' && !v) v = null;
         item[k] = v;
       });
@@ -369,18 +371,21 @@
       kids.push(svg('rect', { x: L, y: y0 + 22, width: Math.max(1, sx(x.h.net)), height: 14, class: 'bar-n' }), stext(L + sx(x.h.net) + 8, y0 + 34, x.h.net + ' net', 'lbl acc'));
     });
     const chart = svg('svg', { viewBox: '0 0 ' + W + ' ' + Ht, role: 'img', 'aria-labelledby': 'bc-t' }, [(() => { const t = svg('title', { id: 'bc-t' }); t.textContent = 'Hours saved a month, gross and net, for each live tool, illustrative'; return t; })()].concat(kids));
-    return h('figure', { class: 'chart', 'data-illustrative': true }, h('figcaption', { text: 'Illustrative data. Estimated hours saved a month for each live tool, gross and net of output that was not used. Hours, not money.' }), h('div', { class: 'svgwrap', role: 'region', 'aria-label': 'Hours saved chart, scrolls sideways on a phone', tabindex: '0' }, chart),
-      h('div', { class: 'legend' }, h('span', null, h('i', { style: 'background: var(--border-strong)' }), 'Gross'), h('span', null, h('i', { style: 'background: var(--accent)' }), 'Net of unused output')));
+    return h('figure', { class: 'chart', 'data-illustrative': true }, h('figcaption', { text: 'Illustrative data. Estimated hours saved a month for each live tool, gross and net of unused output and discarded attempts. Hours, not money.' }), h('div', { class: 'svgwrap', role: 'region', 'aria-label': 'Hours saved chart, scrolls sideways on a phone', tabindex: '0' }, chart),
+      h('div', { class: 'legend' }, h('span', null, h('i', { style: 'background: var(--border-strong)' }), 'Gross'), h('span', null, h('i', { style: 'background: var(--accent)' }), 'Net of unused output and discarded attempts')));
   }
   function viewImpact() {
     const tot = R.impactTotals(S);
     const like = R.likeForLike(S);
     const live = S.register.filter((r) => r.stage === 'Live');
     return h('div', { class: 'stack--loose', style: 'display: grid; gap: var(--space-6)' },
-      howto('How it runs', 'Each live tool carries a baseline, the time it takes now including review and correction, how many times a month it runs, and the share of output that was not used. Gross is the time saved if every output were used. Net removes the unused share. The basis says how the estimate was made, and each tool names where its usage data comes from and who exports it.'),
-      h('div', { class: 'tiles' }, [[tot.live, 'tools live'], [Math.round(tot.gross), 'hours a month saved, gross'], [Math.round(tot.net), 'hours a month saved, net'], [like.now, 'weekly tool-users on tools live four weeks ago, from ' + like.before], [like.freshUsers, 'tool-users on a tool launched since']].map((t) => h('div', { class: 'tile' }, h('span', { class: 'tile__v', text: t[0] }), h('span', { class: 'tile__l', text: t[1] })))),
+      howto('How it runs', 'Each live tool carries a baseline, the time it takes now including review and correction, how many times a month it runs, the share of output that was not used, and the minutes spent on an output before it was thrown away. Gross is the time saved if every output were used. Net takes off two things: the saving on the outputs that were not used, and the time lost on those attempts, because that work is then done by hand. The basis says how the estimate was made, and each tool names where its usage data comes from and who exports it. All figures are illustrative.'),
+      h('div', { class: 'tiles' }, [[tot.live, 'tools live'], [Math.round(tot.gross), 'hours a month saved, gross'], [Math.round(tot.net), 'hours a month saved, net of unused output and discarded attempts'], [like.now, 'weekly tool-users on tools live four weeks ago, from ' + like.before], [like.freshUsers, 'tool-users on a tool launched since']].map((t) => h('div', { class: 'tile' }, h('span', { class: 'tile__v', text: t[0] }), h('span', { class: 'tile__l', text: t[1] })))),
       lineChart(), barChart(),
-      table('Live tools and the basis of each estimate', ['Tool', 'Owner', 'Gross hours', 'Net hours', 'Basis', 'Usage data comes from', 'Exported by'], live.map((r) => { const n = R.netHours(r); return h('tr', null, h('th', { scope: 'row', text: r.title }), h('td', { text: pname(r.owner) }), h('td', { class: 'num', text: n ? n.gross : '' }), h('td', { class: 'num', text: n ? n.net : '' }), h('td', null, tag(r.basis, r.basis === 'Measured' ? 'ok' : r.basis === 'Sampled' ? 'accent' : 'warn')), h('td', { text: r.dataSource }), h('td', { text: r.exportedBy })); })));
+      h('p', { class: 'hint', text: 'Net hours are gross hours less the saving on unused output, less the time spent on discarded attempts.' }),
+      table('Live tools: gross hours, less unused output, less discarded attempts, equals net hours, and the basis of each estimate', ['Tool', 'Owner', 'Gross hours', 'Unused output', 'Discarded attempts', 'Net hours', 'Basis', 'Usage data comes from', 'Exported by'],
+        live.map((r) => { const n = R.netHours(r); return h('tr', null, h('th', { scope: 'row', text: r.title }), h('td', { text: pname(r.owner) }), h('td', { class: 'num', text: n ? n.gross : '' }), h('td', { class: 'num', text: n ? n.unused : '' }), h('td', { class: 'num', text: n ? n.failed : '' }), h('td', { class: 'num', text: n ? n.net : '' }), h('td', null, tag(r.basis, r.basis === 'Measured' ? 'ok' : r.basis === 'Sampled' ? 'accent' : 'warn')), h('td', { text: r.dataSource }), h('td', { text: r.exportedBy })); })
+          .concat([h('tr', { class: 'total' }, h('th', { scope: 'row', text: 'All live tools' }), h('td'), h('td', { class: 'num', text: tot.gross }), h('td', { class: 'num', text: tot.unused }), h('td', { class: 'num', text: tot.failed }), h('td', { class: 'num', text: tot.net }), h('td'), h('td'), h('td'))])));
   }
 
   // ---- Forums --------------------------------------------------------------
@@ -530,6 +535,14 @@
   }
 
   // ---- Front door (staff view) ---------------------------------------------
+  // The service notice for a live tool: its status, its known limitation and what to do meanwhile, and when it is next reviewed.
+  function notice(r) {
+    const n = R.staffNotice(r, S);
+    return h('div', { class: 'notice', role: 'note', 'aria-label': 'Service notice for ' + r.title },
+      h('div', { class: 'notice__head' }, h('span', { class: 'label', text: 'Service notice' }), ragTag(n.rag), n.review ? h('span', { class: 'muted', text: 'Next review ' + hd(n.review) }) : null),
+      h('p', null, h('span', { class: 'notice__k', text: 'Known limitation. ' }), n.limitation || 'None recorded.'),
+      n.limitation && n.workaround ? h('p', null, h('span', { class: 'notice__k', text: 'Until it is fixed. ' }), n.workaround) : null);
+  }
   function viewDoor() {
     const a = ui.door;
     const out = R.route({ unit: a.unit, function: a.unit, task: a.task, material: a.material }, S);
@@ -538,7 +551,7 @@
     const live = S.register.filter((r) => r.stage === 'Live');
     const li = [
       h('li', null, h('strong', { text: 'First, the rule' }), out.rule),
-      h('li', null, h('strong', { text: 'A tool to start with' }), out.tools.length ? out.tools.map((t) => h('p', null, h('strong', { text: t.title }), ' (' + t.type + '). Use it for: ' + t.howToUse + ' Not for: ' + t.notFor)) : [h('span', { text: 'Nothing live yet for your team, for this kind of task with this kind of material.' }), out.elsewhere && out.elsewhere.length ? h('p', { class: 'muted', text: 'A similar tool is live in another team: ' + out.elsewhere.map((t) => t.title + ' (' + t.function + ')').join('; ') + '. Ask how it is used; the same pattern may fit yours, and the request can start from it.' }) : null]),
+      h('li', null, h('strong', { text: 'A tool to start with' }), out.tools.length ? out.tools.map((t) => h('div', { class: 'tool' }, h('p', null, h('strong', { text: t.title }), ' (' + t.type + '). Use it for: ' + t.howToUse + ' Not for: ' + t.notFor), notice(t))) : [h('span', { text: 'Nothing live yet for your team, for this kind of task with this kind of material.' }), out.elsewhere && out.elsewhere.length ? h('p', { class: 'muted', text: 'A similar tool is live in another team: ' + out.elsewhere.map((t) => t.title + ' (' + t.function + ')').join('; ') + '. Ask how it is used; the same pattern may fit yours, and the request can start from it.' }) : null]),
       h('li', null, h('strong', { text: 'Your champion' }), out.champion ? pname(out.champion.person) + ', ' + out.champion.unit + '. ' + out.champion.hoursPerMonth + ' hours a month set aside to help.' : 'There is no champion for ' + a.unit + ' yet. Ask the coordinator.'),
       h('li', null, h('strong', { text: 'Next session' }), out.training ? out.training.title + ', ' + hd(out.training.date) + ', ' + out.training.seatsFree + ' seats free.' : 'No session is booked.')
     ];
@@ -551,14 +564,93 @@
           field('What do you want to do?', select(Object.keys(R.TASKS).map((k) => [k, R.TASKS[k]]), a.task, { id: nid(), 'data-k': 'dtask', onchange: upd('task') })),
           h('fieldset', null, h('legend', { class: 'label', text: 'What kind of material is it?' }), h('div', { class: 'stack--tight', style: 'display:grid;gap:4px' }, radios))),
         h('section', { class: 'answer', 'aria-live': 'polite' }, h('h4', { text: 'Your way in' }), h('ol', null, li), out.idea ? h('div', { class: 'cluster', style: 'margin-top: var(--space-4)' }, btn('Log it as an idea', () => requestDialog({ function: a.unit, task: a.task, dataClass: out.idea.dataClass }), 'btn--small')) : null)),
-      h('section', { class: 'stack' }, h('h4', { text: 'What is live' }), h('div', { class: 'live-cards' }, live.map((r) => { const c = S.champions.find((x) => x.id === r.championId); return h('article', { class: 'live-card' }, h('h4', { text: r.title }), h('div', { class: 'tags' }, tag(r.type, 'accent'), tag(r.dataClass === R.CONF ? 'Confidential' : r.dataClass)), h('p', null, h('strong', { text: 'Use it for: ' }), r.howToUse), h('p', null, h('strong', { text: 'Not for: ' }), r.notFor), h('p', null, h('strong', { text: 'Ask: ' }), c ? pname(c.person) + ', ' + c.unit : pname(r.owner))); })))
+      h('section', { class: 'stack' }, h('h4', { text: 'What is live' }), h('div', { class: 'live-cards' }, live.map((r) => { const c = S.champions.find((x) => x.id === r.championId); return h('article', { class: 'live-card' }, h('h4', { text: r.title }), h('div', { class: 'tags' }, tag(r.type, 'accent'), tag(r.dataClass === R.CONF ? 'Confidential' : r.dataClass)), h('p', null, h('strong', { text: 'Use it for: ' }), r.howToUse), h('p', null, h('strong', { text: 'Not for: ' }), r.notFor), notice(r), h('p', null, h('strong', { text: 'Ask: ' }), c ? pname(c.person) + ', ' + c.unit : pname(r.owner))); })))
     ];
   }
 
+  // ---- The three-minute case ----------------------------------------------
+  // One slipped action (A-003) followed from the overdue date to the Lead's decision. It is computed from the
+  // untouched illustrative data with the same rules the desk runs, so it reads the same however the desk below
+  // has been changed. The decision is the Lead's, in this illustration.
+  const CASE = R.escalationCase(clone(SEED), 'A-003', SEED.meta.demoDate);
+  const caseUI = { step: 0 };
+  const CASE_STEPS = ['The action slips', 'The note to the Lead', 'The Lead decides'];
+  function openDesk(view) {
+    ui.view = view;
+    if (view === 'forums') { ui.forumTab = 'sessions'; ui.forum = 'WG'; ui.mid = null; }
+    render();
+    const d = document.getElementById('desk'); if (d) d.scrollIntoView({ behavior: 'auto' });
+    const t = $('#tab-' + view, root); if (t) t.focus();
+  }
+  function renderCase() {
+    const host = document.getElementById('case');
+    if (!host || !CASE) return;
+    const c = CASE, st = caseUI.step, snap = st < 2 ? c.before : c.after, a = snap.action, ln = snap.line;
+    const stepName = (x) => R.STEP_LABEL[x.step].toLowerCase();
+    const stateTag = a.state === 'overdue' ? tag('Overdue by ' + a.overdue + ' working days', 'bad') : tag('Due soon', 'warn');
+    const file = h('div', { class: 'case__file', role: 'group', 'aria-label': 'The case file, kept in view' },
+      h('div', { class: 'case__rec' },
+        h('span', { class: 'label', text: 'Register line' }), h('strong', { text: ln.id + ' ' + ln.title }),
+        h('div', { class: 'tags' }, tag(ln.stage, 'accent'), ragTag(ln.rag), tag(ln.unit), ln.flags.length ? ln.flags.map((f) => tag(f, 'warn')) : tag('No flags', 'ok')),
+        h('p', { class: 'muted', text: 'Owner ' + ln.owner.replace(/\.$/, '') + '. Next milestone: ' + ln.milestone.charAt(0).toLowerCase() + ln.milestone.slice(1) + ', ' + hd(ln.milestoneDate) + (ln.milestoneDate < SEED.meta.demoDate ? ' (passed)' : '') + '.' })),
+      h('div', { class: 'case__rec' },
+        h('span', { class: 'label', text: 'Action' }), h('strong', { text: a.id + ' ' + a.text }),
+        h('div', { class: 'tags' }, stateTag, tag(a.owner), tag('Due ' + hd(a.due)), a.chases.length ? tag(a.chases.length + ' chases') : tag('Chase ladder restarted', 'ok'), a.redates ? tag('Re-dated ' + (a.redates === 1 ? 'once' : a.redates + ' times'), '') : null),
+        h('p', { class: 'muted', text: 'Waiting on it: ' + snap.waiting.map((w) => w.id + ' ' + w.text + ' (' + w.owner + ', due ' + hd(w.due) + ')').join('; ') + '.' }),
+        st === 2 ? h('p', { class: 'muted', text: 'New: ' + c.leadAction.id + ' ' + c.leadAction.text + ' (' + pname(c.leadAction.owner) + ', due ' + hd(c.leadAction.due) + ').' }) : null));
+
+    const trail = h('ol', { class: 'case__trail', 'aria-label': 'The three steps' }, CASE_STEPS.map((name, i) => {
+      const li = h('li', { class: i === st ? 'is-current' : '' }, h('span', { class: 'case__n', 'data-ordinal': true, text: i + 1 }), h('span', { text: name }));
+      if (i === st) li.setAttribute('aria-current', 'step');
+      return li;
+    }));
+
+    const shows = (txt) => h('p', { class: 'case__shows' }, h('strong', { text: 'What this shows. ' }), txt);
+    const go = (n) => () => { caseUI.step = n; renderCase(); const hd3 = $('.case__panel h3', host); if (hd3) hd3.focus(); };
+    let body, nav;
+    if (st === 0) {
+      const rows = [[hd(a.due), 'Due', '']].concat(a.chases.map((x) => [hd(x.date), R.STEP_LABEL[x.step] + ' to ' + a.owner, 'No update logged'])).concat([[hd(SEED.meta.demoDate), 'Programme date', a.overdue + ' working days overdue']]);
+      body = [
+        h('h3', { tabindex: '-1', text: 'Two chases, no update, and a Red line is waiting' }),
+        shows('The chase ladder, and escalation by impact. The desk stops chasing ' + a.owner + ' because a third nudge would add nothing. The next step is the Lead.'),
+        table('The history of ' + a.id, ['Date', 'What happened', 'Position'], rows.map((r) => h('tr', null, h('td', { text: r[0] }), h('td', { text: r[1] }), h('td', { text: r[2] })))),
+        h('p', { text: 'Both escalation rules are met. By age: ' + c.why.chases + ' chases (the rule needs ' + R.RULES.flagLeadMinChases + ') and ' + c.why.overdue + ' working days overdue (it needs ' + R.RULES.flagLeadAfterWorkingDays + '). By impact: the action blocks a register line, which needs only ' + R.RULES.impactFlagMinChases + ' chase and ' + R.RULES.impactFlagWorkingDays + ' working days.' })];
+      nav = [btn('Next: the note to the Lead', go(1), 'btn'), btn('See the chase queue in the desk', () => openDesk('week'))];
+    } else if (st === 1) {
+      body = [
+        h('h3', { tabindex: '-1', text: 'One note, with the ask and a date' }),
+        shows('One message to the person who can unblock it: the specific ask, a date before the forum, and the decision left to the Lead. The desk drafts it. I read it, edit it and send it.'),
+        h('div', { class: 'case__note', role: 'group', 'aria-label': 'Draft note to the Lead' }, c.note)];
+      nav = [btn('Back', go(0)), btn('Next: the Lead decides', go(2), 'btn'), btn('Copy the note', () => copy(c.note)), btn('See it in the chase queue', () => openDesk('week'))];
+    } else {
+      const was = c.before, now = c.after, q = c.queue;
+      const qtext = (g) => (g.name === 'the Lead' ? 'the note to the Lead' : 'a ' + stepName(g) + ' to ' + g.name);
+      const rows = [
+        [a.id + ' due date', hd(was.action.due) + ', ' + was.action.overdue + ' working days overdue', hd(now.action.due) + ', re-dated once. The chase ladder starts again.'],
+        [c.leadAction.id + ' (new)', 'Not on the log', c.leadAction.text + '. ' + pname(c.leadAction.owner) + ', due ' + hd(c.leadAction.due) + '.'],
+        [ln.id + ' milestone', hd(was.line.milestoneDate) + ', passed. Flags: ' + was.line.flags.join('; ').toLowerCase() + '.', hd(now.line.milestoneDate) + '. Flags: ' + (now.line.flags.join('; ').toLowerCase() || 'none') + '. The status stays ' + now.line.rag + ' until the source is confirmed.'],
+        was.waiting.length ? [was.waiting[0].id + ' (waiting)', 'Blocked on ' + a.id + '.', 'Still blocked on ' + a.id + '. It is not chased; the blocker is.'] : null,
+        ['Chase queue', q.before + ' messages, including ' + q.gone.map(qtext).join(' and ') + '.', q.after + ' messages. ' + q.gone.map(qtext).join(' and ').replace(/^./, (m) => m.toUpperCase()) + ' has gone' + (q.added.length ? ' and ' + q.added.map(qtext).join(' and ') + ' about the new date has joined.' : '.')]
+      ].filter(Boolean);
+      const fn = c.agenda.forum === 'WG' ? 'Working Group' : 'Functional Group';
+      body = [
+        h('h3', { tabindex: '-1', text: 'The decision becomes an owner, a date and a line on the agenda' }),
+        shows('A decision turned into actions with one owner and one date each, and visible at the next forum without anyone retyping it.'),
+        h('p', null, h('strong', { text: 'The Lead decides (illustrative). ' }), 'They take it to the delivery team directly, as suggested, and the coordinator records it.'),
+        table('What the desk records', ['Record', 'Before', 'After'], rows.map((r) => h('tr', null, h('th', { scope: 'row', text: r[0] }), h('td', { text: r[1] }), h('td', { text: r[2] })))),
+        h('h4', { text: 'Where it shows next: the ' + fn + ' agenda, ' + hd(c.agenda.date) + ', item "Actions"' }),
+        h('div', { class: 'cols' },
+          h('section', { class: 'panel' }, h('h4', { text: 'Before the decision' }), h('ul', null, c.agenda.before.map((l) => h('li', { text: l })))),
+          h('section', { class: 'panel' }, h('h4', { text: 'After the decision' }), h('ul', null, c.agenda.after.map((l) => h('li', { text: l })))))];
+      nav = [btn('Back', go(1)), btn('Open the ' + hd(c.agenda.date, false) + ' agenda in the desk', () => openDesk('forums'), 'btn'), btn('Start again', go(0))];
+    }
+    host.replaceChildren(
+      h('div', { class: 'case__top' }, h('span', { class: 'badge badge--ill', text: 'Illustrative data' }), h('span', { class: 'muted', text: 'Position on ' + hd(SEED.meta.demoDate) + ' ' + SEED.meta.demoDate.slice(0, 4) + '. Saved nowhere, and unaffected by changes in the desk below.' })),
+      file, trail,
+      h('div', { class: 'case__panel' }, body, h('div', { class: 'cluster case__nav' }, nav)));
+  }
+
   // ---- tour buttons and boot ----------------------------------------------
-  document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => {
-    ui.view = b.dataset.go; if (ui.view === 'forums') { ui.forumTab = 'sessions'; ui.forum = 'WG'; ui.mid = null; }
-    render(); const d = document.getElementById('desk'); if (d) d.scrollIntoView({ behavior: 'auto' }); const t = $('#tab-' + ui.view, root); if (t) t.focus();
-  }));
+  renderCase();
   render();
 })();

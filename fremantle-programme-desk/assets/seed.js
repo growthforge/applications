@@ -42,10 +42,11 @@
       dataClass: 'Internal', signOff: '2026-08-14', budget: 'Function', task: 'draft-summarise',
       currentWorkflow: 'The production accountant writes variance commentary by hand from the weekly cost report, about 40 minutes per production.',
       redesignedWorkflow: 'The accountant pastes the cost report extract. The GPT drafts commentary against a house template. The accountant checks every figure and edits before it is used.',
-      baselineMin: 40, withAiMin: 15, runsPerMonth: 120, unusedShare: 0.15, basis: 'Sampled',
+      baselineMin: 40, withAiMin: 15, runsPerMonth: 120, unusedShare: 0.15, failedMin: 15, basis: 'Sampled',
       dataSource: 'Usage export from the GPT platform, monthly', exportedBy: 'Daniel R.',
       lastUpdate: '2026-10-27', nextMilestone: 'Add a second template for co-productions', nextMilestoneDate: '2026-11-20',
       howToUse: 'Drafts the weekly variance commentary from a pasted cost report extract.', notFor: 'Final figures or anything that has not been checked line by line.', championId: 'C-05',
+      limitation: 'It only has the standard budget template, so commentary on a co-production needs a closer check.', workaround: 'Check the structure against the co-production budget by hand, or ask Daniel R.',
       history: [hist('2026-08-14', 'Pilot', 'Live', 'Sign-off recorded')]
     },
     {
@@ -53,10 +54,11 @@
       dataClass: 'Internal', signOff: '2026-09-03', budget: 'Function', task: 'analyse-data',
       currentWorkflow: 'A finance analyst compiles a cash summary email from three exports, about 55 minutes each week.',
       redesignedWorkflow: 'The project holds the template and the three export layouts. The analyst uploads the exports and reviews the draft summary before it goes out.',
-      baselineMin: 55, withAiMin: 20, runsPerMonth: 16, unusedShare: 0.1, basis: 'Measured',
+      baselineMin: 55, withAiMin: 20, runsPerMonth: 16, unusedShare: 0.1, failedMin: 20, basis: 'Measured',
       dataSource: 'Analyst time log for four weeks, then monthly count of runs', exportedBy: 'Priya R.',
       lastUpdate: '2026-11-02', nextMilestone: 'Quarterly review of the template', nextMilestoneDate: '2026-12-04',
       howToUse: 'Turns the three weekly bank and ledger exports into a draft cash summary.', notFor: 'Forecasts, or any figure not in the exports.', championId: 'C-01',
+      limitation: '', workaround: '',
       history: [hist('2026-09-03', 'Pilot', 'Live', 'Four-week time log complete')]
     },
     {
@@ -64,10 +66,11 @@
       dataClass: 'Internal', signOff: '2026-09-24', budget: 'Programme', task: 'answer-policy',
       currentWorkflow: 'The People team answers the same policy questions by email, about 12 minutes each.',
       redesignedWorkflow: 'The agent answers from the current policy set and links the source paragraph. The People team reviews flagged answers once a week.',
-      baselineMin: 12, withAiMin: 4, runsPerMonth: 260, unusedShare: 0.25, basis: 'Self-reported',
+      baselineMin: 12, withAiMin: 4, runsPerMonth: 260, unusedShare: 0.25, failedMin: 4, basis: 'Self-reported',
       dataSource: 'Agent usage report plus a short monthly survey', exportedBy: 'Sofia M.',
       lastUpdate: '2026-10-30', nextMilestone: 'Fix two policy documents the agent cites inconsistently', nextMilestoneDate: '2026-11-11',
       howToUse: 'Answers common policy questions and shows the paragraph it used.', notFor: 'Individual cases, grievances or anything that needs a decision.', championId: 'C-03',
+      limitation: 'The agent cites two policy documents inconsistently, so some answers show a paragraph that may not be the current one.', workaround: 'Check the paragraph it shows against the policy page before you act on an answer, or ask Sofia M.',
       history: [hist('2026-09-24', 'Pilot', 'Live', 'Weekly review of flagged answers agreed')]
     },
     {
@@ -75,10 +78,11 @@
       dataClass: 'Internal', signOff: '2026-07-16', budget: 'Function', task: 'repetitive-admin',
       currentWorkflow: 'The People coordinator assembles the starter email, forms and access requests by hand, about 45 minutes per starter.',
       redesignedWorkflow: 'A flow triggered by the offer-accepted status builds the pack and creates the access tasks. The coordinator checks it before it is sent.',
-      baselineMin: 45, withAiMin: 12, runsPerMonth: 22, unusedShare: 0.05, basis: 'Measured',
+      baselineMin: 45, withAiMin: 12, runsPerMonth: 22, unusedShare: 0.05, failedMin: 12, basis: 'Measured',
       dataSource: 'Flow run history, monthly', exportedBy: 'Callum F.',
       lastUpdate: '2026-10-14', nextMilestone: 'Add a contractor variant', nextMilestoneDate: '2026-11-27',
       howToUse: 'Builds a new starter pack and the access tasks when an offer is accepted.', notFor: 'Visa, payroll or any case with special handling.', championId: 'C-03',
+      limitation: 'It does not cover contractors yet.', workaround: 'Build the pack for a contractor by hand, or ask Callum F.',
       history: [hist('2026-07-16', 'Pilot', 'Live', '')]
     },
     {
@@ -86,10 +90,11 @@
       dataClass: 'Internal', signOff: '2026-08-28', budget: 'Function', task: 'draft-summarise',
       currentWorkflow: 'The communications team writes first drafts of routine releases from a brief, about 60 minutes each.',
       redesignedWorkflow: 'The GPT drafts from the approved brief and checks tone against the house style. A communications manager edits and approves every release.',
-      baselineMin: 60, withAiMin: 25, runsPerMonth: 30, unusedShare: 0.2, basis: 'Self-reported',
+      baselineMin: 60, withAiMin: 25, runsPerMonth: 30, unusedShare: 0.2, failedMin: 30, basis: 'Self-reported',
       dataSource: 'Usage export from the GPT platform plus a monthly check-in', exportedBy: 'Tariq H.',
       lastUpdate: '2026-10-21', nextMilestone: 'Add a sensitivity checklist for unannounced projects', nextMilestoneDate: '2026-11-18',
       howToUse: 'Drafts routine releases from an approved brief and checks the tone.', notFor: 'Unannounced projects until the sensitivity checklist is in place.', championId: 'C-06',
+      limitation: 'The sensitivity checklist for unannounced projects is not agreed yet.', workaround: 'Write anything unannounced by hand, or ask Tariq H. first.',
       history: [hist('2026-08-28', 'Pilot', 'Live', '')]
     },
     {
@@ -97,10 +102,11 @@
       dataClass: 'Internal', signOff: '2026-10-20', budget: 'Programme', task: 'repetitive-admin',
       currentWorkflow: 'Finance operations read each expense query and route it by hand, about 10 minutes each.',
       redesignedWorkflow: 'The flow reads the query, tags it and routes it to the right queue. Finance operations review the tags in a weekly sample.',
-      baselineMin: 10, withAiMin: 3, runsPerMonth: 120, unusedShare: 0.1, basis: 'Measured',
+      baselineMin: 10, withAiMin: 3, runsPerMonth: 120, unusedShare: 0.1, failedMin: 3, basis: 'Measured',
       dataSource: 'Flow run history and a weekly sample of 25 queries', exportedBy: 'Helena N.',
       lastUpdate: '2026-11-04', nextMilestone: 'Route supplier queries to Procurement', nextMilestoneDate: '2026-11-25',
       howToUse: 'Tags and routes expense queries to the right queue.', notFor: 'Disputes or anything that needs a policy decision.', championId: 'C-01',
+      limitation: 'Supplier queries are not routed to Procurement yet, so they land in the general queue.', workaround: 'Forward a supplier query to Procurement by hand until the routing is added.',
       history: [hist('2026-10-28', 'Pilot', 'Live', 'Weekly sample passed')]
     },
     {
@@ -109,7 +115,7 @@
       currentWorkflow: 'Business affairs read each incoming agreement and note the key clauses by hand, about 90 minutes each.',
       redesignedWorkflow: 'The project lists the key clauses and flags the unusual ones. A business affairs lawyer checks every flagged clause against the document.',
       baselineMin: 90, withAiMin: 35, runsPerMonth: 14, unusedShare: 0.2, basis: 'Sampled',
-      dataSource: 'Pilot log kept by the pilot group', exportedBy: 'Jonas K.',
+      dataSource: 'Pilot log kept by the pilot group', exportedBy: 'Jonas K.', signOffBy: 'p-ingrid', ifLate: 'The pilot stays with its group of three and cannot widen.',
       lastUpdate: '2026-10-22', nextMilestone: 'Legal sign-off on data handling', nextMilestoneDate: '2026-11-13',
       howToUse: '', notFor: '', championId: 'C-04',
       history: [hist('2026-10-08', 'Build', 'Pilot', 'Small pilot group of three')]
@@ -211,7 +217,7 @@
   const actions = [
     A('A-001', 'Agree the stage names for the register', 'p-lead', 'WG', 'M-WG-1001', '2026-10-08', 'Done', { doneDate: '2026-10-07' }),
     A('A-002', 'Set up the shared register list', 'p-coord', 'WG', 'M-WG-1001', '2026-10-08', 'Done', { doneDate: '2026-10-08' }),
-    A('A-003', 'Confirm the delivery schedule data source with the delivery team', 'p-marcus', 'WG', 'M-WG-1015', '2026-10-29', 'Open', { blocks: 'R-009', chases: [{ date: '2026-10-30', step: 'nudge1' }, { date: '2026-11-04', step: 'nudge2' }] }),
+    A('A-003', 'Confirm the delivery schedule data source with the delivery team', 'p-marcus', 'WG', 'M-WG-1015', '2026-10-29', 'Open', { blocks: 'R-009', waitingOn: 'the delivery team', chases: [{ date: '2026-10-30', step: 'nudge1' }, { date: '2026-11-04', step: 'nudge2' }] }),
     A('A-004', 'Collect usage exports for the first four live tools', 'p-priya', 'WG', 'M-WG-1015', '2026-10-22', 'Done', { doneDate: '2026-10-21' }),
     A('A-005', 'Confirm the sign-off route for confidential material', 'p-ingrid', 'WG', 'M-WG-1015', '2026-10-22', 'Done', { doneDate: '2026-10-28' }),
     A('A-006', 'Circulate the stage definitions to function leads', 'p-coord', 'FPG', 'M-FPG-0915', '2026-09-22', 'Done', { doneDate: '2026-09-21' }),
@@ -232,7 +238,7 @@
     A('A-021', 'Send the weekly sample results for the cash summary', 'p-priya', 'WG', 'M-WG-1015', '2026-11-17', 'Open', { originalDue: '2026-10-30', redates: [{ from: '2026-10-30', to: '2026-11-06', date: '2026-10-29' }, { from: '2026-11-06', to: '2026-11-17', date: '2026-11-05' }] }),
     A('A-022', 'Draft the access rules for confidential material in the pilot', 'p-amara', 'FPG', 'M-FPG-1020', '2026-11-18', 'Open'),
     A('A-023', 'Send the fortnightly post to the channel', 'p-coord', 'WG', 'M-WG-1029', '2026-11-13', 'Open'),
-    A('A-024', 'Review the data handling notes for the contract summariser', 'p-ingrid', 'FPG', 'M-FPG-1020', '2026-11-25', 'Open'),
+    A('A-024', 'Review the data handling notes for the contract summariser', 'p-ingrid', 'FPG', 'M-FPG-1020', '2026-11-25', 'Open', { blocks: 'R-007' }),
     A('A-025', 'Run the clearances workshop', 'p-yuki', 'WG', 'M-WG-1029', '2026-11-19', 'Open'),
     A('A-026', 'Nominate a second champion for the Brindle label', 'p-chloe', 'FPG', 'M-FPG-1020', '2026-11-24', 'Open'),
     A('A-027', 'Send the starter pack feedback results', 'p-callum', 'WG', 'M-WG-1015', '2026-11-05', 'Open')
@@ -327,7 +333,7 @@
   ];
 
   return {
-    meta: { programmeDate: '2026-11-09', demoDate: '2026-11-09', coordinatorId: 'p-coord', leadId: 'p-lead', version: 2 },
+    meta: { programmeDate: '2026-11-09', demoDate: '2026-11-09', coordinatorId: 'p-coord', leadId: 'p-lead', version: 3 },
     functions: FUNCTIONS, labels: LABELS,
     units: FUNCTIONS.map((name) => ({ name, kind: 'Function' })).concat(LABELS.map((name) => ({ name, kind: 'Label' }))),
     people, register, actions, champions, meetings, adoption, training, events, checkins,

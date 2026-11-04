@@ -74,6 +74,7 @@
   const person = (state, id) => state.people.find((p) => p.id === id) || { id, name: id, group: false, senior: false };
   const personName = (state, id) => person(state, id).name;
   const firstName = (n) => String(n || '').split(' ')[0];
+  const joinList = (arr) => (arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1]);
   const opts = (state) => ({
     selfIds: [state.meta.coordinatorId],
     seniorIds: state.people.filter((p) => p.senior).map((p) => p.id),
@@ -195,16 +196,30 @@
     t += (by('nudge2').length || by('nudge1').length) ? 'One line back on each is plenty, or a new date if it has moved. I will log it on your word.' : 'If it is on track, no reply is needed. If a date has moved, tell me the new one and I will update the log.';
     return t + '\n\nThank you,\nAI Productivity Coordinator';
   }
+  // What waits on an action: the register line it blocks and any action marked as blocked on it.
+  function waitsOn(a, state) {
+    return {
+      line: state.register.find((r) => r.id === a.blocks) || null,
+      acts: state.actions.filter((x) => x.id !== a.id && x.status === 'Blocked' && (x.blockedOn || '').indexOf(a.id) >= 0)
+    };
+  }
   function draftLead(items, nf, state, today) {
     const when = nf ? forumName(nf.forum) + ' on ' + human(nf.date) : 'the next session';
+    const by = nf ? addWorkingDays(nf.date, -1, state.holidays) : null;
     const flags = items.filter((i) => i.step === 'flag-lead');
     const via = items.filter((i) => i.step === 'via-lead');
     let t = 'For the Lead:\n';
     if (flags.length) {
       t += '\nFlags, by impact:\n' + flags.map((i) => {
-        const od = workingDaysBetween(i.a.due, today, state.holidays);
-        const dates = (i.a.chases || []).map((c) => human(c.date, false)).join(' and ');
-        return '• ' + i.a.id + ' ' + i.a.text + ' (' + personName(state, i.a.owner) + '), ' + od + ' working days overdue after chases on ' + dates + (i.a.blocks ? '. It blocks ' + i.a.blocks + '.' : '.');
+        const a = i.a;
+        const od = workingDaysBetween(a.due, today, state.holidays);
+        const dates = joinList((a.chases || []).map((c) => human(c.date, false)));
+        const w = waitsOn(a, state);
+        const blocks = (w.line ? [w.line.id + ' ' + w.line.title + ' (' + w.line.rag + ')'] : []).concat(w.acts.map((x) => x.id + ' (' + personName(state, x.owner) + ')'));
+        const ask = a.waitingOn ? 'you ask ' + a.waitingOn + ' for it' : 'you agree a new date with ' + firstName(personName(state, a.owner));
+        return '• ' + a.id + ' ' + a.text + ' (' + personName(state, a.owner) + '). Due ' + human(a.due) + ', ' + od + ' working days overdue after chases on ' + dates + '.' +
+          (blocks.length ? ' It blocks ' + joinList(blocks) + '.' : '') +
+          '\n  Suggested: ' + ask + (by ? ' by ' + human(by) + ', the working day before ' + forumName(nf.forum) : '') + ', or name another owner.';
       }).join('\n');
     }
     if (via.length) {
@@ -261,19 +276,29 @@
   }
 
   // Hours per month. The "with AI" time includes reviewing and correcting the output.
-  // Net removes the share of outputs that were not used. Hours, not money.
+  // Gross is the saving if every output were used. Net takes off two things: the saving on outputs that
+  // were not used, and the minutes spent on those outputs before they were thrown away (the work is then
+  // done by hand at today's time, so nothing is saved on it and the attempt is lost time).
+  // failedMin is that wasted time per discarded output; blank means as long as a used output took.
+  // Worked in tenths of an hour so that gross, the two deductions and net always add up on the page.
   function netHours(item) {
     if (!item.baselineMin || !item.withAiMin || !item.runsPerMonth) return null;
-    const gross = item.runsPerMonth * (item.baselineMin - item.withAiMin) / 60;
-    const net = gross * (1 - (item.unusedShare || 0));
-    return { gross: Math.round(gross * 10) / 10, net: Math.round(net * 10) / 10 };
+    const u = item.unusedShare || 0;
+    const failedMin = (item.failedMin === undefined || item.failedMin === null || item.failedMin === '') ? item.withAiMin : item.failedMin;
+    const saved = item.baselineMin - item.withAiMin;
+    const tenths = (x) => Math.round(x * 10);
+    const gross = tenths(item.runsPerMonth * saved / 60);
+    const unused = tenths(item.runsPerMonth * u * saved / 60);
+    const failed = tenths(item.runsPerMonth * u * failedMin / 60);
+    return { gross: gross / 10, unused: unused / 10, failed: failed / 10, net: (gross - unused - failed) / 10 };
   }
   function impactTotals(state) {
     const live = state.register.filter((r) => r.stage === 'Live');
-    let gross = 0, net = 0;
+    let gross = 0, unused = 0, failed = 0, net = 0;
     const basis = {};
-    live.forEach((r) => { const h = netHours(r); if (h) { gross += h.gross; net += h.net; } basis[r.basis] = (basis[r.basis] || 0) + 1; });
-    return { live: live.length, gross: Math.round(gross * 10) / 10, net: Math.round(net * 10) / 10, basis };
+    live.forEach((r) => { const h = netHours(r); if (h) { gross += h.gross; unused += h.unused; failed += h.failed; net += h.net; } basis[r.basis] = (basis[r.basis] || 0) + 1; });
+    const r1 = (x) => Math.round(x * 10) / 10;
+    return { live: live.length, gross: r1(gross), unused: r1(unused), failed: r1(failed), net: r1(net), basis };
   }
   // Tool-users on tools that were already live four weeks ago, so a new launch is not counted as growth.
   function likeForLike(state) {
@@ -438,7 +463,7 @@
       push('aob', 'Any other business', 'Note', 'Chair', 2, ['Raised with the Coordinator the day before.'], []);
     } else {
       const t = impactTotals(state);
-      push('health', 'Programme health', 'Note', 'Lead', 10, [t.live + ' live tools. About ' + Math.round(t.gross) + ' hours a month saved gross and about ' + Math.round(t.net) + ' net of unused output. Hours, not money. Estimates.',
+      push('health', 'Programme health', 'Note', 'Lead', 10, [t.live + ' live tools. About ' + Math.round(t.gross) + ' hours a month saved gross and about ' + Math.round(t.net) + ' net of unused output and discarded attempts. Hours, not money. Estimates.',
         'In flight: ' + state.register.filter((r) => ['Design', 'Build', 'Pilot'].includes(r.stage)).length + ' lines across Design, Build and Pilot.'], []);
       const byFn = {};
       state.register.filter((r) => r.stage !== 'Retired').forEach((r) => { (byFn[r.function] = byFn[r.function] || []).push(r); });
@@ -478,6 +503,117 @@
   }
 
   // ---- outputs: monthly one-pager and the fortnightly post -----------------
+  // What the Lead needs the Head of Department to get decided. Each entry is one decision: what is asked,
+  // of whom, by when, what it waits on and what happens if it slips. The coordinator prepares and tracks
+  // the request; the named person decides.
+  function decisionRequests(state, today) {
+    const hol = state.holidays;
+    const fpg = state.meetings.filter((m) => m.forum === 'FPG' && m.status === 'Planned' && m.date >= today).sort((a, b) => a.date < b.date ? -1 : 1)[0];
+    const out = [];
+    state.register.forEach((r) => {
+      if (['Retired', 'Paused'].includes(r.stage)) return;
+      const codes = registerFlags(r, today, hol).map((f) => f.code);
+      ['sign-off-missing', 'no-budget'].forEach((code) => {
+        if (!codes.includes(code)) return;
+        const signOff = code === 'sign-off-missing';
+        const by = r.nextMilestoneDate && r.nextMilestoneDate >= today ? r.nextMilestoneDate : (fpg ? fpg.date : addWorkingDays(today, 5, hol));
+        const deciderId = signOff ? (r.signOffBy || r.owner) : state.meta.leadId;
+        const dep = state.actions.filter((a) => a.blocks === r.id && ['Open', 'Blocked'].includes(a.status) && a.id !== r.id).sort((a, b) => (a.due || '9') < (b.due || '9') ? -1 : 1);
+        const late = dep.filter((a) => a.due && a.due > by);
+        const needs = dep.map((a) => a.id + ' ' + a.text + ' (' + personName(state, a.owner) + ', ' + (!a.due ? 'no date' : a.due < today ? 'overdue since ' + human(a.due) : 'due ' + human(a.due)) + (late.includes(a) ? ', after this date' : '') + ')');
+        out.push({
+          line: r.id, title: r.title, kind: code, by,
+          decision: signOff ? 'Record the sign-off for ' + r.id + ' ' + r.title + ' (' + r.dataClass.toLowerCase() + ' material).' : 'Name a budget line, Programme or Function, for ' + r.id + ' ' + r.title + '.',
+          of: personName(state, deciderId) + (person(state, deciderId).role ? ', ' + person(state, deciderId).role : ''),
+          needs,
+          recommend: late.length ? joinList(late.map((a) => a.id)) + (late.length === 1 ? ' falls' : ' fall') + ' after this date: bring ' + (late.length === 1 ? 'it' : 'them') + ' forward, or move the date.' : '',
+          ifLate: r.ifLate || 'The line stays at ' + r.stage + ' and the flag stays on the register.'
+        });
+      });
+    });
+    return out;
+  }
+
+  // What colleagues are told about a live tool's known limit. An empty limitation means none is recorded.
+  function staffNotice(item, state) {
+    const champ = state.champions.find((c) => c.id === item.championId);
+    return {
+      rag: item.rag,
+      limitation: String(item.limitation || '').trim(),
+      workaround: String(item.workaround || '').trim(),
+      review: item.nextMilestoneDate || '',
+      reviewFor: item.nextMilestone || '',
+      ask: personName(state, champ ? champ.person : item.owner)
+    };
+  }
+
+  // Which messages leave the chase queue and which join it between two states.
+  function queueChange(was, now) {
+    const key = (g) => g.kind + ':' + g.owner + ':' + g.step;
+    const label = (g) => ({ name: g.kind === 'lead' ? 'the Lead' : g.name, step: g.step });
+    return { before: was.length, after: now.length, gone: was.filter((g) => !now.some((h) => key(h) === key(g))).map(label), added: now.filter((g) => !was.some((h) => key(h) === key(g))).map(label) };
+  }
+
+  // One slipped action, followed to the Lead's decision. Everything is computed from the state with the same
+  // rules the desk runs, so the walk-through on the page cannot drift from the desk. The decision is the
+  // coordinator's proposal taken up by the Lead; it is illustrative.
+  function escalationCase(state, actionId, today) {
+    const hol = state.holidays;
+    const a = state.actions.find((x) => x.id === actionId);
+    const step = chaseStep(a, today, hol, opts(state));
+    if (step !== 'flag-lead') return null;
+    const nf = nextForum(state, today);
+    const snap = (s) => {
+      const act = s.actions.find((x) => x.id === actionId);
+      const line = s.register.find((r) => r.id === act.blocks) || null;
+      return {
+        action: { id: act.id, text: act.text, owner: personName(s, act.owner), due: act.due, state: actionState(act, today, hol), overdue: act.due < today ? workingDaysBetween(act.due, today, hol) : 0,
+          chases: (act.chases || []).filter((c) => c.step !== 'courtesy'), redates: (act.redates || []).length },
+        line: line && { id: line.id, title: line.title, stage: line.stage, rag: line.rag, owner: personName(s, line.owner), unit: line.function, milestone: line.nextMilestone, milestoneDate: line.nextMilestoneDate, flags: registerFlags(line, today, hol).map((f) => f.label) },
+        waiting: waitsOn(act, s).acts.map((x) => ({ id: x.id, text: x.text, owner: personName(s, x.owner), due: x.due }))
+      };
+    };
+    const before = snap(state);
+    const n = before.action.chases.length;
+    const why = {
+      chases: n, overdue: before.action.overdue, blocks: !!a.blocks,
+      byAge: n >= RULES.flagLeadMinChases && before.action.overdue >= RULES.flagLeadAfterWorkingDays,
+      byImpact: !!a.blocks && n >= RULES.impactFlagMinChases && before.action.overdue >= RULES.impactFlagWorkingDays
+    };
+    const note = draftLead([{ a, step }], nf, state, today);
+
+    const after = JSON.parse(JSON.stringify(state));
+    const act = after.actions.find((x) => x.id === actionId);
+    const newDue = nf ? addWorkingDays(nf.date, -1, hol) : addWorkingDays(today, 2, hol);
+    const leadDue = addWorkingDays(today, 1, hol);
+    Object.assign(act, redate(act, newDue, today));
+    const ownerFirst = firstName(personName(state, a.owner));
+    const seq = after.actions.reduce((m, x) => Math.max(m, parseInt(x.id.slice(2), 10) || 0), 0) + 1;
+    const leadAction = {
+      id: 'A-' + String(seq).padStart(3, '0'),
+      text: a.waitingOn ? 'Ask ' + a.waitingOn + ' to give ' + ownerFirst + ' the answer on ' + a.id : 'Agree a new date for ' + a.id + ' with ' + ownerFirst,
+      owner: state.meta.leadId, forum: a.forum, source: 'Lead note, ' + human(today, false), due: leadDue, status: 'Open', chases: [], blocks: a.blocks
+    };
+    after.actions.push(leadAction);
+    const line = after.register.find((r) => r.id === a.blocks);
+    if (line) {
+      line.nextMilestoneDate = nf ? nf.date : newDue;
+      line.lastUpdate = today;
+      line.history = (line.history || []).concat([{ date: today, from: line.stage, to: line.stage, note: 'Raised with the Lead; milestone moved' }]);
+    }
+    const agendaLines = (s, ids) => {
+      if (!nf) return [];
+      const it = buildAgenda(s, nf.forum, nf.date).items.find((i) => i.id === 'actions');
+      return it ? it.lines.filter((l) => ids.some((id) => l.indexOf(id) >= 0)) : [];
+    };
+    return {
+      step, why, note, nextForum: nf, newDue, leadDue, leadAction,
+      before, after: snap(after),
+      agenda: nf ? { forum: nf.forum, date: nf.date, before: agendaLines(state, [a.id]), after: agendaLines(after, [a.id, leadAction.id]) } : null,
+      queue: queueChange(groupChases(state, today), groupChases(after, today))
+    };
+  }
+
   function monthlySummary(state, today) {
     const hol = state.holidays;
     const t = impactTotals(state);
@@ -489,11 +625,10 @@
     const sev = (x) => (x.f.some((y) => y.code === 'sign-off-missing') ? 0 : x.f.some((y) => y.code === 'milestone-missed') ? 1 : 2);
     flagged.sort((a, b) => sev(a) - sev(b));
     const cov = coverage(state.champions, state.units);
-    const asks = state.register.filter((r) => registerFlags(r, today, hol).some((f) => f.code === 'sign-off-missing' || f.code === 'no-budget'));
     return {
       live: t.live, inFlight: state.register.filter((r) => ['Design', 'Build', 'Pilot'].includes(r.stage)).length,
       gross: t.gross, net: t.net, basis: t.basis, activeNow: now, activeBefore: before, like: likeForLike(state),
-      asks: asks.map((r) => r.id + ' ' + r.title + ': ' + registerFlags(r, today, hol).filter((f) => f.code === 'sign-off-missing' || f.code === 'no-budget').map((f) => f.label).join('; ')),
+      asks: decisionRequests(state, today),
       risks: flagged.slice(0, 3).map((x) => x.r.id + ' ' + x.r.title + ': ' + x.f.map((y) => y.label).join('; ')),
       backlogReady: po.ready.length, backlogNeeds: po.needs.length,
       champions: state.champions.length, units: cov.length, gaps: cov.filter((c) => c.gap).map((c) => c.name)
@@ -510,7 +645,7 @@
     const nt = state.training.filter((t) => t.date >= today).sort((a, b) => a.date < b.date ? -1 : 1)[0];
     const lines = ['AI productivity: what is new, w/c ' + human(monday)];
     if (newly.length) lines.push('New: ' + newly.map((r) => r.title + ' (' + r.history.filter((h) => h.date > since && h.date <= today).slice(-1)[0].to + ', ' + r.function + ')').join('; ') + '.');
-    if (winner) lines.push('A win: ' + winner.title + ' now saves the ' + winner.function + ' team about ' + Math.round(netHours(winner).net) + ' hours a month, after allowing for drafts that were not used. Estimate, ' + String(winner.basis).toLowerCase() + '.');
+    if (winner) lines.push('A win: ' + winner.title + ' now saves the ' + winner.function + ' team about ' + Math.round(netHours(winner).net) + ' hours a month, after allowing for drafts that were not used and the time spent on them. Estimate, ' + String(winner.basis).toLowerCase() + '.');
     lines.push('Not sure where to start? Ask the front door page, or message your champion.');
     if (nt) lines.push('Next session: ' + nt.title + ', ' + human(nt.date) + ', ' + nt.seatsFree + ' seats free.');
     const body = lines.join('\n\n');
@@ -573,7 +708,7 @@
     parse, fmt, addDays, calDays, isWorking, workingDaysBetween, addWorkingDays, human, wordCount,
     person, personName, opts,
     actionState, actionFlags, chaseStep, groupChases, redate, nextForum,
-    registerFlags, canMove, netHours, impactTotals, activeUsersByWeek, likeForLike, similarLive, openForums,
+    registerFlags, canMove, netHours, impactTotals, decisionRequests, staffNotice, escalationCase, activeUsersByWeek, likeForLike, similarLive, openForums,
     missingRequestFields, proposedOrder, checkinFlag,
     championFlags, coverage, apologyFlags,
     forumPrep, allocate, buildAgenda, publishMinutes,
