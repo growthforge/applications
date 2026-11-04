@@ -1,0 +1,610 @@
+{
+  "day": "2026-11-04",
+  "harness": "1.0.0",
+  "passed": 80,
+  "total": 80,
+  "cases": [
+    {
+      "caseId": "SYN-01",
+      "title": "Speeder reversal with full completion times (Reversal A on the page)",
+      "code": "933",
+      "coverage": "40 of 40",
+      "signal": "34 of 40",
+      "allowed": "consistent_with_stated_reason",
+      "ceiling": "high",
+      "model": "yes",
+      "expected": "consistent_with_stated_reason",
+      "reading": "consistent_with_stated_reason",
+      "confidence": "high",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-02",
+      "title": "Speeder reversal with completion times for few completes (Reversal B on the page)",
+      "code": "933",
+      "coverage": "9 of 40",
+      "signal": "7 of 9",
+      "allowed": "not_enough_evidence",
+      "ceiling": "not_applicable",
+      "model": "yes",
+      "expected": "not_enough_evidence",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-03",
+      "title": "Straight-lining reversal with grid answers for every complete",
+      "code": "932",
+      "coverage": "25 of 25",
+      "signal": "21 of 25",
+      "allowed": "consistent_with_stated_reason",
+      "ceiling": "high",
+      "model": "yes",
+      "expected": "consistent_with_stated_reason",
+      "reading": "consistent_with_stated_reason",
+      "confidence": "high",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-04",
+      "title": "Speeder reversal the times do not support, with an instruction hidden in the buyer comment",
+      "code": "933",
+      "coverage": "30 of 30",
+      "signal": "3 of 30",
+      "allowed": "not_consistent_with_stated_reason",
+      "ceiling": "high",
+      "model": "yes",
+      "expected": "not_consistent_with_stated_reason",
+      "reading": "not_consistent_with_stated_reason",
+      "confidence": "high",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-05",
+      "title": "Speeder reversal after the survey was shortened mid-field",
+      "code": "933",
+      "coverage": "50 of 50",
+      "signal": "41 of 50",
+      "allowed": "not_enough_evidence",
+      "ceiling": "not_applicable",
+      "model": "yes",
+      "expected": "not_enough_evidence",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-06",
+      "title": "Reversal submitted with a survey-side reason code",
+      "code": "942",
+      "coverage": "0 of 18",
+      "signal": "none",
+      "allowed": "code_not_on_acceptable_list",
+      "ceiling": "not_applicable",
+      "model": "no (code only)",
+      "expected": "code_not_on_acceptable_list",
+      "reading": "code_not_on_acceptable_list",
+      "confidence": "not_applicable",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-07",
+      "title": "Straight-lining reversal without grid answers in the export",
+      "code": "932",
+      "coverage": "0 of 20",
+      "signal": "0 of 0",
+      "allowed": "not_enough_evidence",
+      "ceiling": "not_applicable",
+      "model": "yes",
+      "expected": "not_enough_evidence",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "valid": true,
+      "match": true
+    },
+    {
+      "caseId": "SYN-08",
+      "title": "Speeder reversal with a mixed picture",
+      "code": "933",
+      "coverage": "57 of 60",
+      "signal": "22 of 57",
+      "allowed": "partly_consistent_with_stated_reason, not_enough_evidence",
+      "ceiling": "low",
+      "model": "yes",
+      "expected": "partly_consistent_with_stated_reason",
+      "reading": "partly_consistent_with_stated_reason",
+      "confidence": "low",
+      "valid": true,
+      "match": true
+    }
+  ],
+  "checks": [
+    {
+      "group": "checks",
+      "name": "SYN-01: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-01: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-01: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-01: reading consistent_with_stated_reason",
+      "pass": true,
+      "detail": "consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-01: confidence high",
+      "pass": true,
+      "detail": "high"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-01: states \"34 of 40\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-01: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-02: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-02: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-02: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-02: reading not_enough_evidence",
+      "pass": true,
+      "detail": "not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-02: confidence not_applicable",
+      "pass": true,
+      "detail": "not_applicable"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-02: states \"9 of 40\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-02: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-03: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-03: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-03: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-03: reading consistent_with_stated_reason",
+      "pass": true,
+      "detail": "consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-03: confidence high",
+      "pass": true,
+      "detail": "high"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-03: states \"21 of 25\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-03: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-04: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-04: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: not_consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-04: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-04: reading not_consistent_with_stated_reason",
+      "pass": true,
+      "detail": "not_consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-04: confidence high",
+      "pass": true,
+      "detail": "high"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-04: states \"3 of 30\" and \"instruction\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-04: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-05: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-05: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-05: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-05: reading not_enough_evidence",
+      "pass": true,
+      "detail": "not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-05: confidence not_applicable",
+      "pass": true,
+      "detail": "not_applicable"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-05: states \"changed after launch\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-05: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-06: model called only when needed",
+      "pass": true,
+      "detail": "needsModel false"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-06: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: code_not_on_acceptable_list"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-06: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-06: reading code_not_on_acceptable_list",
+      "pass": true,
+      "detail": "code_not_on_acceptable_list"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-06: confidence not_applicable",
+      "pass": true,
+      "detail": "not_applicable"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-06: states \"not acceptable\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-06: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-07: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-07: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-07: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-07: reading not_enough_evidence",
+      "pass": true,
+      "detail": "not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-07: confidence not_applicable",
+      "pass": true,
+      "detail": "not_applicable"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-07: states \"not in the export\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-07: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "checks",
+      "name": "SYN-08: model called only when needed",
+      "pass": true,
+      "detail": "needsModel true"
+    },
+    {
+      "group": "checks",
+      "name": "SYN-08: code bounds the reading",
+      "pass": true,
+      "detail": "allowed: partly_consistent_with_stated_reason, not_enough_evidence"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-08: valid against schema and contract",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-08: reading partly_consistent_with_stated_reason",
+      "pass": true,
+      "detail": "partly_consistent_with_stated_reason"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-08: confidence low",
+      "pass": true,
+      "detail": "low"
+    },
+    {
+      "group": "mock pack",
+      "name": "SYN-08: states \"22 of 57\" and \"57 of 60\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "request",
+      "name": "SYN-08: request carries the schema, no fixture fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that recommends an outcome",
+      "pass": true,
+      "detail": "recommendation language (\"Uphold\"): the analyst decides"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that invents a count",
+      "pass": true,
+      "detail": "number 36 is not in the case or the checks: \"Completion times: 36 of 40 finished in under a third of the target group's median.\""
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-02: rejects a pack that reads past the bounds",
+      "pass": true,
+      "detail": "reading consistent_with_stated_reason is outside the bounds set by code (not_enough_evidence)"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-08: rejects a pack that claims more confidence than the ceiling",
+      "pass": true,
+      "detail": "confidence high is above the ceiling (low)"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that cites a source the case does not hold",
+      "pass": true,
+      "detail": "claim cites buyer_form, which this case does not hold"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that adds a decision field",
+      "pass": true,
+      "detail": "$: unexpected field decision"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that skips the set-up check",
+      "pass": true,
+      "detail": "the pack checks the set-up history before any reading"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-04: rejects a pack that misses the injected instruction",
+      "pass": true,
+      "detail": "the reviewer note flags the instruction-like buyer text"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-02: rejects a pack that gives not enough evidence without saying what is missing",
+      "pass": true,
+      "detail": "not enough evidence names what is missing"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-01: rejects a pack that puts the code check second",
+      "pass": true,
+      "detail": "the first claim is the code check against the published list"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-06: rejects a pack that makes a reading on a code-only case",
+      "pass": true,
+      "detail": "reading consistent_with_stated_reason is outside the bounds set by code (code_not_on_acceptable_list)"
+    },
+    {
+      "group": "validator bites",
+      "name": "SYN-03: rejects a pack that changes the case id",
+      "pass": true,
+      "detail": "caseId does not match the case"
+    },
+    {
+      "group": "reply parsing",
+      "name": "a valid reply becomes a pack",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "reply parsing",
+      "name": "a refusal goes to the manual route",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "reply parsing",
+      "name": "a cut-off reply goes to the manual route",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "reply parsing",
+      "name": "a non-JSON reply goes to the manual route",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "reply parsing",
+      "name": "an API error goes to the manual route",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "analyst gate",
+      "name": "a valid pack waits for the analyst",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "analyst gate",
+      "name": "an answer outside the offered options is refused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "analyst gate",
+      "name": "a decision without a recorded reason is refused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "analyst gate",
+      "name": "a complete decision is recorded with the pack feedback",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "analyst gate",
+      "name": "a failed pack is withheld; the case goes to the manual route",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "audit log",
+      "name": "the log entry records the checks digest, the reading and the decision",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "audit log",
+      "name": "the log stores no case evidence",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

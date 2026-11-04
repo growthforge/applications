@@ -1,0 +1,1531 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The reconciliation cycle, redrawn</title>
+  <meta name="description" content="An independent AI workflow assessment of Cint's monthly reconciliation and quality-programme cycle, built from public pages: what goes forward, what stays human, which gates apply and how value is proved.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The reconciliation cycle, redrawn">
+  <meta property="og:description" content="One workflow from public pages: what goes forward, what stays human, which gates apply and how value is proved, beside a workflow already changed and measured.">
+  <meta property="og:image" content="https://growthforge.github.io/applications/cint-workflow-assessment/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://growthforge.github.io/applications/cint-workflow-assessment/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/moderustic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+/* tokens.css */
+/*
+  Build Studio design tokens
+  ---------------------------------------------------------------------------
+  Load order: tokens.css, components.css, print.css (print last so it wins).
+
+  Per deliverable you normally set ONE variable, the brand accent:
+      :root { --brand: #1d5c8a; }
+  The light theme uses it as is (white text sits on it, so pick a colour with
+  at least 4.5:1 against white). The dark theme derives a lighter tint from it
+  automatically. Optional fine-tuning, only if axe flags contrast:
+      :root { --brand-dark: #9cc3e0; --brand-ink: #ffffff; --brand-ink-dark: #0d1117; }
+
+  Themes: follows prefers-color-scheme, and [data-theme="light"|"dark"] on
+  <html> overrides it. Print always renders light (see print.css).
+
+  Font families: at most two. --font-sans (system UI stack) for body and UI,
+  --font-display (system serif stack) for headings. A deliverable that wants a
+  single family sets  :root { --font-display: var(--font-sans); }
+*/
+
+:root {
+  /* ---- Brand hook (the only thing most deliverables change) ---- */
+  --brand: #1d5c8a;
+
+  /* ---- Type families (two at most) ---- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+
+  /* ---- Fluid type scale (ratio about 1.2 at small sizes, 1.25 at large) ---- */
+  --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --step--1: clamp(0.84rem, 0.81rem + 0.15vw, 0.92rem);
+  --step-0:  clamp(1.00rem, 0.96rem + 0.20vw, 1.10rem);
+  --step-1:  clamp(1.18rem, 1.10rem + 0.40vw, 1.38rem);
+  --step-2:  clamp(1.40rem, 1.26rem + 0.70vw, 1.75rem);
+  --step-3:  clamp(1.66rem, 1.44rem + 1.10vw, 2.25rem);
+  --step-4:  clamp(1.98rem, 1.62rem + 1.80vw, 2.90rem);
+  --step-5:  clamp(2.30rem, 1.80rem + 2.50vw, 3.60rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.6;
+  --measure: 68ch;
+  --weight-regular: 400;
+  --weight-medium: 550;
+  --weight-bold: 700;
+  --tracking-caps: 0.06em;
+
+  /* ---- Spacing: a 4 / 8 px scale ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --gutter: var(--space-4);          /* 16px side gutter on phones */
+  --content-max: 1120px;
+  --content-narrow: 760px;
+
+  /* ---- Radius and elevation ---- */
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* ---- Motion ---- */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Light theme colour roles (default) ---- */
+  color-scheme: light;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --surface-2: #f2f0ec;
+  --text: #1b1d21;
+  --text-muted: #53575e;
+  --border: #dcd8d1;
+  --border-strong: #8a867f;          /* 3:1 on bg, for control outlines */
+  --accent: var(--brand);
+  --accent-ink: var(--brand-ink, #ffffff);
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --focus: #b45309;
+
+  /* Work-allocation roles. -ink is text or fill, -bg is the tint behind it.
+     Every ink meets 4.5:1 on its own -bg, on --surface and on --bg. */
+  --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+  --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+  --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+  --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+
+  --shadow-1: 0 1px 2px rgb(20 22 26 / 0.06), 0 1px 1px rgb(20 22 26 / 0.04);
+  --shadow-2: 0 6px 18px rgb(20 22 26 / 0.08), 0 2px 4px rgb(20 22 26 / 0.05);
+}
+
+/* Dark theme, applied two ways: system preference (unless the page forces
+   light) and an explicit [data-theme="dark"] override. Keep both blocks equal. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121417;
+    --surface: #1a1d21;
+    --surface-2: #23272c;
+    --text: #ecebe7;
+    --text-muted: #a8acb2;
+    --border: #343a41;
+    --border-strong: #7d848c;
+    --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+    --accent-ink: var(--brand-ink-dark, #0d1117);
+    --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    --focus: #f5b84a;
+    --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+    --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+    --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+    --escalate: #f4a397;    --escalate-bg: #3d1d19;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121417;
+  --surface: #1a1d21;
+  --surface-2: #23272c;
+  --text: #ecebe7;
+  --text-muted: #a8acb2;
+  --border: #343a41;
+  --border-strong: #7d848c;
+  --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+  --accent-ink: var(--brand-ink-dark, #0d1117);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --focus: #f5b84a;
+  --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+  --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+  --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+  --escalate: #f4a397;    --escalate-bg: #3d1d19;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; }
+}
+
+/* components.css */
+/*
+  Build Studio components. Requires tokens.css first.
+  Every class is documented in design-system/demo.html, which uses all of them.
+
+  Contents
+    1. Base and typography      6. Matrices (2x2, allocation grid)
+    2. Layout primitives        7. Tables
+    3. Skip link, focus, a11y   8. Callouts, chips, badges
+    4. Header, hero, sections   9. Tabs and step-through (enhanced by components.js)
+    5. Cards, stats, timeline  10. Footer, buttons, theme toggle, motion
+*/
+
+/* 1. Base and typography ------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-5); letter-spacing: -0.01em; }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); line-height: var(--leading-snug); }
+h4 { font-size: var(--step-0); font-family: var(--font-sans); line-height: var(--leading-snug); }
+p, ul, ol, dl, figure, blockquote, pre, table { margin: 0; }
+p, li, dd { max-width: var(--measure); }
+ul, ol { padding-left: 1.25em; }
+li + li { margin-top: var(--space-1); }
+strong { font-weight: var(--weight-bold); }
+small, .small { font-size: var(--step--1); }
+.muted { color: var(--text-muted); }
+.lede { font-size: var(--step-1); line-height: var(--leading-snug); color: var(--text-muted); max-width: 60ch; }
+.eyebrow {
+  font-size: var(--step--1);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.num { font-variant-numeric: tabular-nums lining-nums; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+img, svg, video { max-width: 100%; height: auto; display: block; }
+code, kbd, samp, pre { font-size: 0.92em; }
+code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: var(--radius-1); }
+pre { background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-2); max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre code { background: none; padding: 0; }
+hr { border: 0; border-top: var(--border-width) solid var(--border); margin: var(--space-6) 0; }
+blockquote { border-left: 3px solid var(--accent); padding-left: var(--space-4); color: var(--text-muted); }
+
+/* 2. Layout primitives --------------------------------------------------- */
+.wrap { width: 100%; max-width: var(--content-max); margin-inline: auto; padding-inline: var(--gutter); }
+.wrap--narrow { max-width: var(--content-narrow); }
+.stack > * + * { margin-top: var(--stack-gap, var(--space-4)); }
+.stack--tight { --stack-gap: var(--space-2); }
+.stack--loose { --stack-gap: var(--space-6); }
+.cluster { display: flex; flex-wrap: wrap; gap: var(--cluster-gap, var(--space-2)); align-items: center; }
+.grid { display: grid; gap: var(--grid-gap, var(--space-5)); grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min, 240px)), 1fr)); }
+.grid--2 { --grid-min: 320px; }
+.grid--4 { --grid-min: 200px; }
+.split { display: grid; gap: var(--space-6); }
+@media (min-width: 880px) { .split { grid-template-columns: 1fr 1fr; align-items: start; } }
+
+/* 3. Skip link, focus, accessibility helpers ---------------------------- */
+.skip-link {
+  position: absolute; left: var(--space-2); top: var(--space-2); z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface); color: var(--text); border: 2px solid var(--text); border-radius: var(--radius-2);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); border-radius: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[tabindex="-1"]:focus { outline: none; }
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* 4. Header, hero, sections --------------------------------------------- */
+.site-header { border-bottom: var(--border-width) solid var(--border); background: var(--surface); }
+.site-header__inner { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding-block: var(--space-3); }
+.site-header__title { font-weight: var(--weight-bold); font-size: var(--step--1); color: var(--text); text-decoration: none; }
+.site-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.site-nav li + li { margin-top: 0; }
+.site-nav a { font-size: var(--step--1); color: var(--text); display: inline-block; padding-block: var(--space-1); }
+.hero { padding-block: var(--space-8) var(--space-7); border-bottom: var(--border-width) solid var(--border); }
+.hero h1 { max-width: 20ch; }
+.hero .lede { margin-top: var(--space-4); }
+.hero__meta { margin-top: var(--space-5); }
+.section { padding-block: var(--space-8); }
+.section + .section { border-top: var(--border-width) solid var(--border); }
+.section__head { margin-bottom: var(--space-6); max-width: var(--measure); }
+.section__head > * + * { margin-top: var(--space-2); }
+.section--alt { background: var(--surface-2); }
+
+/* 5. Cards, stat tiles, timeline ---------------------------------------- */
+.card {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-3);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+}
+.card > * + * { margin-top: var(--space-3); }
+.card--accent { border-top: 4px solid var(--accent); }
+.card--flat { box-shadow: none; background: var(--surface-2); border-color: transparent; }
+.card__kicker { font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+
+.stats { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.stat {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.stat__value { font-family: var(--font-display); font-size: var(--step-3); line-height: 1; font-weight: var(--weight-bold); font-variant-numeric: tabular-nums lining-nums; color: var(--text); }
+.stat__label { font-weight: var(--weight-medium); }
+.stat__note { font-size: var(--step--1); color: var(--text-muted); }
+
+.timeline { list-style: none; padding: 0; margin: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.timeline__item { position: relative; padding-left: var(--space-6); padding-bottom: var(--space-5); }
+.timeline__item + .timeline__item { margin-top: 0; }
+.timeline__item::before {
+  content: ""; position: absolute; left: 0; top: 0.35em; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--surface); border: 3px solid var(--accent);
+}
+.timeline__when { display: block; font-size: var(--step--1); font-weight: var(--weight-bold); color: var(--accent); letter-spacing: 0.02em; }
+.timeline__title { margin-top: var(--space-1); }
+.timeline__item > p { margin-top: var(--space-2); }
+
+/* 6. Matrices ------------------------------------------------------------ */
+/* 2x2: y axis label on the left, x axis label below, four quadrants. */
+.matrix { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 1fr auto; gap: var(--space-2); }
+.matrix__y { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__x { grid-column: 2; text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
+.matrix__cell { margin: 0; background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-2); padding: var(--space-4); min-height: 9rem; }
+.matrix__cell + .matrix__cell { margin-top: 0; }
+.matrix__cell h4 { margin-bottom: var(--space-2); }
+.matrix__cell ul { padding-left: 1.1em; font-size: var(--step--1); }
+.matrix__cell--focus { border: 2px solid var(--accent); background: var(--accent-soft); }
+@media (max-width: 520px) {
+  .matrix { grid-template-columns: 1fr; }
+  .matrix__y { writing-mode: horizontal-tb; transform: none; }
+  .matrix__x { grid-column: 1; }
+  .matrix__grid { grid-template-columns: 1fr; }
+  .matrix__cell { min-height: 0; }
+}
+
+/* Allocation grid: one lane per work-allocation role. */
+.alloc { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+.alloc__lane { border-radius: var(--radius-2); padding: var(--space-4); border-top: 4px solid var(--lane-ink); background: var(--lane-bg); color: var(--text); }
+.alloc__lane h4 { color: var(--lane-ink); display: flex; gap: var(--space-2); align-items: center; }
+.alloc__lane ul { list-style: none; padding: 0; margin-top: var(--space-3); }
+.alloc__lane li { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-1); padding: var(--space-2) var(--space-3); font-size: var(--step--1); }
+.alloc__lane li + li { margin-top: var(--space-2); }
+.alloc__lane--human    { --lane-ink: var(--human-led);   --lane-bg: var(--human-led-bg); }
+.alloc__lane--assist   { --lane-ink: var(--ai-assist);   --lane-bg: var(--ai-assist-bg); }
+.alloc__lane--automate { --lane-ink: var(--ai-automate); --lane-bg: var(--ai-automate-bg); }
+.alloc__lane--escalate { --lane-ink: var(--escalate);    --lane-bg: var(--escalate-bg); }
+
+/* 7. Tables -------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; max-width: 100%; border: var(--border-width) solid var(--border); border-radius: var(--radius-2); background: var(--surface); }
+.table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.table caption { text-align: left; padding: var(--space-3) var(--space-4); font-weight: var(--weight-medium); color: var(--text-muted); caption-side: top; }
+.table th, .table td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4); border-top: var(--border-width) solid var(--border); }
+.table thead th { background: var(--surface-2); font-weight: var(--weight-bold); border-top: 0; white-space: nowrap; }
+.table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table tbody tr:hover { background: var(--accent-soft); }
+
+/* 8. Callouts, chips, badges -------------------------------------------- */
+.callout { border-left: 4px solid var(--callout-ink, var(--accent)); background: var(--callout-bg, var(--accent-soft)); padding: var(--space-4) var(--space-5); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
+.callout > * + * { margin-top: var(--space-2); }
+.callout__title { font-weight: var(--weight-bold); font-family: var(--font-sans); font-size: var(--step-0); }
+.callout--note { --callout-ink: var(--human-led); --callout-bg: var(--human-led-bg); }
+.callout--caution { --callout-ink: var(--escalate); --callout-bg: var(--escalate-bg); }
+
+.chip, .badge {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  font-size: var(--step--1); font-weight: var(--weight-medium); line-height: 1.2;
+  padding: 0.3em 0.7em; border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--chip-ink, var(--border-strong));
+  color: var(--chip-ink, var(--text)); background: var(--chip-bg, var(--surface));
+  white-space: nowrap;
+}
+.badge { border-radius: var(--radius-1); text-transform: uppercase; letter-spacing: var(--tracking-caps); font-size: var(--step--2); font-weight: var(--weight-bold); }
+.badge--accent { --chip-ink: var(--accent); --chip-bg: var(--accent-soft); }
+/* The four work-allocation roles: colour plus a distinct shape, never colour alone. */
+.chip--human    { --chip-ink: var(--human-led);   --chip-bg: var(--human-led-bg); }
+.chip--assist   { --chip-ink: var(--ai-assist);   --chip-bg: var(--ai-assist-bg); }
+.chip--automate { --chip-ink: var(--ai-automate); --chip-bg: var(--ai-automate-bg); }
+.chip--escalate { --chip-ink: var(--escalate);    --chip-bg: var(--escalate-bg); }
+.chip--human::before, .chip--assist::before, .chip--automate::before, .chip--escalate::before {
+  content: ""; flex: none; width: 0.7em; height: 0.7em; border: 2px solid currentColor; border-radius: 50%;
+}
+.chip--assist::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.chip--automate::before { background: currentColor; }
+.chip--escalate::before { border-radius: 1px; transform: rotate(45deg) scale(0.85); background: currentColor; }
+
+/* 9. Tabs and step-through ---------------------------------------------- */
+/* Without JS: the tab list is a list of in-page links and every panel shows.
+   components.js upgrades [data-tabs] to the ARIA tabs pattern. */
+.tabs__list { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; gap: var(--space-2); border-bottom: var(--border-width) solid var(--border); }
+.tabs__list li + li { margin-top: 0; }
+.tabs__list a, .tabs__list [role="tab"] {
+  display: inline-block; padding: var(--space-2) var(--space-4); min-height: 44px; line-height: 28px;
+  color: var(--text-muted); text-decoration: none; font-weight: var(--weight-medium);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tabs__list [role="tab"][aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tabs__list a:hover { color: var(--text); }
+.tabs__panel > * + * { margin-top: var(--space-3); }
+.tabs:not(.is-enhanced) .tabs__panel + .tabs__panel { margin-top: var(--space-6); }
+.tabs__panel:focus-visible { outline-offset: 6px; }
+
+/* Step-through: an ordered list that components.js turns into one-step-at-a-time
+   with Previous / Next controls and a live status. All steps show without JS. */
+.stepper { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-3); padding: var(--space-5); }
+.stepper__steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.stepper__step { counter-increment: step; }
+.stepper__step + .stepper__step { margin-top: var(--space-5); padding-top: var(--space-5); border-top: var(--border-width) solid var(--border); }
+.stepper.is-enhanced .stepper__step + .stepper__step { margin-top: 0; padding-top: 0; border-top: 0; }
+.stepper__step > * + * { margin-top: var(--space-3); }
+.stepper__step h3 { outline: none; }
+.stepper__bar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; margin-top: var(--space-5); padding-top: var(--space-4); border-top: var(--border-width) solid var(--border); }
+.stepper__dots { display: flex; gap: var(--space-1); list-style: none; padding: 0; margin: 0; }
+.stepper__dots li + li { margin-top: 0; }
+.stepper__dot { width: 24px; height: 24px; border-radius: 50%; background: transparent; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.stepper__dot::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); }
+.stepper__dot[aria-current="step"]::before { background: var(--accent); }
+.stepper__status { font-size: var(--step--1); color: var(--text-muted); margin: 0; }
+
+/* 10. Footer, buttons, theme toggle, motion ----------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; padding: var(--space-2) var(--space-5);
+  font: inherit; font-weight: var(--weight-medium); line-height: 1.2;
+  border-radius: var(--radius-2); border: 2px solid var(--accent);
+  background: var(--accent); color: var(--accent-ink); text-decoration: none; cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, var(--text)); }
+.btn--ghost { background: transparent; color: var(--accent); }
+.btn--ghost:hover { background: var(--accent-soft); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+.theme-toggle { font: inherit; font-size: var(--step--1); min-height: 36px; padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); border: var(--border-width) solid var(--border-strong); background: var(--surface); color: var(--text); cursor: pointer; }
+
+.site-footer { border-top: var(--border-width) solid var(--border); background: var(--surface-2); padding-block: var(--space-7); font-size: var(--step--1); color: var(--text-muted); }
+.site-footer__inner > * + * { margin-top: var(--space-3); }
+.site-footer__disclaimer { color: var(--text); font-weight: var(--weight-medium); }
+.site-footer a { color: var(--text); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* print.css */
+/*
+  Build Studio print styles: portrait A4, light theme only, nothing clipped.
+  Load after tokens.css and components.css. Everything is wrapped in
+  @media print, so it can be linked normally or inlined.
+
+  pdf.mjs assumes the @page side margins below (16mm) when it checks that no
+  element is wider than the printable area. Change both together.
+
+  Opt-outs and helpers:
+    .no-print            hidden in print
+    .print-only          hidden on screen, shown in print
+    .page-break-before   force a new page before this element
+    a.no-url             do not print the URL after this link
+*/
+
+.print-only { display: none; }
+
+@media print {
+  @page { size: A4 portrait; margin: 18mm 16mm 20mm 16mm; }
+
+  /* Force the light palette whatever the system or [data-theme] says. Same
+     specificity as the dark selectors in tokens.css; this file loads later. */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f4f2ee;
+    --text: #111316;
+    --text-muted: #45494f;
+    --border: #cfcac2;
+    --border-strong: #7a766f;
+    --accent: var(--brand);
+    --accent-ink: var(--brand-ink, #ffffff);
+    --accent-soft: color-mix(in srgb, var(--brand) 8%, #ffffff);
+    --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+    --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+    --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+    --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+    --shadow-1: none;
+    --shadow-2: none;
+  }
+
+  html { font-size: 10.5pt; }
+  body { background: #ffffff; color: var(--text); line-height: 1.45; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Hide screen-only chrome. */
+  .skip-link, .site-nav, .theme-toggle, .stepper__bar, .tabs__list, .no-print,
+  button, [role="tablist"] { display: none !important; }
+  .print-only { display: block; }
+
+  /* Every tab panel and every step is visible in print. */
+  .tabs__panel, .tabs__panel[hidden], .stepper__step, .stepper__step[hidden] { display: block !important; }
+  .tabs__panel + .tabs__panel, .stepper__step + .stepper__step {
+    margin-top: 6mm !important; padding-top: 4mm !important; border-top: 1px solid var(--border) !important;
+  }
+  /* Closed <details> open in print: components.js and pdf.mjs set open on
+     beforeprint; this rule covers browsers that support ::details-content. */
+  details > summary { list-style: none; font-weight: var(--weight-bold); }
+
+  /* Nothing clipped: scrollers expand, wide things shrink to the page. */
+  .table-wrap, pre, .stepper, .card, .alloc, .matrix { overflow: visible !important; max-width: 100% !important; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  img, svg, canvas, video, iframe { max-width: 100% !important; height: auto !important; }
+  .wrap { max-width: none; padding-inline: 0; }
+  .table { width: 100%; table-layout: auto; font-size: 9pt; }
+  .table th, .table td { padding: 2mm 2.5mm; word-break: normal; overflow-wrap: anywhere; }
+  .table thead th { white-space: normal; }
+  .table thead { display: table-header-group; }
+
+  /* Denser grids on paper (the printable width is about 670 CSS px). */
+  .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .alloc { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .grid { --grid-min: 180px; gap: 4mm; }
+  .stat__value { font-size: 20pt; }
+
+  /* Compact vertical rhythm on paper. */
+  .hero { padding-block: 0 6mm; }
+  .section { padding-block: 6mm; }
+  .section--alt { background: none; }
+  .site-footer { padding-block: 6mm 0; background: none; }
+
+  /* Page-break rules. */
+  h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  .card, .stat, .callout, .timeline__item, .matrix, .alloc__lane, .stepper__step,
+  figure, tr, img, svg, blockquote, pre { break-inside: avoid-page; page-break-inside: avoid; }
+  .section { break-inside: auto; }
+  p, li { orphans: 3; widows: 3; }
+  .page-break-before { break-before: page; page-break-before: always; }
+
+  /* Print external link targets after the text, where that helps a reader. */
+  main a[href^="http"]:not(.no-url)::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em; color: var(--text-muted); overflow-wrap: anywhere; word-break: break-all;
+  }
+  a { color: var(--text); text-decoration: underline; }
+}
+
+@media print {
+  /* Separate block: an engine that does not know ::details-content drops only this. */
+  details::details-content { content-visibility: visible !important; display: block !important; }
+}
+</style>
+<script>
+/*
+  Build Studio progressive enhancement. Load with <script defer>.
+  Every component works without this file (all content visible, in order).
+
+  [data-tabs]          link list + panels  ->  ARIA tabs (arrow keys, Home, End)
+  [data-stepper]       ordered list        ->  one step at a time, Previous / Next,
+                                               live status, focus moves to the step
+  [data-theme-toggle]  button [hidden]     ->  shown, cycles system, light, dark on <html data-theme>
+  beforeprint          opens every <details>, so print and PDF show everything
+
+  Generated step counters ("Step 2 of 5") sit inside an element carrying
+  data-ordinal, so factcheck.py treats them as ordinals, not claims.
+*/
+(function () {
+  'use strict';
+
+  function initTabs(root) {
+    var list = root.querySelector('.tabs__list');
+    if (!list) return;
+    var links = Array.prototype.slice.call(list.querySelectorAll('a[href^="#"]'));
+    var panels = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+    if (!links.length || panels.some(function (p) { return !p; })) return;
+
+    list.setAttribute('role', 'tablist');
+    if (root.dataset.label) list.setAttribute('aria-label', root.dataset.label);
+    Array.prototype.forEach.call(list.children, function (li) { li.setAttribute('role', 'presentation'); });
+
+    links.forEach(function (tab, i) {
+      var panel = panels[i];
+      if (!tab.id) tab.id = panel.id + '-tab';
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', panel.id);
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.setAttribute('tabindex', '0');
+      tab.addEventListener('click', function (e) { e.preventDefault(); select(i, true); });
+      tab.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % links.length;
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + links.length) % links.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = links.length - 1;
+        if (next !== null) { e.preventDefault(); select(next, true); }
+      });
+    });
+
+    function select(index, focus) {
+      links.forEach(function (tab, i) {
+        var on = i === index;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.setAttribute('tabindex', on ? '0' : '-1');
+        panels[i].hidden = !on;
+      });
+      if (focus) links[index].focus();
+    }
+
+    var start = 0;
+    var hash = window.location.hash.slice(1);
+    panels.forEach(function (p, i) { if (p.id === hash) start = i; });
+    select(start, false);
+    root.classList.add('is-enhanced');
+  }
+
+  function initStepper(root) {
+    var steps = Array.prototype.slice.call(root.querySelectorAll('.stepper__step'));
+    if (steps.length < 2) return;
+    var label = root.dataset.label || 'Step';
+    var current = 0;
+
+    var bar = document.createElement('div');
+    bar.className = 'stepper__bar';
+    var prev = button('Previous', 'btn btn--ghost');
+    var next = button('Next', 'btn');
+    var status = document.createElement('p');
+    status.className = 'stepper__status';
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('data-ordinal', '');
+    var dots = document.createElement('ol');
+    dots.className = 'stepper__dots';
+    dots.setAttribute('data-ordinal', '');
+    steps.forEach(function (step, i) {
+      var heading = step.querySelector('h2, h3, h4');
+      var li = document.createElement('li');
+      var dot = button('', 'stepper__dot');
+      dot.setAttribute('aria-label', 'Go to ' + label.toLowerCase() + ' ' + (i + 1) + (heading ? ': ' + heading.textContent.trim() : ''));
+      dot.addEventListener('click', function () { show(i, true); });
+      li.appendChild(dot);
+      dots.appendChild(li);
+    });
+    var controls = document.createElement('div');
+    controls.className = 'cluster';
+    controls.appendChild(prev);
+    controls.appendChild(next);
+    bar.appendChild(dots);
+    bar.appendChild(status);
+    bar.appendChild(controls);
+    root.appendChild(bar);
+
+    prev.addEventListener('click', function () { show(current - 1, true); });
+    next.addEventListener('click', function () { show(current + 1, true); });
+
+    function button(text, cls) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = cls;
+      if (text) b.textContent = text;
+      return b;
+    }
+
+    function show(i, moveFocus) {
+      current = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach(function (s, k) { s.hidden = k !== current; });
+      Array.prototype.forEach.call(dots.querySelectorAll('button'), function (d, k) {
+        if (k === current) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current');
+      });
+      prev.disabled = current === 0;
+      next.disabled = current === steps.length - 1;
+      status.textContent = label + ' ' + (current + 1) + ' of ' + steps.length;
+      if (moveFocus) {
+        var h = steps[current].querySelector('h2, h3, h4') || steps[current];
+        h.setAttribute('tabindex', '-1');
+        h.focus({ preventScroll: false });
+      }
+    }
+
+    root.classList.add('is-enhanced');
+    show(0, false);
+  }
+
+  function initThemeToggle(btn) {
+    var order = ['system', 'light', 'dark'];
+    var html = document.documentElement;
+    function state() { return html.getAttribute('data-theme') || 'system'; }
+    function render() { btn.textContent = 'Theme: ' + state(); }
+    btn.hidden = false;   // ship the button with [hidden]; it only works with JS
+    btn.addEventListener('click', function () {
+      var nextState = order[(order.indexOf(state()) + 1) % order.length];
+      if (nextState === 'system') html.removeAttribute('data-theme'); else html.setAttribute('data-theme', nextState);
+      render();
+    });
+    render();
+  }
+
+  var openedForPrint = [];
+  window.addEventListener('beforeprint', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('details:not([open])'), function (d) { d.open = true; openedForPrint.push(d); });
+  });
+  window.addEventListener('afterprint', function () {
+    openedForPrint.forEach(function (d) { d.open = false; });
+    openedForPrint = [];
+  });
+
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tabs]'), initTabs);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-stepper]'), initStepper);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-theme-toggle]'), initThemeToggle);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+  <link rel="stylesheet" href="assets/redrawn.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="site-header__title" href="#top">Hemanth Vallamkonda</a>
+      <nav class="site-nav" aria-label="Sections">
+        <ul>
+          <li class="nav-proof"><a href="#proof">Proof</a></li>
+          <li><a href="#cut">Opportunities</a></li>
+          <li><a href="#map">Map</a></li>
+          <li><a href="#gates">Gates</a></li>
+          <li><a href="#measures">Measures</a></li>
+          <li><a href="#plan">Plan</a></li>
+        </ul>
+      </nav>
+      <a class="nav-pdf" href="deliverable.pdf">PDF</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 1. Hero (on paper, the one-page summary) -->
+    <section class="hero" id="top" aria-labelledby="title">
+      <div class="wrap">
+        <div class="hero__grid">
+          <div>
+            <p class="eyebrow">AI workflow assessment, for Cint</p>
+            <h1 id="title">The reconciliation cycle, redrawn</h1>
+            <p class="hero__lede">One Cint workflow, assessed from public pages as I would in my first weeks. I chose the reconciliation cycle because it is structured, measured and crosses teams; I would repeat the method with each function in the first <span data-plan>90 days</span>.</p>
+            <p class="hero__honesty">The map shows how those pages describe the work. Every sticking point is a hypothesis to test in <span data-plan>week 1</span>, with the people who do the work.</p>
+          </div>
+          <ul class="brief" aria-label="In brief">
+            <li><span data-count="ideas" data-value="7">Seven ideas</span>: <span data-count="proceed" data-value="2">two</span> proceed, <span data-count="reshape" data-value="1">one</span> reshaped, <span data-count="park" data-value="2">two</span> parked, <span data-count="stop" data-value="2">two</span> stopped.</li>
+            <li><span data-count="steps" data-value="10">Ten steps</span>: AI makes no decision of record; <span data-count="exists" data-value="2">two</span> that appear to work today are left alone.</li>
+            <li>A saving counts only while the appeal-overturn rate holds.</li>
+          </ul>
+        </div>
+
+        <div class="strip" role="group" aria-labelledby="strip-title">
+          <p id="strip-title" class="visually-hidden">The ten steps of the cycle in calendar order, by zone. Each opens its row in the map.</p>
+          <div class="strip__phases">
+            <div class="strip__phase">
+              <p class="strip__when" data-src="S56">Before the 25th</p>
+              <ol class="strip__steps" start="1">
+                <li><a class="strip__step z-automate" href="#step-1" data-ordinal><span class="strip__top"><span class="strip__num">1</span><span class="zmark zmark--automate" aria-hidden="true"></span></span><span class="strip__label">Remind buyers</span><span class="visually-hidden">, automated</span></a></li>
+                <li><a class="strip__step z-autonomous" href="#step-2" data-ordinal><span class="strip__top"><span class="strip__num">2</span><span class="zmark zmark--autonomous" aria-hidden="true"></span></span><span class="strip__label">Rules in one place</span><span class="visually-hidden">, safely autonomous</span></a></li>
+              </ol>
+            </div>
+            <div class="strip__phase">
+              <p class="strip__when" data-src="S56 S61">Audit window</p>
+              <ol class="strip__steps" start="3">
+                <li><a class="strip__step z-assist" href="#step-3" data-ordinal><span class="strip__top"><span class="strip__num">3</span><span class="zmark zmark--assist" aria-hidden="true"></span></span><span class="strip__label">Screen reversals</span><span class="visually-hidden">, AI-assisted</span></a></li>
+                <li><a class="strip__step strip__step--exists z-automate" href="#step-4" data-ordinal><span class="strip__top"><span class="strip__num">4</span><span class="zmark zmark--automate" aria-hidden="true"></span></span><span class="strip__label">Audit notice</span><span class="visually-hidden">, automated, likely exists today</span></a></li>
+                <li><a class="strip__step z-human" href="#step-5" data-ordinal><span class="strip__top"><span class="strip__num">5</span><span class="zmark zmark--human" aria-hidden="true"></span></span><span class="strip__label">Overturn or uphold</span><span class="visually-hidden">, human-led</span></a></li>
+              </ol>
+            </div>
+            <div class="strip__phase">
+              <p class="strip__when" data-src="S65 S67">First business day</p>
+              <ol class="strip__steps" start="6">
+                <li><a class="strip__step strip__step--exists z-automate" href="#step-6" data-ordinal><span class="strip__top"><span class="strip__num">6</span><span class="zmark zmark--automate" aria-hidden="true"></span></span><span class="strip__label">Compute rates</span><span class="visually-hidden">, automated, likely exists today</span></a></li>
+                <li><a class="strip__step z-assist" href="#step-7" data-ordinal><span class="strip__top"><span class="strip__num">7</span><span class="zmark zmark--assist" aria-hidden="true"></span></span><span class="strip__label">Assign statuses</span><span class="visually-hidden">, AI-assisted</span></a></li>
+              </ol>
+            </div>
+            <div class="strip__phase">
+              <p class="strip__when" data-src="S67 S69">After the review</p>
+              <ol class="strip__steps" start="8">
+                <li><a class="strip__step z-assist" href="#step-8" data-ordinal><span class="strip__top"><span class="strip__num">8</span><span class="zmark zmark--assist" aria-hidden="true"></span></span><span class="strip__label">Review plans</span><span class="visually-hidden">, AI-assisted</span></a></li>
+                <li><a class="strip__step z-human" href="#step-9" data-ordinal><span class="strip__top"><span class="strip__num">9</span><span class="zmark zmark--human" aria-hidden="true"></span></span><span class="strip__label">Pause or exclude</span><span class="visually-hidden">, human-led</span></a></li>
+                <li><a class="strip__step z-assist" href="#step-10" data-ordinal><span class="strip__top"><span class="strip__num">10</span><span class="zmark zmark--assist" aria-hidden="true"></span></span><span class="strip__label">Answer queries</span><span class="visually-hidden">, AI-assisted</span></a></li>
+              </ol>
+            </div>
+          </div>
+          <ul class="legend" aria-label="Zones">
+            <li class="z-human"><span class="swatch" aria-hidden="true"><span class="zmark zmark--human"></span></span>Human-led</li>
+            <li class="z-assist"><span class="swatch" aria-hidden="true"><span class="zmark zmark--assist"></span></span>AI-assisted</li>
+            <li class="z-automate"><span class="swatch" aria-hidden="true"><span class="zmark zmark--automate"></span></span>Automated</li>
+            <li class="z-autonomous"><span class="swatch" aria-hidden="true"><span class="zmark zmark--autonomous"></span></span>Safely autonomous</li>
+            <li><span class="swatch swatch--exists" aria-hidden="true"></span>Likely exists today; others proposed</li>
+          </ul>
+        </div>
+        <p class="print-only exec-decisions">By <span data-plan>week 2</span>, three decisions for you: who sponsors the pilot, the baseline method, and what the DPO screen found.</p>
+      </div>
+    </section>
+
+    <!-- 2. The method on real work, and how to read the rows -->
+    <section class="section band" id="proof" aria-labelledby="proof-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="proof-title">First, a workflow I changed</h2>
+          <p class="section__intro">The Cint map below uses these columns.</p>
+        </div>
+        <dl class="key">
+          <div><dt>Zone</dt><dd>Who does the step. Safely autonomous: runs alone in a logged boundary, with an off switch.</dd></div>
+          <div><dt>Ceiling</dt><dd>The most AI may do there.</dd></div>
+          <div><dt>Decision of record</dt><dd>Moves money, status or rights. A person makes it.</dd></div>
+        </dl>
+        <div class="rows rows--map rows--proof" data-fact="hv">
+          <div class="rows__head" aria-hidden="true"><span>Step</span><span>Zone</span><span>Ceiling</span><span>Gate</span><span>Measure</span></div>
+          <div class="proofrow">
+            <div class="row__sum">
+              <span class="row__step"><span class="step__num" aria-hidden="true"></span><span class="row__title row__title--static">Design test scenarios and cases<span class="row__where">MTest Labs, a software-testing firm</span></span></span>
+              <span class="row__cell" data-label="Zone"><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span><span class="tag tag--done">Done</span></span>
+              <span class="row__cell" data-label="Ceiling">Drafts only</span>
+              <span class="row__cell" data-label="Gate">A tester approves every case</span>
+              <span class="row__cell" data-label="Measure"><span class="before">A full 8-hour day, or 2 to 3 days</span><span class="after">1 to 3 supervised hours</span></span>
+            </div>
+            <p class="proofrow__note">Staged agents draft cases from the firm's own test library and issue logs. I trained the team to run it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. The cut -->
+    <section class="section" id="cut" aria-labelledby="cut-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="cut-title">Seven ideas, two proceed</h2>
+          <p class="section__intro">Each idea is rated on <span data-src="S5">value, feasibility, risk, readiness and scalability</span>. The last is the tempting one, and it stops.</p>
+        </div>
+        <figure class="cut" data-illustrative>
+          <figcaption class="figcap">Illustrative: my ratings and decisions, from outside.</figcaption>
+          <div class="rows rows--cut">
+            <div class="rows__head" aria-hidden="true"><span>Idea</span><span>Decision</span><span>Why</span></div>
+            <ol class="rows__list">
+              <li class="rowi" data-decision="proceed">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">The monthly reconciliation cycle</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--proceed">Proceed</span></span>
+                    <span class="row__cell" data-label="Why">Structured, calendar-driven and already measured.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Trust and Safety Operations, supply and account teams, Finance</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: High</span><span>Feasibility: Medium</span><span>Risk: Medium</span><span>Readiness: High</span><span>Scalability: High</span></dd></div>
+                    <div><dt>Public evidence</dt><dd><span data-src="S13">Cint reports that reversal rates on the Cint Exchange improved by about 24% from Q4 2025 to Q1 2026.</span> <span data-src="S56 S65 S67">The cycle runs on published codes, thresholds and a formula.</span> Worked through in the map.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="proceed">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">One agreed source for the cycle's rules</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--proceed">Proceed</span></span>
+                    <span class="row__cell" data-label="Why">Cheap, low risk; needed before any assistant.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Support and documentation owners</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: Medium</span><span>Feasibility: High</span><span>Risk: Low</span><span>Readiness: Medium</span><span>Scalability: High</span></dd></div>
+                    <div><dt>Public evidence</dt><dd><span data-src="S27">Slack Enterprise Search and an AI Slackbot are live, and Cint plans to make its support assistant an agent.</span> <span data-src="S56 S63 S65 S67">The cycle's rules are stated across policy, help-centre and developer pages.</span> Links to <a href="#step-2">step <span data-ordinal>2</span></a>.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="reshape">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">Collections follow-up on reconciliation adjustments</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--reshape">Reshape</span></span>
+                    <span class="row__cell" data-label="Why">Start from a query's evidence, not the adjustment.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Finance</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: High</span><span>Feasibility: Medium</span><span>Risk: High</span><span>Readiness: Medium</span><span>Scalability: Medium</span></dd></div>
+                    <div><dt>Public evidence</dt><dd><span data-src="S13">Collections is a stated operational priority.</span> <span data-src="S69">Reconciliations are credited on the next month's invoice.</span> Financial controls and customer relationships are at stake, so the work starts at <a href="#step-10">step <span data-ordinal>10</span></a>.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="park">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">Paused target-group triage and relaunch</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--park">Park</span></span>
+                    <span class="row__cell" data-label="Why">Partly automated; revisit after the first pattern.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Global Coverage, Support</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: Medium</span><span>Feasibility: Medium</span><span>Risk: Medium</span><span>Readiness: Medium</span><span>Scalability: Medium</span></dd></div>
+                    <div><dt>Public evidence</dt><dd data-src="S77 S78">Auto Survey Health already pauses on defined breaches and emails the PM with suggested actions.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="park">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">Data scrubbing in survey programming</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--park">Park</span></span>
+                    <span class="row__cell" data-label="Why">Personal data: DPO screen before any design.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Programming and Hosting</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: Medium</span><span>Feasibility: Medium</span><span>Risk: High</span><span>Readiness: Low</span><span>Scalability: Medium</span></dd></div>
+                    <div><dt>Public evidence</dt><dd data-src="S94">The work covers straight-lining, speeding and duplicates, on personal data, in line with GDPR.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="stop">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">Internal feasibility requests to Bidding</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--stop">Stop</span></span>
+                    <span class="row__cell" data-label="Why" data-src="S74">Refer to Product: customers already check feasibility themselves.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Support, CSMs</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: Low</span><span>Feasibility: Medium</span><span>Risk: Low</span><span>Readiness: Medium</span><span>Scalability: Low</span></dd></div>
+                    <div><dt>Public evidence</dt><dd><span data-src="S74">Human feasibility checks reach the Bidding team through a CSM or Support, and buyers already see a feasibility forecast in the Exchange.</span> <span data-src="S88">Cint's MCP integration, in closed beta, offers the same check from Claude.</span> Redesigning the internal route would duplicate product work.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+              <li class="rowi" data-decision="stop">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="row__title">Auto-decide reversals above a confidence threshold</span></span>
+                    <span class="row__cell" data-label="Decision"><span class="decision decision--stop">Stop</span></span>
+                    <span class="row__cell" data-label="Why">Each outcome moves money between buyer and supplier; a person decides.</span>
+                  </summary>
+                  <div class="row__body"><dl class="facts">
+                    <div><dt>Function</dt><dd>Trust and Safety Operations</dd></div>
+                    <div><dt>Ratings</dt><dd class="ratings"><span>Value: High</span><span>Feasibility: Medium</span><span>Risk: High</span><span>Readiness: Low</span><span>Scalability: High</span></dd></div>
+                    <div><dt>Public evidence</dt><dd><span data-src="S56 S61">Audits review reasons and overturn late or invalid reversals.</span> <span data-src="S69">Reconciliations are credited on the buyer's next invoice.</span> <span data-src="S66">Cint evaluates RISP appeals case by case</span>, <span data-src="S67">and POP pauses follow published grace periods.</span> <span data-src="S57">Cint's managed services terms rely on the Reconciliation Policy to define unacceptable completes and the buyer's duty to report them.</span></dd></div>
+                    <div><dt>Why it stays stopped</dt><dd>A better model does not reopen this: the constraint is accountability, not accuracy. The evidence pack in <a href="#step-3">step <span data-ordinal>3</span></a> speeds the decision; it does not make it.</dd></div>
+                  </dl></div>
+                </details>
+              </li>
+            </ol>
+          </div>
+        </figure>
+
+        <details class="disc inline-disc" id="breadth">
+          <summary>Beyond this workflow: four first-wave candidates</summary>
+          <div class="disc__body">
+            <figure data-illustrative>
+              <figcaption class="figcap">Illustrative: my outside assessment from public pages; each needs its own <span data-plan>week-1</span> test with the function. <span data-src="S5">Route uses the Office's three pathways: Enable, Guide and Co-build.</span></figcaption>
+              <table class="dtable flat reflow-screen breadth">
+                <caption class="visually-hidden">First-wave candidates in other functions, rated on the same five tests</caption>
+                <colgroup><col style="width:24%"><col style="width:34%"><col style="width:22%"><col style="width:20%"></colgroup>
+                <thead><tr><th scope="col">Function and workflow</th><th scope="col">Public signal</th><th scope="col">Ratings</th><th scope="col">Route</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Sales: quote approvals and pricing checks</th><td data-label="Public signal" data-src="S27">Cint plans internal agents to improve pricing accuracy and streamline approvals, on Sales Cloud with a custom CPQ engine.</td><td data-label="Ratings" class="ratings"><span>Value: High</span><span>Feasibility: Medium</span><span>Risk: Medium</span><span>Readiness: Medium</span><span>Scalability: High</span></td><td data-label="Route">Co-build, inside Business Technology's agent plan rather than beside it.</td></tr>
+                  <tr><th scope="row">Customer success: account review preparation</th><td data-label="Public signal" data-src="S27">A CSM Canvas is next, bringing revenue, contract health and open escalations into one view.</td><td data-label="Ratings" class="ratings"><span>Value: Medium</span><span>Feasibility: High</span><span>Risk: Low</span><span>Readiness: Low</span><span>Scalability: High</span></td><td data-label="Route">Enable: redesign the preparation around the Canvas once it lands.</td></tr>
+                  <tr><th scope="row">Operations: project handoffs in Global Coverage</th><td data-label="Public signal" data-src="S93">Global Coverage managers coordinate Sales, Account Management, Product and Finance, in Excel, Power BI, Salesforce and Qualtrics.</td><td data-label="Ratings" class="ratings"><span>Value: Medium</span><span>Feasibility: Medium</span><span>Risk: Low</span><span>Readiness: Medium</span><span>Scalability: Medium</span></td><td data-label="Route">Guide first; co-build if the same handoff repeats across projects.</td></tr>
+                  <tr><th scope="row">Media measurement: client reporting</th><td data-label="Public signal" data-src="S95">The client success advert lists AI tools and MCP integrations for internal workflows as a preferred skill.</td><td data-label="Ratings" class="ratings"><span>Value: Medium</span><span>Feasibility: Medium</span><span>Risk: Medium</span><span>Readiness: Medium</span><span>Scalability: Medium</span></td><td data-label="Route">Enable: a shared pattern the team already wants, with the Enablement Lead.</td></tr>
+                </tbody>
+              </table>
+            </figure>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 4. The map -->
+    <section class="section band" id="map" aria-labelledby="map-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="map-title">Decide what stays human, then place every other step</h2>
+          <p class="section__intro">Several teams on one published calendar, codes and formula. Each row opens to its hypothesis and <span data-plan>week-1</span> test.</p>
+          <p class="keyline">AI makes no decision of record anywhere in this cycle.</p>
+        </div>
+        <div class="rows rows--map rows--card">
+          <div class="rows__head" aria-hidden="true"><span>Step</span><span>Zone</span><span>Ceiling</span><span>Gate</span><span>Measure</span></div>
+
+          <div class="phase">
+            <h3 class="phase__title" data-src="S56">Before the 25th</h3>
+            <ol class="rows__list">
+              <li id="step-1" tabindex="-1" class="rowi z-automate" data-zone="automate" data-status="proposed">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>1</span><span class="row__title">Remind buyers before the deadline</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-automate"><span class="zmark zmark--automate" aria-hidden="true"></span>Automated</span></span>
+                    <span class="row__cell" data-label="Ceiling">Template only</span>
+                    <span class="row__cell muted-cell" data-label="Gate">None</span>
+                    <span class="row__cell" data-label="Measure">Reconciled on time</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>Some eligible target groups reach the deadline without anyone having looked.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Count last month's target groups still open in the final week before the deadline.</dd></div>
+                      <div><dt>If wrong</dt><dd>If almost none are late, drop the step.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd data-src="S62 S56">PMs see target groups eligible this month and next in the "eligible to submit" tab; the deadline is the 25th of the month after each RID's timestamp.</dd></div>
+                      <div><dt>Ceiling in full</dt><dd>Rules send a reminder from an approved template to the PM and the CSM; no model; cannot change eligibility, dates or amounts.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>CSMs and account managers. <span data-src="S27">Business Technology builds it on the Slack and Salesforce layer Cint has described.</span></dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-2" tabindex="-1" class="rowi z-autonomous" data-zone="autonomous" data-status="proposed" data-gates="infosec">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>2</span><span class="row__title">Keep each cycle rule stated once</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-autonomous"><span class="zmark zmark--autonomous" aria-hidden="true"></span>Safely autonomous</span></span>
+                    <span class="row__cell" data-label="Ceiling">Opens tickets; edits nothing; logged</span>
+                    <span class="row__cell" data-label="Gate">InfoSec</span>
+                    <span class="row__cell" data-label="Measure">Open conflicts</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>The rules sit on more pages than anyone owns, so an assistant answering from them would inherit any difference.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>List every page that states the deadline, the codes or the thresholds, and compare them.</dd></div>
+                      <div><dt>If wrong</dt><dd>If they agree and one owner holds them, a quarterly review is enough; drop the check.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd data-src="S56 S63 S65 S67">The deadline, the reason codes and the programme thresholds are stated across policy, help-centre and developer pages.</dd></div>
+                      <div><dt>Ceiling in full</dt><dd>A nightly check reads published pages and opens a ticket for the content owner when two disagree; it may not edit or publish anything; every run is logged; the owner can switch it off.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>Support and documentation owners. InfoSec reviews the check once; Business Technology builds it. Links to the second idea in the cut.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li class="rowi rowi--oos" data-zone="outofscope">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" aria-hidden="true"></span><span class="row__title">Buyers correct rejected files (out of scope)</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="tag">Product's</span></span>
+                    <span class="row__cell" data-label="Ceiling">Load passed to Product</span>
+                    <span class="row__cell empty"></span>
+                    <span class="row__cell empty"></span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd data-src="S59 S60">A failed file cannot be corrected mid-upload; the buyer downloads the error report, fixes the original and starts again.</dd></div>
+                      <div><dt>Decision</dt><dd><span data-src="S51 S59">Validation is a product feature that already checks formats and reasons.</span> Not the Office's to redesign; the Office passes the support load this creates to Product as evidence.</dd></div>
+                      <div><dt>Owner</dt><dd>The buyer, in the product.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+            </ol>
+          </div>
+
+          <div class="phase">
+            <h3 class="phase__title" data-src="S56 S61">Audit window</h3>
+            <ol class="rows__list">
+              <li id="step-3" tabindex="-1" class="rowi z-assist" data-zone="assist" data-status="proposed" data-gates="dpo infosec" data-escalates>
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>3</span><span class="row__title">Screen flagged reversals</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span><span class="tag tag--escalate"><span class="zmark zmark--escalate" aria-hidden="true"></span>Escalates</span></span>
+                    <span class="row__cell" data-label="Ceiling">Drafts a pack; decides nothing</span>
+                    <span class="row__cell" data-label="Gate">DPO, InfoSec</span>
+                    <span class="row__cell" data-label="Measure">Minutes per screen; appeal overturns</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>Gathering the evidence takes longer than judging it.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Time three screens with an analyst, split into gathering and judging.</dd></div>
+                      <div><dt>If wrong</dt><dd>If most of the time is judgement, reshape the step: a checklist rather than a pack.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S51 S50">Cint validates every reversal submitted with a reason, and specialists run manual investigations for part of the work.</span> <span data-src="S56">Acceptable reasons include Straight-lining (932) and Speeder (933); survey-side errors such as wrong qualifications or quotas (942) are not acceptable.</span></dd></div>
+                      <div><dt>Ceiling in full</dt><dd>Drafts an evidence pack and a reviewer note; no decision, no message, no status change. The gates section shows the output, and <a href="pack/">the build pack</a> runs it.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>Trust and Safety Operations. DPO and InfoSec gate it; AI/Data Architecture and Business Technology build it; the Enablement Lead trains analysts on it.</dd></div>
+                      <div><dt>Escalates to</dt><dd>The Trust and Safety lead, when a pattern suggests a coordinated fraud source.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-4" tabindex="-1" class="rowi z-automate" data-zone="automate" data-status="exists">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>4</span><span class="row__title">Send the audit notice and form</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-automate"><span class="zmark zmark--automate" aria-hidden="true"></span>Automated</span><span class="tag">Likely exists today</span></span>
+                    <span class="row__cell" data-label="Ceiling">Leave as is</span>
+                    <span class="row__cell muted-cell" data-label="Gate">None</span>
+                    <span class="row__cell" data-label="Measure">Forms back in time</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>This appears to work; the wait on the buyer's form is the right wait.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Confirm how the notice goes out on the Exchange, and how many forms came back after their deadline last quarter.</dd></div>
+                      <div><dt>If wrong</dt><dd>If the notice is sent by hand, automate it; if late forms are common, add one reminder; otherwise leave as is.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S56">When a reconciliation is audited, the PM is notified with a time frame to respond, and Cint's audit and final approval may run to the last calendar day of the month.</span> <span data-src="S61">The Marketplace help page describes the email as auto-generated, with the survey number, the RIDs and a form with a deadline.</span></dd></div>
+                      <div><dt>Owner</dt><dd>Trust and Safety Operations.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-5" tabindex="-1" class="rowi z-human" data-zone="human" data-status="proposed" data-gates="dpo decision" data-escalates>
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>5</span><span class="row__title">Overturn or uphold the reversal</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-human"><span class="zmark zmark--human" aria-hidden="true"></span>Human-led</span><span class="tag tag--escalate"><span class="zmark zmark--escalate" aria-hidden="true"></span>Escalates</span></span>
+                    <span class="row__cell" data-label="Ceiling">Side-by-side view only</span>
+                    <span class="row__cell" data-label="Gate">DPO; decision of record</span>
+                    <span class="row__cell" data-label="Measure">Appeal overturns; time to proficiency</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>The decision waits on finding the supplier's context, not on weighing it.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Sit with two analysts on live decisions and note where the waiting happens.</dd></div>
+                      <div><dt>If wrong</dt><dd>If the context is already to hand, drop the side-by-side view.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd data-src="S61 S56">Reasons are reviewed, and late or invalid reversals are overturned.</dd></div>
+                      <div><dt>Ceiling in full</dt><dd>AI places the buyer's form and the supplier context side by side and makes no recommendation; the analyst decides and records the reason.</dd></div>
+                      <div><dt>Kept human on purpose</dt><dd>For analysts in their first months, the side-by-side view opens only after they have recorded their own view, so they still build the judgement.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>Trust and Safety Operations. The DPO screens the use of buyer forms; CSMs and account managers take escalations; the Enablement Lead supports new analysts.</dd></div>
+                      <div><dt>Escalates to</dt><dd>The account lead, for disputed high-value cases.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+            </ol>
+          </div>
+
+          <div class="phase">
+            <h3 class="phase__title" data-src="S65 S67">First business day</h3>
+            <ol class="rows__list">
+              <li id="step-6" tabindex="-1" class="rowi z-automate" data-zone="automate" data-status="exists">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>6</span><span class="row__title">Compute rates against thresholds</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-automate"><span class="zmark zmark--automate" aria-hidden="true"></span>Automated</span><span class="tag">Likely exists today</span></span>
+                    <span class="row__cell" data-label="Ceiling">Rules, no model</span>
+                    <span class="row__cell muted-cell" data-label="Gate">None</span>
+                    <span class="row__cell" data-label="Measure">Negative Reconciliation Rate</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>This appears to be automated already: rules and a published formula, with no judgement in it.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Ask the reviewers whether anything is recalculated by hand before the first business day.</dd></div>
+                      <div><dt>If wrong</dt><dd>Fix the data feed, still with no model. A model would add risk and no value here.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S65 S67">RISP reviews hard-close rates and POP compares per-country soft-close rates with a 5% standard, using a published formula, on the first business day of each month.</span> <span data-src="S68 S91">Suppliers already see the same rates in their reports and dashboards.</span></dd></div>
+                      <div><dt>Owners</dt><dd>Trust and Safety Operations and the supply team.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-7" tabindex="-1" class="rowi z-assist" data-zone="assist" data-status="proposed" data-gates="legal">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>7</span><span class="row__title">Assign statuses, write the root cause</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span></span>
+                    <span class="row__cell" data-label="Ceiling">Drafts; thresholds set the status</span>
+                    <span class="row__cell" data-label="Gate">Legal template</span>
+                    <span class="row__cell" data-label="Measure">Minutes per status</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>The first business day is a peak because every review lands at once, and the root-cause write-up is its slowest part.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Ask reviewers to log minutes per status for one review day.</dd></div>
+                      <div><dt>If wrong</dt><dd>If the write-up is quick, the draft is not worth a Legal template; drop it.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S67">Statuses follow published thresholds: for POP, Watchlist from 5% to under 10%, Needs Attention from 10% to under 40%, Alarming at 40% or more.</span> <span data-src="S65">RISP notices go out in a fixed sequence with the CSM and account manager copied, and buyers are expected to run a root-cause analysis and an action plan with their CSM.</span></dd></div>
+                      <div><dt>Ceiling in full</dt><dd>Drafts the root-cause summary by supplier, country and source from that month's packs; the status comes from the published thresholds, never from the model; a person approves every notice before it is sent.</dd></div>
+                      <div><dt>Owners and partners</dt><dd>Trust and Safety Operations (RISP) and the supply team (POP). Legal approves the template once; CSMs and account managers; the Enablement Lead.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+            </ol>
+          </div>
+
+          <div class="phase">
+            <h3 class="phase__title" data-src="S67 S69">After the review</h3>
+            <ol class="rows__list">
+              <li id="step-8" tabindex="-1" class="rowi z-assist" data-zone="assist" data-status="proposed" data-gates="dpo">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>8</span><span class="row__title">Review supplier plans of action</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span></span>
+                    <span class="row__cell" data-label="Ceiling">Flags gaps; drafts only</span>
+                    <span class="row__cell" data-label="Gate">DPO</span>
+                    <span class="row__cell" data-label="Measure">Days to agreed plan</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>Plans are checked against the supplier's reversals by hand, and gaps are found late.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Review five recent plans with the supply team: how long each took to check, and how many came back.</dd></div>
+                      <div><dt>If wrong</dt><dd>If plans are checked quickly and rarely come back, drop the step.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd data-src="S67">Suppliers in Needs Attention fill out a plan of action and review their security and quality audit form; the supply team gathers context from the buy-side team, and buyer error leads to a Retrospective Exclusion.</dd></div>
+                      <div><dt>Ceiling in full</dt><dd>Compares each plan with the drivers in that supplier's reversals, flags gaps and assembles the buyer-error evidence; drafts only; reuses the <span data-ordinal>step 3</span> integration and log.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>The supply and buy-side teams. The DPO; the Enablement Lead.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-9" tabindex="-1" class="rowi z-human" data-zone="human" data-status="proposed" data-gates="decision" data-escalates>
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>9</span><span class="row__title">Pause, suspend or exclude</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-human"><span class="zmark zmark--human" aria-hidden="true"></span>Human-led</span><span class="tag tag--escalate"><span class="zmark zmark--escalate" aria-hidden="true"></span>Escalates</span></span>
+                    <span class="row__cell" data-label="Ceiling">No AI recommendation</span>
+                    <span class="row__cell" data-label="Gate">Decision of record</span>
+                    <span class="row__cell" data-label="Measure">Decisions inside published windows</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>Delays come from gathering approvals, not from the rules.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Trace three recent pauses from status to decision against the published windows.</dd></div>
+                      <div><dt>If wrong</dt><dd>If decisions already land inside the windows, leave the step alone.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S67">POP pauses a supplier's traffic after 10 business days in Needs Attention or 2 in Alarming, unless the supplier acts within that window.</span> <span data-src="S65">RISP gives buyers two calendar months to improve before a possible suspension.</span></dd></div>
+                      <div><dt>Ceiling in full</dt><dd>A person makes every decision that affects a supplier's revenue or a buyer's rights; AI gives no recommendation of record.</dd></div>
+                      <div><dt>Owners</dt><dd>The supply team and Trust and Safety Operations.</dd></div>
+                      <div><dt>Escalates to</dt><dd data-src="S67">At Multiple Strikes L2, the contract is reviewed with the supply team.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+              <li id="step-10" tabindex="-1" class="rowi z-assist" data-zone="assist" data-status="proposed" data-gates="legal infosec">
+                <details class="row">
+                  <summary class="row__sum">
+                    <span class="row__step"><span class="step__num" data-ordinal>10</span><span class="row__title">Answer adjustment and payout queries</span></span>
+                    <span class="row__cell" data-label="Zone"><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span></span>
+                    <span class="row__cell" data-label="Ceiling">Drafts replies; posts nothing</span>
+                    <span class="row__cell" data-label="Gate">Legal template, InfoSec</span>
+                    <span class="row__cell" data-label="Measure">Days to answer; reopened queries</span>
+                  </summary>
+                  <div class="row__body">
+                    <dl class="facts facts--test">
+                      <div><dt>Hypothesis</dt><dd>Most of a query's handling time goes on tracing adjustment lines back to RIDs.</dd></div>
+                      <div><dt data-plan>Week-1 test</dt><dd>Time three recent queries with Finance.</dd></div>
+                      <div><dt>If wrong</dt><dd>If the time goes on the conversation rather than the tracing, reshape to an approved reply template only.</dd></div>
+                    </dl>
+                    <dl class="facts">
+                      <div><dt>Today</dt><dd><span data-src="S69">Buyers are billed monthly on total completes, with reconciliations credited on the next month's invoice.</span> <span data-src="S71">Reconciliation adjustments are not returned through the supplier API.</span> <span data-src="S62">The total of reconciliation-eligible costs is shown in USD only.</span></dd></div>
+                      <div><dt>Ceiling in full</dt><dd>Traces the adjustment lines on a query back to the RIDs and drafts the reply; Finance approves material adjustments and every reply; posting stays system-driven; no posting, no credit and no reply sent without approval.</dd></div>
+                      <div><dt>Owner and partners</dt><dd>Finance. Legal approves the reply template; InfoSec reviews the integration; AI/Data Architecture and Business Technology build it; CSMs and account managers; the Enablement Lead.</dd></div>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <details class="disc inline-disc" id="partners">
+          <summary>Partners by step</summary>
+          <div class="disc__body">
+            <p>I would not own these teams or systems. The grid proposes who decides each step, who gates it and who builds or supports it.</p>
+            <p class="pkey"><span><span class="pm pm--d" aria-hidden="true">D</span> decides or owns</span><span><span class="pm pm--g" aria-hidden="true">G</span> gates, once</span><span><span class="pm pm--b" aria-hidden="true">B</span> builds</span><span><span class="pm pm--s" aria-hidden="true">S</span> supports</span></p>
+            <div class="pgrid-wrap" role="region" aria-label="Partners by step" tabindex="0">
+              <table class="pgrid">
+                <caption class="visually-hidden">Partners by step: who decides, gates, builds or supports each of the ten steps</caption>
+                <thead data-ordinal><tr><th scope="col">Partner</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row" data-src="S65 S66">Trust and Safety Operations</th><td></td><td></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td></td></tr>
+                  <tr><th scope="row" data-src="S67">Supply and buy-side teams</th><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td></td></tr>
+                  <tr><th scope="row" data-src="S65">CSMs and account managers</th><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td></td><td></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td></tr>
+                  <tr><th scope="row" data-src="S74">Support and documentation owners</th><td></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr><th scope="row" data-src="S69 S71">Finance</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--d" aria-hidden="true">D</span><span class="visually-hidden">decides</span></td></tr>
+                  <tr><th scope="row" data-src="S1">Legal</th><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td></tr>
+                  <tr><th scope="row" data-src="S1 S157">DPO</th><td></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td></td><td></td></tr>
+                  <tr><th scope="row" data-src="S1">InfoSec</th><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--g" aria-hidden="true">G</span><span class="visually-hidden">gates</span></td></tr>
+                  <tr><th scope="row" data-src="S1">Business Technology</th><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td></tr>
+                  <tr><th scope="row" data-src="S1">AI/Data Architecture</th><td></td><td></td><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="pm pm--b" aria-hidden="true">B</span><span class="visually-hidden">builds</span></td></tr>
+                  <tr><th scope="row" data-src="S1">Enablement Lead</th><td></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td><td></td><td><span class="pm pm--s" aria-hidden="true">S</span><span class="visually-hidden">supports</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="pnote" data-src="S5">The Director and the Steering Group approve any rise in a ceiling.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 5. Gates and the one AI step -->
+    <section class="section" id="gates" aria-labelledby="gates-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="gates-title">Gates sized to the step</h2>
+        </div>
+        <div class="gates-grid">
+          <dl class="gatelist">
+            <div><dt>DPO</dt><dd>Steps using buyer forms or respondent data as evidence.</dd></div>
+            <div><dt>InfoSec</dt><dd>Each new integration or autonomous check, once.</dd></div>
+            <div><dt>Legal</dt><dd>One template for AI-drafted text a customer sees.</dd></div>
+            <div><dt>A person</dt><dd>Every decision that moves money or rights.</dd></div>
+            <div data-src="S5"><dt>Steering Group</dt><dd>Any rise in a ceiling, on evidence.</dd></div>
+          </dl>
+          <div>
+            <h3 id="pack-title">What the evidence pack returns (<span data-ordinal>step 3</span>)</h3>
+            <figure class="stack" style="margin-top:var(--space-4)" data-illustrative aria-labelledby="pack-title">
+              <figcaption class="figcap"><strong>Illustrative data:</strong> synthetic reversals.</figcaption>
+              <div class="packs">
+                <article class="packcard" aria-label="Reversal A">
+                  <div class="packcard__head"><h4>Reversal A: Speeder (933), 40 completes</h4><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span></div>
+                  <ul>
+                    <li>Code: on the published acceptable list. <span class="srctag">Reconciliation Policy</span></li>
+                    <li>Completion times: 34 of 40 finished in under a third of the target group's median. <span class="srctag">Completion log</span></li>
+                    <li>Set-up: unchanged since launch. <span class="srctag">Target-group history</span></li>
+                  </ul>
+                  <p class="reading">Reading: consistent with the stated reason. Confidence: high. The analyst decides.</p>
+                </article>
+                <article class="packcard" aria-label="Reversal B">
+                  <div class="packcard__head"><h4>Reversal B: Speeder (933), 40 completes</h4><span class="chip z-assist"><span class="zmark zmark--assist" aria-hidden="true"></span>AI-assisted</span></div>
+                  <ul>
+                    <li>Completion times recorded for 9 of 40. <span class="srctag">Completion log</span></li>
+                  </ul>
+                  <p class="reading reading--none">Reading: not enough evidence; the analyst requests the buyer's evidence.</p>
+                </article>
+              </div>
+            </figure>
+          </div>
+        </div>
+
+        <details class="disc inline-disc">
+          <summary>Build and control</summary>
+          <div class="disc__body">
+            <dl class="control">
+              <dt>Trigger</dt><dd>A reversal flagged for screening in the existing queue.</dd>
+              <dt>Reads</dt><dd>The reason code and RIDs, a completion-time summary, the target group's set-up history, the supplier's recent rates. Open-ended answers only if the DPO screen allows; minimised otherwise.</dd>
+              <dt>Writes</dt><dd>An evidence pack and a draft reviewer note. Nothing else.</dd>
+              <dt>Output contract</dt><dd data-src="S56">Every claim carries its source; confidence is stated; "not enough evidence" is a valid answer; the code check uses the published list, not the model's memory.</dd>
+              <dt>Gate</dt><dd>The analyst decides. Nothing reaches a buyer without an explicit approval.</dd>
+              <dt>Log</dt><dd>Every pack, every edit and every decision, so edits become feedback.</dd>
+              <dt>Stop rule</dt><dd>Switch off and fall back to today's manual route if the appeal-overturn rate rises above its baseline in any cycle.</dd>
+              <dt>Ceiling</dt><dd data-src="S5">AI-assisted. Any change goes to the Steering Group with evidence.</dd>
+              <dt>Reuse</dt><dd><span data-ordinal>Steps 7 and 8</span> use the same integration and log.</dd>
+              <dt>Route</dt><dd data-src="S27">The build, buy or configure choice is made with AI/Data Architecture, and Business Technology delivers and supports it on the Slack and Salesforce layer Cint has described, where Enterprise Search and an AI Slackbot are already live.</dd>
+              <dt>Tooling</dt><dd data-fact="hv">For the prototype I would use whatever the architecture team approves. I have built workflows in n8n for over a year and build with Claude, Gemini and GPT, so the tool is the smaller decision.</dd>
+            </dl>
+          </div>
+        </details>
+
+        <div class="packlink">
+          <p><strong>Step <span data-ordinal>3</span> is built and runs offline:</strong> prompt contract, schema, eight synthetic cases, an n8n workflow with the analyst's gate, and an evaluation against a mock model. The live call needs your key.</p>
+          <a class="btn" href="pack/">Open the build pack</a>
+          <span class="print-url">growthforge.github.io/applications/cint-workflow-assessment/pack/</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Measures -->
+    <section class="section band" id="measures" aria-labelledby="measures-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="measures-title">Deployment, adoption and outcome, kept apart</h2>
+          <p class="section__intro">Baseline first: self-reported savings are weak evidence.</p>
+        </div>
+        <div class="measures-grid">
+          <dl class="layers">
+            <div><dt>Deployment</dt><dd>Screens with a complete, sourced pack.</dd></div>
+            <div><dt>Adoption</dt><dd>Packs opened; drafts accepted with light edits.</dd></div>
+            <div><dt>Outcome</dt><dd>Days from flag to decision; analyst hours per cycle.</dd></div>
+            <div><dt>Quality guard</dt><dd>Appeal-overturn rate at or below baseline.</dd></div>
+            <div><dt>People</dt><dd>Time to proficiency for new analysts.</dd></div>
+          </dl>
+          <div>
+            <p class="rule">A saving counts only while the guard holds, and released hours count only once someone names where they go.</p>
+            <figure class="example" data-illustrative>
+              <figcaption class="figcap"><strong>Illustrative data</strong></figcaption>
+              <table class="calc">
+                <caption class="visually-hidden">Worked example of analyst hours saved</caption>
+                <tbody>
+                  <tr><th scope="row">Screens a month</th><td>400</td></tr>
+                  <tr><th scope="row">× share using the pack</th><td>70%</td></tr>
+                  <tr><th scope="row">× minutes saved (20 to 8)</th><td>12</td></tr>
+                  <tr class="calc__total"><th scope="row">= hours a month</th><td>56</td></tr>
+                </tbody>
+              </table>
+              <p class="calc__guard">Counted: overturns held at the 4.0% baseline. At 5.0%, none.</p>
+            </figure>
+          </div>
+        </div>
+        <figure class="valuetree" data-illustrative>
+          <figcaption class="figcap"><strong>Illustrative value tree:</strong> each link needs a baseline.</figcaption>
+          <dl class="vt">
+            <div><dt>Days from flag to decision</dt><dd><span data-src="S67">Less time with supplier traffic paused or in dispute.</span></dd></div>
+            <div><dt>Reopened buyer queries</dt><dd><span data-src="S13 S69">Credits settled once, supporting collections.</span></dd></div>
+            <div><dt>Together</dt><dd><span data-src="S13">The reversal-rate trend Cint reports.</span></dd></div>
+          </dl>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 7. Plan, with the reusable record -->
+    <section class="section" id="plan" aria-labelledby="plan-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="plan-title">Twelve weeks, then a first wave</h2>
+        </div>
+        <table class="dtable flat reflow-screen plan">
+          <caption class="visually-hidden">The plan for one workflow and its step to a first wave</caption>
+          <colgroup><col style="width:18%"><col style="width:52%"><col style="width:30%"></colgroup>
+          <thead><tr><th scope="col">When</th><th scope="col">What happens</th><th scope="col">Ends with</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" data-plan>Weeks 1 to 2</th><td data-label="What happens">Walk one month-end; run the <span data-plan>week-1</span> tests; start the DPO screen</td><td data-label="Ends with">Agreed map and owners</td></tr>
+            <tr><th scope="row" data-plan>Weeks 3 to 6</th><td data-label="What happens">Baseline one cycle; InfoSec review; prototype with two analysts, starting from <a href="pack/">the build pack</a></td><td data-label="Ends with">Pilot, or reshape</td></tr>
+            <tr><th scope="row" data-plan>Weeks 7 to 12</th><td data-label="What happens">One live cycle; adoption and the guard read weekly</td><td data-label="Ends with">Proceed, reshape or stop</td></tr>
+            <tr><th scope="row" data-plan>Months 4 to 9</th><td data-label="What happens">Handover and runbook; record published; layers reported separately</td><td data-label="Ends with">Visible improvement, with adoption data</td></tr>
+          </tbody>
+        </table>
+        <p class="decisions">By <span data-plan>week 2</span>, three decisions for you: who sponsors the pilot, the baseline method, and what the DPO screen found.</p>
+        <div class="reuse" id="reuse">
+          <p><strong>The reusable part.</strong> A blank seven-part record, from opportunity to decision log, so the next function starts from a tested pattern.</p>
+          <a class="btn btn--ghost" href="assessment-record.md" download>Download the record</a>
+          <span class="print-url">growthforge.github.io/applications/cint-workflow-assessment/assessment-record.md</span>
+        </div>
+        <details class="disc inline-disc plan-more">
+          <summary>Partners by stage</summary>
+          <div class="disc__body" data-plan>
+            <ul>
+              <li><strong>Weeks 1 to 2:</strong> function leads and analysts in Trust and Safety, supply and Finance.</li>
+              <li><strong>Weeks 3 to 6:</strong> DPO, InfoSec, AI/Data Architecture, the Enablement Lead.</li>
+              <li><strong>Weeks 7 to 12:</strong> Trust and Safety, Support, the Enablement Lead, with the step 2 check running in parallel.</li>
+              <li><strong>Months 4 to 9:</strong> Business Technology, Finance, the Director, and a named home for released hours: <span data-src="S67">root-cause work with suppliers on Watchlist</span>.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 8. Elsewhere in my work -->
+    <section class="section band" id="elsewhere" aria-labelledby="elsewhere-title">
+      <div class="wrap">
+        <h2 id="elsewhere-title">Elsewhere in my work</h2>
+        <div class="tiles">
+          <article class="tile" data-fact="hv">
+            <h3>Adopted beyond my team</h3>
+            <p>Bnk To The Future. Redesigned case routing, triage and escalation inside segregation of duties: ~25% faster turnaround across 100+ cases. Prepared risk-committee reporting; my templates were adopted firm-wide.</p>
+          </article>
+          <article class="tile" data-fact="hv">
+            <h3>Autonomy with a boundary</h3>
+            <p>Atelier di Venice. Dozens of automated workflows, enquiry to delivery; low-risk steps run alone, consequential ones wait for a person.</p>
+          </article>
+          <article class="tile" data-fact="hv">
+            <h3>Reconciliation at volume</h3>
+            <p>AirTM. Matched daily payment volumes against provider and bank statements; cleared a 150-case backlog in three weeks; backlog down ~30%; 95%+ service level.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Sources -->
+    <section class="section sources" id="sources" aria-labelledby="sources-title">
+      <div class="wrap">
+        <h2 id="sources-title" class="visually-hidden">Sources</h2>
+        <details class="disc inline-disc">
+          <summary><span>Sources (<span data-ordinal>28</span> public pages)</span></summary>
+          <div class="disc__body">
+            <h3>The calendar</h3>
+            <ol>
+              <li data-src="S56"><a href="https://legal.cint.com/docs/cint-exchange-reconciliation-policy">Cint Legal Center, Cint Exchange Reconciliation Policy (current version)</a></li>
+              <li data-src="S61"><a href="https://help.cint.com/docs/reconciliation-audits">Cint Help (Lucid Marketplace), Reconciliation audits FAQ</a></li>
+              <li data-src="S65"><a href="https://help.cint.com/docs/reconciliation-improvement-suspension-program-risp">Cint Help, Reconciliation Improvement and Suspension Program (RISP)</a></li>
+              <li data-src="S67"><a href="https://help.cint.com/docs/partner-optimization-program">Cint Help, Partner Optimization Program (POP)</a></li>
+              <li data-src="S69"><a href="https://help.cint.com/docs/cint-exchange-invoicing-faq">Cint Help, Cint Exchange invoicing FAQ</a></li>
+            </ol>
+            <h3>The cut</h3>
+            <ol start="6">
+              <li data-src="S13"><a href="https://storage.mfn.se/d68eb9c1-feca-4ed2-9d6f-aa0a118b0108/cint-group-ab-q1-report-2026.pdf">Cint Group, Interim report January to March 2026 (PDF)</a></li>
+              <li data-src="S27"><a href="https://mfn.se/one/a/cint-group/cint-and-salesforce-to-deliver-the-next-generation-of-ai-powered-support-a5dc1864">Cint, Cint and Salesforce to Deliver the Next Generation of AI-Powered Support</a></li>
+              <li data-src="S63"><a href="https://developer.cint.com/demand/docs/2025-12-18/deep-dives/reconciliations/understanding-reconciliations">Cint Developer, Understanding reconciliations</a></li>
+              <li data-src="S77"><a href="https://help.cint.com/docs/cintx-auto-survey-health-notifications-faq">Cint Help, CintX Auto Survey Health Notifications FAQ</a></li>
+              <li data-src="S78"><a href="https://help.cint.com/docs/auto-survey-health-faq">Cint Help, Marketplace Auto Survey Health FAQ</a></li>
+              <li data-src="S94"><a href="https://jobs.smartrecruiters.com/Cint/744000154069055">Cint, Senior Analyst, Survey Programming and Data Scrubbing, SmartRecruiters</a></li>
+              <li data-src="S74"><a href="https://help.cint.com/docs/cint-exchange-feasibility-faq">Cint Help, Cint Exchange feasibility FAQ</a></li>
+              <li data-src="S88"><a href="https://help.cint.com/docs/mcp-overview">Cint Help, Cint MCP Overview</a></li>
+              <li data-src="S57"><a href="https://legal.cint.com/docs/managed-services-and-data-collaboration-project-terms-v2026-01">Cint Legal Center, Managed Services and Data Collaboration Project Terms</a></li>
+              <li data-src="S66"><a href="https://help.cint.com/docs/reconciliation-improvement-suspension-program-risp-faq">Cint Help, RISP FAQ</a></li>
+            </ol>
+            <h3>The map</h3>
+            <ol start="16">
+              <li data-src="S62"><a href="https://help.cint.com/docs/view-target-groups-eligible-for-reconciliation-faq">Cint Help, View target groups eligible for reconciliation FAQ</a></li>
+              <li data-src="S59"><a href="https://help.cint.com/docs/approve-completes-reconciliation">Cint Help, Submit approve completes reconciliation</a></li>
+              <li data-src="S60"><a href="https://help.cint.com/docs/approve-reconciliation-faq">Cint Help, Approve Completes Reconciliation FAQ</a></li>
+              <li data-src="S51"><a href="https://www.cint.com/blog/data-quality-review-2025/">Cint blog, Data quality review 2025</a></li>
+              <li data-src="S50"><a href="https://www.cint.com/blog/introducing-the-global-data-quality-feedback-loop/">Cint blog, Introducing the global data quality feedback loop</a></li>
+              <li data-src="S68"><a href="https://help.cint.com/docs/supply-reconciliations-report">Cint Help, Supply Reconciliations Report</a></li>
+              <li data-src="S91"><a href="https://help.cint.com/docs/product-release-notes-october-30-2026">Cint Help, Product release notes: October 30, 2026</a></li>
+              <li data-src="S71"><a href="https://help.cint.com/docs/payment-process-for-cint-exchange-suppliers">Cint Help, Payment process for Cint Exchange suppliers</a></li>
+            </ol>
+            <h3>Partners and gates</h3>
+            <ol start="24">
+              <li data-src="S1"><a href="https://jobs.smartrecruiters.com/Cint/744000157982099">Cint, AI Workflow Transformation Lead (London), SmartRecruiters</a></li>
+              <li data-src="S5"><a href="https://builtinlondon.uk/job/director-enterprise-ai-transformation/10081486">Cint, Director, Enterprise AI Transformation (Built In London copy)</a></li>
+              <li data-src="S157"><a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/when-do-we-need-to-do-a-dpia">ICO, When do we need to do a DPIA?</a></li>
+            </ol>
+            <h3>Beyond this workflow</h3>
+            <ol start="27">
+              <li data-src="S93"><a href="https://jobs.smartrecruiters.com/Cint/744000157448229">Cint, Senior Manager, Global Coverage/Project Manager, SmartRecruiters</a></li>
+              <li data-src="S95"><a href="https://jobs.smartrecruiters.com/Cint/744000159421229">Cint, Client Success Specialist, Media Measurement, SmartRecruiters</a></li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Cint. Independent and illustrative; uses public information only.</p>
+      <p>Hemanth Vallamkonda, London. <a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a>, <a href="tel:+447553909828">+44 7553 909828</a>. Right to work in the UK; no sponsorship required. <a class="pdf-link" href="deliverable.pdf">PDF version</a></p>
+    </div>
+  </footer>
+  <script>
+    /* A strip tile or a step link opens the row it jumps to. Without script the link still jumps. */
+    (function () {
+      function openRow(hash) {
+        if (!hash || hash.indexOf('#step-') !== 0) return;
+        var row = document.getElementById(hash.replace('#', ''));
+        var d = row && row.querySelector('details');
+        if (d) d.open = true;
+      }
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#step-"]');
+        if (a) openRow(a.getAttribute('href'));
+      });
+      window.addEventListener('hashchange', function () { openRow(location.hash); });
+      openRow(location.hash);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{
+  "_label": "Synthetic data. A headless n8n run of evidence-pack.n8n.json (manual trigger, mock mode, review queue), compared with run-evals.mjs.",
+  "n8nVersion": "2.46.4",
+  "ranOn": "2026-11-03",
+  "command": "n8n import:workflow --input=evidence-pack.n8n.json, then n8n execute --id=<id> --rawOutput",
+  "executionError": null,
+  "nodesRan": [
+    "Run on the synthetic cases (manual)",
+    "Config",
+    "Load case(s) (synthetic)",
+    "Deterministic checks",
+    "Who drafts the pack?",
+    "Pack from the code check (no model)",
+    "Draft pack (mock model)",
+    "All drafts",
+    "Validate pack (schema and contract)",
+    "Log the draft",
+    "Queue or wait?",
+    "Analyst queue (nothing sent or changed)",
+    "Run summary"
+  ],
+  "summary": {
+    "packs": 8,
+    "validPacks": 8,
+    "manualRoute": 0,
+    "notEnoughEvidence": 3,
+    "awaitingAnalyst": 8,
+    "decided": 0
+  },
+  "cases": [
+    {
+      "caseId": "SYN-01",
+      "draftedBy": "mock",
+      "reading": "consistent_with_stated_reason",
+      "confidence": "high",
+      "status": "awaiting_analyst",
+      "expectedReading": "consistent_with_stated_reason",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-02",
+      "draftedBy": "mock",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "status": "awaiting_analyst",
+      "expectedReading": "not_enough_evidence",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-03",
+      "draftedBy": "mock",
+      "reading": "consistent_with_stated_reason",
+      "confidence": "high",
+      "status": "awaiting_analyst",
+      "expectedReading": "consistent_with_stated_reason",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-04",
+      "draftedBy": "mock",
+      "reading": "not_consistent_with_stated_reason",
+      "confidence": "high",
+      "status": "awaiting_analyst",
+      "expectedReading": "not_consistent_with_stated_reason",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-05",
+      "draftedBy": "mock",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "status": "awaiting_analyst",
+      "expectedReading": "not_enough_evidence",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-06",
+      "draftedBy": "code",
+      "reading": "code_not_on_acceptable_list",
+      "confidence": "not_applicable",
+      "status": "awaiting_analyst",
+      "expectedReading": "code_not_on_acceptable_list",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-07",
+      "draftedBy": "mock",
+      "reading": "not_enough_evidence",
+      "confidence": "not_applicable",
+      "status": "awaiting_analyst",
+      "expectedReading": "not_enough_evidence",
+      "packIdenticalToOfflineHarness": true
+    },
+    {
+      "caseId": "SYN-08",
+      "draftedBy": "mock",
+      "reading": "partly_consistent_with_stated_reason",
+      "confidence": "low",
+      "status": "awaiting_analyst",
+      "expectedReading": "partly_consistent_with_stated_reason",
+      "packIdenticalToOfflineHarness": true
+    }
+  ],
+  "parity": "every pack identical to the offline harness; every reading as expected"
+}

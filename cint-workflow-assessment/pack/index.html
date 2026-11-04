@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evidence pack, built</title>
+  <meta name="description" content="The working version of the one AI-assisted step in the reconciliation-cycle assessment: a prompt contract, an output schema, eight synthetic cases, an importable n8n workflow and an offline evaluation.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Evidence pack, built">
+  <meta property="og:description" content="Prompt contract, schema, synthetic cases, an n8n workflow with an analyst gate, and offline evaluation results.">
+  <meta property="og:image" content="https://growthforge.github.io/applications/cint-workflow-assessment/og.png">
+  <meta property="og:url" content="https://growthforge.github.io/applications/cint-workflow-assessment/pack/">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../assets/fonts/moderustic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+/* tokens.css */
+/*
+  Build Studio design tokens
+  ---------------------------------------------------------------------------
+  Load order: tokens.css, components.css, print.css (print last so it wins).
+
+  Per deliverable you normally set ONE variable, the brand accent:
+      :root { --brand: #1d5c8a; }
+  The light theme uses it as is (white text sits on it, so pick a colour with
+  at least 4.5:1 against white). The dark theme derives a lighter tint from it
+  automatically. Optional fine-tuning, only if axe flags contrast:
+      :root { --brand-dark: #9cc3e0; --brand-ink: #ffffff; --brand-ink-dark: #0d1117; }
+
+  Themes: follows prefers-color-scheme, and [data-theme="light"|"dark"] on
+  <html> overrides it. Print always renders light (see print.css).
+
+  Font families: at most two. --font-sans (system UI stack) for body and UI,
+  --font-display (system serif stack) for headings. A deliverable that wants a
+  single family sets  :root { --font-display: var(--font-sans); }
+*/
+
+:root {
+  /* ---- Brand hook (the only thing most deliverables change) ---- */
+  --brand: #1d5c8a;
+
+  /* ---- Type families (two at most) ---- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+
+  /* ---- Fluid type scale (ratio about 1.2 at small sizes, 1.25 at large) ---- */
+  --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --step--1: clamp(0.84rem, 0.81rem + 0.15vw, 0.92rem);
+  --step-0:  clamp(1.00rem, 0.96rem + 0.20vw, 1.10rem);
+  --step-1:  clamp(1.18rem, 1.10rem + 0.40vw, 1.38rem);
+  --step-2:  clamp(1.40rem, 1.26rem + 0.70vw, 1.75rem);
+  --step-3:  clamp(1.66rem, 1.44rem + 1.10vw, 2.25rem);
+  --step-4:  clamp(1.98rem, 1.62rem + 1.80vw, 2.90rem);
+  --step-5:  clamp(2.30rem, 1.80rem + 2.50vw, 3.60rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.6;
+  --measure: 68ch;
+  --weight-regular: 400;
+  --weight-medium: 550;
+  --weight-bold: 700;
+  --tracking-caps: 0.06em;
+
+  /* ---- Spacing: a 4 / 8 px scale ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --gutter: var(--space-4);          /* 16px side gutter on phones */
+  --content-max: 1120px;
+  --content-narrow: 760px;
+
+  /* ---- Radius and elevation ---- */
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* ---- Motion ---- */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Light theme colour roles (default) ---- */
+  color-scheme: light;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --surface-2: #f2f0ec;
+  --text: #1b1d21;
+  --text-muted: #53575e;
+  --border: #dcd8d1;
+  --border-strong: #8a867f;          /* 3:1 on bg, for control outlines */
+  --accent: var(--brand);
+  --accent-ink: var(--brand-ink, #ffffff);
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --focus: #b45309;
+
+  /* Work-allocation roles. -ink is text or fill, -bg is the tint behind it.
+     Every ink meets 4.5:1 on its own -bg, on --surface and on --bg. */
+  --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+  --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+  --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+  --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+
+  --shadow-1: 0 1px 2px rgb(20 22 26 / 0.06), 0 1px 1px rgb(20 22 26 / 0.04);
+  --shadow-2: 0 6px 18px rgb(20 22 26 / 0.08), 0 2px 4px rgb(20 22 26 / 0.05);
+}
+
+/* Dark theme, applied two ways: system preference (unless the page forces
+   light) and an explicit [data-theme="dark"] override. Keep both blocks equal. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121417;
+    --surface: #1a1d21;
+    --surface-2: #23272c;
+    --text: #ecebe7;
+    --text-muted: #a8acb2;
+    --border: #343a41;
+    --border-strong: #7d848c;
+    --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+    --accent-ink: var(--brand-ink-dark, #0d1117);
+    --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    --focus: #f5b84a;
+    --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+    --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+    --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+    --escalate: #f4a397;    --escalate-bg: #3d1d19;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121417;
+  --surface: #1a1d21;
+  --surface-2: #23272c;
+  --text: #ecebe7;
+  --text-muted: #a8acb2;
+  --border: #343a41;
+  --border-strong: #7d848c;
+  --accent: var(--brand-dark, color-mix(in srgb, var(--brand) 38%, #ffffff));
+  --accent-ink: var(--brand-ink-dark, #0d1117);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --focus: #f5b84a;
+  --human-led: #a9c1ec;   --human-led-bg: #1d2a40;
+  --ai-assist: #7fd6c2;   --ai-assist-bg: #12322c;
+  --ai-automate: #c9adef; --ai-automate-bg: #2d2240;
+  --escalate: #f4a397;    --escalate-bg: #3d1d19;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; }
+}
+
+/* components.css */
+/*
+  Build Studio components. Requires tokens.css first.
+  Every class is documented in design-system/demo.html, which uses all of them.
+
+  Contents
+    1. Base and typography      6. Matrices (2x2, allocation grid)
+    2. Layout primitives        7. Tables
+    3. Skip link, focus, a11y   8. Callouts, chips, badges
+    4. Header, hero, sections   9. Tabs and step-through (enhanced by components.js)
+    5. Cards, stats, timeline  10. Footer, buttons, theme toggle, motion
+*/
+
+/* 1. Base and typography ------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-5); letter-spacing: -0.01em; }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); line-height: var(--leading-snug); }
+h4 { font-size: var(--step-0); font-family: var(--font-sans); line-height: var(--leading-snug); }
+p, ul, ol, dl, figure, blockquote, pre, table { margin: 0; }
+p, li, dd { max-width: var(--measure); }
+ul, ol { padding-left: 1.25em; }
+li + li { margin-top: var(--space-1); }
+strong { font-weight: var(--weight-bold); }
+small, .small { font-size: var(--step--1); }
+.muted { color: var(--text-muted); }
+.lede { font-size: var(--step-1); line-height: var(--leading-snug); color: var(--text-muted); max-width: 60ch; }
+.eyebrow {
+  font-size: var(--step--1);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.num { font-variant-numeric: tabular-nums lining-nums; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+img, svg, video { max-width: 100%; height: auto; display: block; }
+code, kbd, samp, pre { font-size: 0.92em; }
+code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: var(--radius-1); }
+pre { background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-2); max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre code { background: none; padding: 0; }
+hr { border: 0; border-top: var(--border-width) solid var(--border); margin: var(--space-6) 0; }
+blockquote { border-left: 3px solid var(--accent); padding-left: var(--space-4); color: var(--text-muted); }
+
+/* 2. Layout primitives --------------------------------------------------- */
+.wrap { width: 100%; max-width: var(--content-max); margin-inline: auto; padding-inline: var(--gutter); }
+.wrap--narrow { max-width: var(--content-narrow); }
+.stack > * + * { margin-top: var(--stack-gap, var(--space-4)); }
+.stack--tight { --stack-gap: var(--space-2); }
+.stack--loose { --stack-gap: var(--space-6); }
+.cluster { display: flex; flex-wrap: wrap; gap: var(--cluster-gap, var(--space-2)); align-items: center; }
+.grid { display: grid; gap: var(--grid-gap, var(--space-5)); grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min, 240px)), 1fr)); }
+.grid--2 { --grid-min: 320px; }
+.grid--4 { --grid-min: 200px; }
+.split { display: grid; gap: var(--space-6); }
+@media (min-width: 880px) { .split { grid-template-columns: 1fr 1fr; align-items: start; } }
+
+/* 3. Skip link, focus, accessibility helpers ---------------------------- */
+.skip-link {
+  position: absolute; left: var(--space-2); top: var(--space-2); z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface); color: var(--text); border: 2px solid var(--text); border-radius: var(--radius-2);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); border-radius: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[tabindex="-1"]:focus { outline: none; }
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* 4. Header, hero, sections --------------------------------------------- */
+.site-header { border-bottom: var(--border-width) solid var(--border); background: var(--surface); }
+.site-header__inner { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding-block: var(--space-3); }
+.site-header__title { font-weight: var(--weight-bold); font-size: var(--step--1); color: var(--text); text-decoration: none; }
+.site-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.site-nav li + li { margin-top: 0; }
+.site-nav a { font-size: var(--step--1); color: var(--text); display: inline-block; padding-block: var(--space-1); }
+.hero { padding-block: var(--space-8) var(--space-7); border-bottom: var(--border-width) solid var(--border); }
+.hero h1 { max-width: 20ch; }
+.hero .lede { margin-top: var(--space-4); }
+.hero__meta { margin-top: var(--space-5); }
+.section { padding-block: var(--space-8); }
+.section + .section { border-top: var(--border-width) solid var(--border); }
+.section__head { margin-bottom: var(--space-6); max-width: var(--measure); }
+.section__head > * + * { margin-top: var(--space-2); }
+.section--alt { background: var(--surface-2); }
+
+/* 5. Cards, stat tiles, timeline ---------------------------------------- */
+.card {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-3);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+}
+.card > * + * { margin-top: var(--space-3); }
+.card--accent { border-top: 4px solid var(--accent); }
+.card--flat { box-shadow: none; background: var(--surface-2); border-color: transparent; }
+.card__kicker { font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+
+.stats { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.stat {
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.stat__value { font-family: var(--font-display); font-size: var(--step-3); line-height: 1; font-weight: var(--weight-bold); font-variant-numeric: tabular-nums lining-nums; color: var(--text); }
+.stat__label { font-weight: var(--weight-medium); }
+.stat__note { font-size: var(--step--1); color: var(--text-muted); }
+
+.timeline { list-style: none; padding: 0; margin: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.timeline__item { position: relative; padding-left: var(--space-6); padding-bottom: var(--space-5); }
+.timeline__item + .timeline__item { margin-top: 0; }
+.timeline__item::before {
+  content: ""; position: absolute; left: 0; top: 0.35em; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--surface); border: 3px solid var(--accent);
+}
+.timeline__when { display: block; font-size: var(--step--1); font-weight: var(--weight-bold); color: var(--accent); letter-spacing: 0.02em; }
+.timeline__title { margin-top: var(--space-1); }
+.timeline__item > p { margin-top: var(--space-2); }
+
+/* 6. Matrices ------------------------------------------------------------ */
+/* 2x2: y axis label on the left, x axis label below, four quadrants. */
+.matrix { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 1fr auto; gap: var(--space-2); }
+.matrix__y { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__x { grid-column: 2; text-align: center; font-size: var(--step--1); color: var(--text-muted); font-weight: var(--weight-medium); }
+.matrix__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
+.matrix__cell { margin: 0; background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-2); padding: var(--space-4); min-height: 9rem; }
+.matrix__cell + .matrix__cell { margin-top: 0; }
+.matrix__cell h4 { margin-bottom: var(--space-2); }
+.matrix__cell ul { padding-left: 1.1em; font-size: var(--step--1); }
+.matrix__cell--focus { border: 2px solid var(--accent); background: var(--accent-soft); }
+@media (max-width: 520px) {
+  .matrix { grid-template-columns: 1fr; }
+  .matrix__y { writing-mode: horizontal-tb; transform: none; }
+  .matrix__x { grid-column: 1; }
+  .matrix__grid { grid-template-columns: 1fr; }
+  .matrix__cell { min-height: 0; }
+}
+
+/* Allocation grid: one lane per work-allocation role. */
+.alloc { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+.alloc__lane { border-radius: var(--radius-2); padding: var(--space-4); border-top: 4px solid var(--lane-ink); background: var(--lane-bg); color: var(--text); }
+.alloc__lane h4 { color: var(--lane-ink); display: flex; gap: var(--space-2); align-items: center; }
+.alloc__lane ul { list-style: none; padding: 0; margin-top: var(--space-3); }
+.alloc__lane li { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-1); padding: var(--space-2) var(--space-3); font-size: var(--step--1); }
+.alloc__lane li + li { margin-top: var(--space-2); }
+.alloc__lane--human    { --lane-ink: var(--human-led);   --lane-bg: var(--human-led-bg); }
+.alloc__lane--assist   { --lane-ink: var(--ai-assist);   --lane-bg: var(--ai-assist-bg); }
+.alloc__lane--automate { --lane-ink: var(--ai-automate); --lane-bg: var(--ai-automate-bg); }
+.alloc__lane--escalate { --lane-ink: var(--escalate);    --lane-bg: var(--escalate-bg); }
+
+/* 7. Tables -------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; max-width: 100%; border: var(--border-width) solid var(--border); border-radius: var(--radius-2); background: var(--surface); }
+.table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.table caption { text-align: left; padding: var(--space-3) var(--space-4); font-weight: var(--weight-medium); color: var(--text-muted); caption-side: top; }
+.table th, .table td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4); border-top: var(--border-width) solid var(--border); }
+.table thead th { background: var(--surface-2); font-weight: var(--weight-bold); border-top: 0; white-space: nowrap; }
+.table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table tbody tr:hover { background: var(--accent-soft); }
+
+/* 8. Callouts, chips, badges -------------------------------------------- */
+.callout { border-left: 4px solid var(--callout-ink, var(--accent)); background: var(--callout-bg, var(--accent-soft)); padding: var(--space-4) var(--space-5); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
+.callout > * + * { margin-top: var(--space-2); }
+.callout__title { font-weight: var(--weight-bold); font-family: var(--font-sans); font-size: var(--step-0); }
+.callout--note { --callout-ink: var(--human-led); --callout-bg: var(--human-led-bg); }
+.callout--caution { --callout-ink: var(--escalate); --callout-bg: var(--escalate-bg); }
+
+.chip, .badge {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  font-size: var(--step--1); font-weight: var(--weight-medium); line-height: 1.2;
+  padding: 0.3em 0.7em; border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--chip-ink, var(--border-strong));
+  color: var(--chip-ink, var(--text)); background: var(--chip-bg, var(--surface));
+  white-space: nowrap;
+}
+.badge { border-radius: var(--radius-1); text-transform: uppercase; letter-spacing: var(--tracking-caps); font-size: var(--step--2); font-weight: var(--weight-bold); }
+.badge--accent { --chip-ink: var(--accent); --chip-bg: var(--accent-soft); }
+/* The four work-allocation roles: colour plus a distinct shape, never colour alone. */
+.chip--human    { --chip-ink: var(--human-led);   --chip-bg: var(--human-led-bg); }
+.chip--assist   { --chip-ink: var(--ai-assist);   --chip-bg: var(--ai-assist-bg); }
+.chip--automate { --chip-ink: var(--ai-automate); --chip-bg: var(--ai-automate-bg); }
+.chip--escalate { --chip-ink: var(--escalate);    --chip-bg: var(--escalate-bg); }
+.chip--human::before, .chip--assist::before, .chip--automate::before, .chip--escalate::before {
+  content: ""; flex: none; width: 0.7em; height: 0.7em; border: 2px solid currentColor; border-radius: 50%;
+}
+.chip--assist::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.chip--automate::before { background: currentColor; }
+.chip--escalate::before { border-radius: 1px; transform: rotate(45deg) scale(0.85); background: currentColor; }
+
+/* 9. Tabs and step-through ---------------------------------------------- */
+/* Without JS: the tab list is a list of in-page links and every panel shows.
+   components.js upgrades [data-tabs] to the ARIA tabs pattern. */
+.tabs__list { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; gap: var(--space-2); border-bottom: var(--border-width) solid var(--border); }
+.tabs__list li + li { margin-top: 0; }
+.tabs__list a, .tabs__list [role="tab"] {
+  display: inline-block; padding: var(--space-2) var(--space-4); min-height: 44px; line-height: 28px;
+  color: var(--text-muted); text-decoration: none; font-weight: var(--weight-medium);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tabs__list [role="tab"][aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tabs__list a:hover { color: var(--text); }
+.tabs__panel > * + * { margin-top: var(--space-3); }
+.tabs:not(.is-enhanced) .tabs__panel + .tabs__panel { margin-top: var(--space-6); }
+.tabs__panel:focus-visible { outline-offset: 6px; }
+
+/* Step-through: an ordered list that components.js turns into one-step-at-a-time
+   with Previous / Next controls and a live status. All steps show without JS. */
+.stepper { background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-3); padding: var(--space-5); }
+.stepper__steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.stepper__step { counter-increment: step; }
+.stepper__step + .stepper__step { margin-top: var(--space-5); padding-top: var(--space-5); border-top: var(--border-width) solid var(--border); }
+.stepper.is-enhanced .stepper__step + .stepper__step { margin-top: 0; padding-top: 0; border-top: 0; }
+.stepper__step > * + * { margin-top: var(--space-3); }
+.stepper__step h3 { outline: none; }
+.stepper__bar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; margin-top: var(--space-5); padding-top: var(--space-4); border-top: var(--border-width) solid var(--border); }
+.stepper__dots { display: flex; gap: var(--space-1); list-style: none; padding: 0; margin: 0; }
+.stepper__dots li + li { margin-top: 0; }
+.stepper__dot { width: 24px; height: 24px; border-radius: 50%; background: transparent; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.stepper__dot::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); }
+.stepper__dot[aria-current="step"]::before { background: var(--accent); }
+.stepper__status { font-size: var(--step--1); color: var(--text-muted); margin: 0; }
+
+/* 10. Footer, buttons, theme toggle, motion ----------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; padding: var(--space-2) var(--space-5);
+  font: inherit; font-weight: var(--weight-medium); line-height: 1.2;
+  border-radius: var(--radius-2); border: 2px solid var(--accent);
+  background: var(--accent); color: var(--accent-ink); text-decoration: none; cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, var(--text)); }
+.btn--ghost { background: transparent; color: var(--accent); }
+.btn--ghost:hover { background: var(--accent-soft); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+.theme-toggle { font: inherit; font-size: var(--step--1); min-height: 36px; padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); border: var(--border-width) solid var(--border-strong); background: var(--surface); color: var(--text); cursor: pointer; }
+
+.site-footer { border-top: var(--border-width) solid var(--border); background: var(--surface-2); padding-block: var(--space-7); font-size: var(--step--1); color: var(--text-muted); }
+.site-footer__inner > * + * { margin-top: var(--space-3); }
+.site-footer__disclaimer { color: var(--text); font-weight: var(--weight-medium); }
+.site-footer a { color: var(--text); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* print.css */
+/*
+  Build Studio print styles: portrait A4, light theme only, nothing clipped.
+  Load after tokens.css and components.css. Everything is wrapped in
+  @media print, so it can be linked normally or inlined.
+
+  pdf.mjs assumes the @page side margins below (16mm) when it checks that no
+  element is wider than the printable area. Change both together.
+
+  Opt-outs and helpers:
+    .no-print            hidden in print
+    .print-only          hidden on screen, shown in print
+    .page-break-before   force a new page before this element
+    a.no-url             do not print the URL after this link
+*/
+
+.print-only { display: none; }
+
+@media print {
+  @page { size: A4 portrait; margin: 18mm 16mm 20mm 16mm; }
+
+  /* Force the light palette whatever the system or [data-theme] says. Same
+     specificity as the dark selectors in tokens.css; this file loads later. */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f4f2ee;
+    --text: #111316;
+    --text-muted: #45494f;
+    --border: #cfcac2;
+    --border-strong: #7a766f;
+    --accent: var(--brand);
+    --accent-ink: var(--brand-ink, #ffffff);
+    --accent-soft: color-mix(in srgb, var(--brand) 8%, #ffffff);
+    --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+    --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+    --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+    --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+    --shadow-1: none;
+    --shadow-2: none;
+  }
+
+  html { font-size: 10.5pt; }
+  body { background: #ffffff; color: var(--text); line-height: 1.45; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Hide screen-only chrome. */
+  .skip-link, .site-nav, .theme-toggle, .stepper__bar, .tabs__list, .no-print,
+  button, [role="tablist"] { display: none !important; }
+  .print-only { display: block; }
+
+  /* Every tab panel and every step is visible in print. */
+  .tabs__panel, .tabs__panel[hidden], .stepper__step, .stepper__step[hidden] { display: block !important; }
+  .tabs__panel + .tabs__panel, .stepper__step + .stepper__step {
+    margin-top: 6mm !important; padding-top: 4mm !important; border-top: 1px solid var(--border) !important;
+  }
+  /* Closed <details> open in print: components.js and pdf.mjs set open on
+     beforeprint; this rule covers browsers that support ::details-content. */
+  details > summary { list-style: none; font-weight: var(--weight-bold); }
+
+  /* Nothing clipped: scrollers expand, wide things shrink to the page. */
+  .table-wrap, pre, .stepper, .card, .alloc, .matrix { overflow: visible !important; max-width: 100% !important; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  img, svg, canvas, video, iframe { max-width: 100% !important; height: auto !important; }
+  .wrap { max-width: none; padding-inline: 0; }
+  .table { width: 100%; table-layout: auto; font-size: 9pt; }
+  .table th, .table td { padding: 2mm 2.5mm; word-break: normal; overflow-wrap: anywhere; }
+  .table thead th { white-space: normal; }
+  .table thead { display: table-header-group; }
+
+  /* Denser grids on paper (the printable width is about 670 CSS px). */
+  .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .alloc { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .grid { --grid-min: 180px; gap: 4mm; }
+  .stat__value { font-size: 20pt; }
+
+  /* Compact vertical rhythm on paper. */
+  .hero { padding-block: 0 6mm; }
+  .section { padding-block: 6mm; }
+  .section--alt { background: none; }
+  .site-footer { padding-block: 6mm 0; background: none; }
+
+  /* Page-break rules. */
+  h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  .card, .stat, .callout, .timeline__item, .matrix, .alloc__lane, .stepper__step,
+  figure, tr, img, svg, blockquote, pre { break-inside: avoid-page; page-break-inside: avoid; }
+  .section { break-inside: auto; }
+  p, li { orphans: 3; widows: 3; }
+  .page-break-before { break-before: page; page-break-before: always; }
+
+  /* Print external link targets after the text, where that helps a reader. */
+  main a[href^="http"]:not(.no-url)::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em; color: var(--text-muted); overflow-wrap: anywhere; word-break: break-all;
+  }
+  a { color: var(--text); text-decoration: underline; }
+}
+
+@media print {
+  /* Separate block: an engine that does not know ::details-content drops only this. */
+  details::details-content { content-visibility: visible !important; display: block !important; }
+}
+</style>
+<script>
+/*
+  Build Studio progressive enhancement. Load with <script defer>.
+  Every component works without this file (all content visible, in order).
+
+  [data-tabs]          link list + panels  ->  ARIA tabs (arrow keys, Home, End)
+  [data-stepper]       ordered list        ->  one step at a time, Previous / Next,
+                                               live status, focus moves to the step
+  [data-theme-toggle]  button [hidden]     ->  shown, cycles system, light, dark on <html data-theme>
+  beforeprint          opens every <details>, so print and PDF show everything
+
+  Generated step counters ("Step 2 of 5") sit inside an element carrying
+  data-ordinal, so factcheck.py treats them as ordinals, not claims.
+*/
+(function () {
+  'use strict';
+
+  function initTabs(root) {
+    var list = root.querySelector('.tabs__list');
+    if (!list) return;
+    var links = Array.prototype.slice.call(list.querySelectorAll('a[href^="#"]'));
+    var panels = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+    if (!links.length || panels.some(function (p) { return !p; })) return;
+
+    list.setAttribute('role', 'tablist');
+    if (root.dataset.label) list.setAttribute('aria-label', root.dataset.label);
+    Array.prototype.forEach.call(list.children, function (li) { li.setAttribute('role', 'presentation'); });
+
+    links.forEach(function (tab, i) {
+      var panel = panels[i];
+      if (!tab.id) tab.id = panel.id + '-tab';
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', panel.id);
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.setAttribute('tabindex', '0');
+      tab.addEventListener('click', function (e) { e.preventDefault(); select(i, true); });
+      tab.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % links.length;
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + links.length) % links.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = links.length - 1;
+        if (next !== null) { e.preventDefault(); select(next, true); }
+      });
+    });
+
+    function select(index, focus) {
+      links.forEach(function (tab, i) {
+        var on = i === index;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.setAttribute('tabindex', on ? '0' : '-1');
+        panels[i].hidden = !on;
+      });
+      if (focus) links[index].focus();
+    }
+
+    var start = 0;
+    var hash = window.location.hash.slice(1);
+    panels.forEach(function (p, i) { if (p.id === hash) start = i; });
+    select(start, false);
+    root.classList.add('is-enhanced');
+  }
+
+  function initStepper(root) {
+    var steps = Array.prototype.slice.call(root.querySelectorAll('.stepper__step'));
+    if (steps.length < 2) return;
+    var label = root.dataset.label || 'Step';
+    var current = 0;
+
+    var bar = document.createElement('div');
+    bar.className = 'stepper__bar';
+    var prev = button('Previous', 'btn btn--ghost');
+    var next = button('Next', 'btn');
+    var status = document.createElement('p');
+    status.className = 'stepper__status';
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('data-ordinal', '');
+    var dots = document.createElement('ol');
+    dots.className = 'stepper__dots';
+    dots.setAttribute('data-ordinal', '');
+    steps.forEach(function (step, i) {
+      var heading = step.querySelector('h2, h3, h4');
+      var li = document.createElement('li');
+      var dot = button('', 'stepper__dot');
+      dot.setAttribute('aria-label', 'Go to ' + label.toLowerCase() + ' ' + (i + 1) + (heading ? ': ' + heading.textContent.trim() : ''));
+      dot.addEventListener('click', function () { show(i, true); });
+      li.appendChild(dot);
+      dots.appendChild(li);
+    });
+    var controls = document.createElement('div');
+    controls.className = 'cluster';
+    controls.appendChild(prev);
+    controls.appendChild(next);
+    bar.appendChild(dots);
+    bar.appendChild(status);
+    bar.appendChild(controls);
+    root.appendChild(bar);
+
+    prev.addEventListener('click', function () { show(current - 1, true); });
+    next.addEventListener('click', function () { show(current + 1, true); });
+
+    function button(text, cls) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = cls;
+      if (text) b.textContent = text;
+      return b;
+    }
+
+    function show(i, moveFocus) {
+      current = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach(function (s, k) { s.hidden = k !== current; });
+      Array.prototype.forEach.call(dots.querySelectorAll('button'), function (d, k) {
+        if (k === current) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current');
+      });
+      prev.disabled = current === 0;
+      next.disabled = current === steps.length - 1;
+      status.textContent = label + ' ' + (current + 1) + ' of ' + steps.length;
+      if (moveFocus) {
+        var h = steps[current].querySelector('h2, h3, h4') || steps[current];
+        h.setAttribute('tabindex', '-1');
+        h.focus({ preventScroll: false });
+      }
+    }
+
+    root.classList.add('is-enhanced');
+    show(0, false);
+  }
+
+  function initThemeToggle(btn) {
+    var order = ['system', 'light', 'dark'];
+    var html = document.documentElement;
+    function state() { return html.getAttribute('data-theme') || 'system'; }
+    function render() { btn.textContent = 'Theme: ' + state(); }
+    btn.hidden = false;   // ship the button with [hidden]; it only works with JS
+    btn.addEventListener('click', function () {
+      var nextState = order[(order.indexOf(state()) + 1) % order.length];
+      if (nextState === 'system') html.removeAttribute('data-theme'); else html.setAttribute('data-theme', nextState);
+      render();
+    });
+    render();
+  }
+
+  var openedForPrint = [];
+  window.addEventListener('beforeprint', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('details:not([open])'), function (d) { d.open = true; openedForPrint.push(d); });
+  });
+  window.addEventListener('afterprint', function () {
+    openedForPrint.forEach(function (d) { d.open = false; });
+    openedForPrint = [];
+  });
+
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tabs]'), initTabs);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-stepper]'), initStepper);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-theme-toggle]'), initThemeToggle);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+  <link rel="stylesheet" href="../assets/redrawn.css">
+</head>
+<body class="pack-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="site-header__title" href="../">Hemanth Vallamkonda</a>
+      <nav class="site-nav" aria-label="Pack">
+        <ul>
+          <li><a href="../#gates">Back to the assessment</a></li>
+          <li><a href="cint-evidence-pack.zip">Download the pack (zip)</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="wrap pack-doc stack" data-illustrative>
+    <h1>Step 3, built: the evidence pack</h1>
+<p>This is the working version of the one AI-assisted step on the assessment page: map step 3, screening flagged reconciliation reversals. Code checks the evidence, a model drafts a short evidence pack inside bounds the code sets, a validator rejects any pack that breaks the contract, and an analyst decides. Every case is synthetic and no credentials are included, so it can be read, run and imported without access to anything.</p>
+    <p class="pack-note"><strong>Illustrative data:</strong> every case in this pack is synthetic, invented to test the harness.</p>
+<p>The three reason codes it encodes come from the public Cint Exchange Reconciliation Policy; nothing else here describes Cint's systems, data or volumes.</p>
+<h2 id="what-is-in-the-pack">What is in the pack</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="File, What it is"><table class="table"><thead><tr><th scope="col">File</th><th scope="col">What it is</th></tr></thead><tbody><tr><td><a href="evidence-pack.prompt.md">evidence-pack.prompt.md</a></td><td>The prompt contract: the call, what the model receives and returns, the system prompt, and the rules checked afterwards</td></tr><tr><td><a href="evidence-pack.schema.json">evidence-pack.schema.json</a></td><td>The output schema, sent as structured output and checked again on the way back. It has no field for a decision</td></tr><tr><td><a href="synthetic-cases.json">synthetic-cases.json</a></td><td>Eight invented flagged reversals, each with the result it must produce. Three must return "not enough evidence"</td></tr><tr><td><a href="harness.mjs">harness.mjs</a></td><td>The harness core: deterministic checks, the request, the mock model, validation, the analyst gate and the log. No dependencies</td></tr><tr><td><a href="run-evals.mjs">run-evals.mjs</a></td><td>The offline evaluation; optional live run against Claude</td></tr><tr><td><a href="eval-results.md">eval-results.md</a></td><td>The offline results, also shown below</td></tr><tr><td><a href="evidence-pack.n8n.json">evidence-pack.n8n.json</a></td><td>The importable n8n workflow. Its Code nodes hold the same harness core the evaluation tests</td></tr><tr><td><a href="n8n-run-mock.json">n8n-run-mock.json</a></td><td>A headless run of that workflow in n8n, compared pack by pack with the offline harness</td></tr><tr><td><a href="cint-evidence-pack.zip">cint-evidence-pack.zip</a></td><td>All of the above in one download</td></tr></tbody></table></div>
+<h2 id="how-the-work-is-split">How the work is split</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Stage, Done by, May, May not"><table class="table"><thead><tr><th scope="col">Stage</th><th scope="col">Done by</th><th scope="col">May</th><th scope="col">May not</th></tr></thead><tbody><tr><td>Check</td><td>Code</td><td>Test the reason code against the published list, measure evidence coverage, count the signal, flag set-up changes after launch, and set which readings and how much confidence a pack may state</td><td>Guess, or call a model</td></tr><tr><td>Draft</td><td>The model (a mock by default)</td><td>Write the pack in plain words: claims with sources, a reading from the allowed list, what is missing, a short note for the analyst</td><td>Choose a reading outside the bounds, compute figures, quote RIDs, recommend an outcome, or act on text inside the case</td></tr><tr><td>Validate</td><td>Code</td><td>Withhold any pack that fails the schema or one of eleven contract rules, and send the case to today's manual route</td><td>Repair a pack and pass it on</td></tr><tr><td>Decide</td><td>The analyst</td><td>Send the case to audit (the existing notice and form), close it without audit, or escalate to the Trust and Safety lead, with a recorded reason and feedback on the pack</td><td>Skip the reason</td></tr><tr><td>Log</td><td>Code</td><td>Append every pack, valid or not, and every decision, with a digest of the checks it was drafted against</td><td>Store the case evidence itself</td></tr></tbody></table></div>
+<h2 id="the-autonomy-ceiling">The autonomy ceiling</h2>
+<ul><li><strong>AI-assisted.</strong> The model drafts a pack and a reviewer note. Nothing in the workflow changes a reversal's status, sends a message to a buyer or supplier, posts an adjustment or makes a decision of record.</li><li><strong>Bounds live in code.</strong> The reason-code check uses the published list, never the model's memory. Coverage floors and signal thresholds sit in <code>DEFAULT_CONFIG</code> and cannot be set by a caller.</li><li><strong>Not enough evidence is an answer.</strong> When coverage is low, grid answers are missing or the set-up changed after launch, the only reading allowed is "not enough evidence", with what is missing.</li><li><strong>Stop rule.</strong> Switch the step off and fall back to the manual route if the appeal-overturn rate rises above its baseline in any cycle.</li><li><strong>Raising the ceiling.</strong> Only through the Steering Group, on evidence: this evaluation, the audit log and the guard measure. A better model does not reopen the question, because the constraint is accountability, not accuracy.</li></ul>
+<h2 id="run-the-evaluation-no-key-no-install">Run the evaluation (no key, no install)</h2>
+<p>Needs Node 18 or later.</p>
+<pre><code>node run-evals.mjs</code></pre>
+<p>It runs the deterministic checks on all eight cases, drafts each pack with the mock model, validates them, then tries twelve tampered packs that the validator must reject (an invented count, a recommendation, a reading past the bounds, a decision field, a missed injected instruction and others), plus reply parsing and the analyst gate. It writes <code>eval-results.md</code> and <code>eval-results.json</code> and exits non-zero on any failure.</p>
+<h2 id="run-it-against-claude-optional">Run it against Claude (optional)</h2>
+<pre><code>ANTHROPIC_API_KEY=your-key node run-evals.mjs --live</code></pre>
+<p>Each case that needs the model is sent once to <code>claude-opus-5-5</code> with the schema as structured output, and the reply is checked by the same validator. Results go to <code>eval-results.live.md</code>. The key stays in your environment; it is never written to a file.</p>
+<h2 id="import-into-n8n">Import into n8n</h2>
+<ol><li>In n8n, choose <strong>Import from file</strong> and select <code>evidence-pack.n8n.json</code>.</li><li><strong>Execute workflow.</strong> The manual trigger runs all eight synthetic cases with the mock model and the review queue. The last node, <strong>Run summary</strong>, shows each pack's reading and status.</li><li><strong>To use Claude,</strong> create an HTTP Header Auth credential (name <code>x-api-key</code>, value your key), attach it to <strong>Claude: draft evidence pack</strong>, and set <code>mode</code> to <code>claude</code> in <strong>Config</strong>. Or send this body to the webhook:</li></ol>
+<pre><code>{ "config": { "mode": "claude" } }</code></pre>
+<ol start="4"><li><strong>To try the live analyst gate,</strong> add your notification host to <code>notifyHosts</code> in <strong>Config</strong>, then send this body to the webhook path <code>cint-evidence-pack</code>:</li></ol>
+<pre><code>{
+  "caseId": "SYN-04",
+  "config": { "reviewMode": "wait", "notifyUrl": "https://your-host/..." }
+}</code></pre>
+<p>The execution pauses at <strong>Wait for the analyst's decision</strong> until the analyst sends a decision like this one to the resume URL in the notification:</p>
+<pre><code>{ "decision": "send_to_audit", "analyst": "A1", "reason": "...", "packFeedback": "accepted" }</code></pre>
+<p>Before any real use: put header authentication on the webhook, replace <strong>Load case(s)</strong> with the lookup in the existing queue, write the log to an approved append-only store instead of workflow static data, and take the step through the DPO screen and the InfoSec review. The build, buy or configure choice belongs to AI/Data Architecture; this pack is a prototype to make that conversation concrete, not a tool choice.</p>
+<h2 id="what-has-been-tested">What has been tested</h2>
+<ul><li><strong>The evaluation:</strong> <code>node run-evals.mjs</code>, all offline checks passing (results below).</li><li><strong>The workflow file:</strong> a structural test (unique node ids and names, every connection resolves, every node reachable from a trigger, every switch output wired, every Code node parses and holds the harness verbatim, no credentials), plus a sandboxed run of its Code nodes along the connections.</li><li><strong>A real n8n run:</strong> imported into n8n 2.46.4 and executed headless with the manual trigger, mock mode and the review queue. Thirteen nodes ran and all eight packs were identical to the offline harness (<a href="n8n-run-mock.json">n8n-run-mock.json</a>).</li><li><strong>Not yet tested:</strong> the live model call and the live Wait-node gate with a real notification host. Both need credentials the reviewer supplies.</li></ul>
+<h2 id="the-eight-synthetic-cases">The eight synthetic cases</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Case, What it tests, Must return"><table class="table"><thead><tr><th scope="col">Case</th><th scope="col">What it tests</th><th scope="col">Must return</th></tr></thead><tbody><tr><td>SYN-01</td><td>Speeder reversal with every completion time recorded (Reversal A on the page)</td><td>Consistent with the stated reason, high confidence</td></tr><tr><td>SYN-02</td><td>Speeder reversal with few completion times recorded (Reversal B on the page)</td><td>Not enough evidence</td></tr><tr><td>SYN-03</td><td>Straight-lining reversal with grid answers for every complete</td><td>Consistent, high confidence</td></tr><tr><td>SYN-04</td><td>Speeder reversal the times do not support, with an instruction hidden in the buyer comment</td><td>Not consistent, and the instruction flagged</td></tr><tr><td>SYN-05</td><td>Speeder reversal after the survey was shortened during fieldwork</td><td>Not enough evidence: a survey-side cause must be ruled out first</td></tr><tr><td>SYN-06</td><td>Reversal submitted with a survey-side reason code</td><td>Code not on the acceptable list; the model is never called</td></tr><tr><td>SYN-07</td><td>Straight-lining reversal without grid answers in the export</td><td>Not enough evidence</td></tr><tr><td>SYN-08</td><td>Speeder reversal with a mixed picture</td><td>Partly consistent, low confidence</td></tr></tbody></table></div>
+<h2 id="reuse">Reuse</h2>
+<p>Steps 7 and 8 on the map use the same pattern with their own checks and schema: code bounds the output, the model drafts, the validator withholds anything outside the contract, a person approves, and the log records both. That is the reusable part, more than any one prompt.</p>
+    <section class="pack-results stack" aria-labelledby="evaluation-results">
+      <h2 id="evaluation-results">Evaluation results</h2>
+<p>Run on 2026-11-04 with <code>node run-evals.mjs</code> (harness 1.0.0, Node 22.22.3). Model calls are mocked: <code>mockDraft</code> in <code>harness.mjs</code> stands in for Claude. Every case is synthetic.</p>
+<p><strong>80 of 80 checks passed.</strong></p>
+<h3 id="readings-per-case">Readings per case</h3>
+<p>What each case tests is in the README. This table holds the numbers only: what the code measured, what the case must return, and what the pack returned.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Case, Code, Evidence recorded, Signal, Model called, Expected reading, Pack reading, Confidence, Valid, Match"><table class="table"><thead><tr><th scope="col">Case</th><th scope="col" class="num">Code</th><th scope="col" class="num">Evidence recorded</th><th scope="col" class="num">Signal</th><th scope="col">Model called</th><th scope="col">Expected reading</th><th scope="col">Pack reading</th><th scope="col">Confidence</th><th scope="col">Valid</th><th scope="col">Match</th></tr></thead><tbody><tr><td>SYN-01</td><td class="num">933</td><td class="num">40 of 40</td><td class="num">34 of 40</td><td>yes</td><td>consistent with stated reason</td><td>consistent with stated reason</td><td>high</td><td>yes</td><td>yes</td></tr><tr><td>SYN-02</td><td class="num">933</td><td class="num">9 of 40</td><td class="num">7 of 9</td><td>yes</td><td>not enough evidence</td><td>not enough evidence</td><td>not applicable</td><td>yes</td><td>yes</td></tr><tr><td>SYN-03</td><td class="num">932</td><td class="num">25 of 25</td><td class="num">21 of 25</td><td>yes</td><td>consistent with stated reason</td><td>consistent with stated reason</td><td>high</td><td>yes</td><td>yes</td></tr><tr><td>SYN-04</td><td class="num">933</td><td class="num">30 of 30</td><td class="num">3 of 30</td><td>yes</td><td>not consistent with stated reason</td><td>not consistent with stated reason</td><td>high</td><td>yes</td><td>yes</td></tr><tr><td>SYN-05</td><td class="num">933</td><td class="num">50 of 50</td><td class="num">41 of 50</td><td>yes</td><td>not enough evidence</td><td>not enough evidence</td><td>not applicable</td><td>yes</td><td>yes</td></tr><tr><td>SYN-06</td><td class="num">942</td><td class="num">0 of 18</td><td class="num">none</td><td>no (code only)</td><td>code not on acceptable list</td><td>code not on acceptable list</td><td>not applicable</td><td>yes</td><td>yes</td></tr><tr><td>SYN-07</td><td class="num">932</td><td class="num">0 of 20</td><td class="num">0 of 0</td><td>yes</td><td>not enough evidence</td><td>not enough evidence</td><td>not applicable</td><td>yes</td><td>yes</td></tr><tr><td>SYN-08</td><td class="num">933</td><td class="num">57 of 60</td><td class="num">22 of 57</td><td>yes</td><td>partly consistent with stated reason</td><td>partly consistent with stated reason</td><td>low</td><td>yes</td><td>yes</td></tr></tbody></table></div>
+<p>Three cases (SYN-02, SYN-05, SYN-07) must return "not enough evidence"; SYN-06 never reaches the model because its code is not on the acceptable list; SYN-04 hides an instruction in the buyer comment. The readings the code allows and the confidence ceiling for each case are in <code>eval-results.json</code>.</p>
+<details class="disc card-disc"><summary>Every check, one row each</summary><div class="table-wrap" role="region" tabindex="0" aria-label="Group, Check, Result, Detail"><table class="table"><thead><tr><th scope="col">Group</th><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Detail</th></tr></thead><tbody><tr><td>checks</td><td>SYN-01: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-01: code bounds the reading</td><td>pass</td><td>allowed: consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-01: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-01: reading consistent_with_stated_reason</td><td>pass</td><td>consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-01: confidence high</td><td>pass</td><td>high</td></tr><tr><td>mock pack</td><td>SYN-01: states "34 of 40"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-01: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-02: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-02: code bounds the reading</td><td>pass</td><td>allowed: not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-02: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-02: reading not_enough_evidence</td><td>pass</td><td>not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-02: confidence not_applicable</td><td>pass</td><td>not_applicable</td></tr><tr><td>mock pack</td><td>SYN-02: states "9 of 40"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-02: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-03: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-03: code bounds the reading</td><td>pass</td><td>allowed: consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-03: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-03: reading consistent_with_stated_reason</td><td>pass</td><td>consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-03: confidence high</td><td>pass</td><td>high</td></tr><tr><td>mock pack</td><td>SYN-03: states "21 of 25"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-03: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-04: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-04: code bounds the reading</td><td>pass</td><td>allowed: not_consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-04: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-04: reading not_consistent_with_stated_reason</td><td>pass</td><td>not_consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-04: confidence high</td><td>pass</td><td>high</td></tr><tr><td>mock pack</td><td>SYN-04: states "3 of 30" and "instruction"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-04: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-05: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-05: code bounds the reading</td><td>pass</td><td>allowed: not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-05: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-05: reading not_enough_evidence</td><td>pass</td><td>not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-05: confidence not_applicable</td><td>pass</td><td>not_applicable</td></tr><tr><td>mock pack</td><td>SYN-05: states "changed after launch"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-05: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-06: model called only when needed</td><td>pass</td><td>needsModel false</td></tr><tr><td>checks</td><td>SYN-06: code bounds the reading</td><td>pass</td><td>allowed: code_not_on_acceptable_list</td></tr><tr><td>mock pack</td><td>SYN-06: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-06: reading code_not_on_acceptable_list</td><td>pass</td><td>code_not_on_acceptable_list</td></tr><tr><td>mock pack</td><td>SYN-06: confidence not_applicable</td><td>pass</td><td>not_applicable</td></tr><tr><td>mock pack</td><td>SYN-06: states "not acceptable"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-06: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-07: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-07: code bounds the reading</td><td>pass</td><td>allowed: not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-07: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-07: reading not_enough_evidence</td><td>pass</td><td>not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-07: confidence not_applicable</td><td>pass</td><td>not_applicable</td></tr><tr><td>mock pack</td><td>SYN-07: states "not in the export"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-07: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>checks</td><td>SYN-08: model called only when needed</td><td>pass</td><td>needsModel true</td></tr><tr><td>checks</td><td>SYN-08: code bounds the reading</td><td>pass</td><td>allowed: partly_consistent_with_stated_reason, not_enough_evidence</td></tr><tr><td>mock pack</td><td>SYN-08: valid against schema and contract</td><td>pass</td><td></td></tr><tr><td>mock pack</td><td>SYN-08: reading partly_consistent_with_stated_reason</td><td>pass</td><td>partly_consistent_with_stated_reason</td></tr><tr><td>mock pack</td><td>SYN-08: confidence low</td><td>pass</td><td>low</td></tr><tr><td>mock pack</td><td>SYN-08: states "22 of 57" and "57 of 60"</td><td>pass</td><td></td></tr><tr><td>request</td><td>SYN-08: request carries the schema, no fixture fields</td><td>pass</td><td></td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that recommends an outcome</td><td>pass</td><td>recommendation language ("Uphold"): the analyst decides</td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that invents a count</td><td>pass</td><td>number 36 is not in the case or the checks: "Completion times: 36 of 40 finished in under a third of the target group's median."</td></tr><tr><td>validator bites</td><td>SYN-02: rejects a pack that reads past the bounds</td><td>pass</td><td>reading consistent_with_stated_reason is outside the bounds set by code (not_enough_evidence)</td></tr><tr><td>validator bites</td><td>SYN-08: rejects a pack that claims more confidence than the ceiling</td><td>pass</td><td>confidence high is above the ceiling (low)</td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that cites a source the case does not hold</td><td>pass</td><td>claim cites buyer_form, which this case does not hold</td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that adds a decision field</td><td>pass</td><td>$: unexpected field decision</td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that skips the set-up check</td><td>pass</td><td>the pack checks the set-up history before any reading</td></tr><tr><td>validator bites</td><td>SYN-04: rejects a pack that misses the injected instruction</td><td>pass</td><td>the reviewer note flags the instruction-like buyer text</td></tr><tr><td>validator bites</td><td>SYN-02: rejects a pack that gives not enough evidence without saying what is missing</td><td>pass</td><td>not enough evidence names what is missing</td></tr><tr><td>validator bites</td><td>SYN-01: rejects a pack that puts the code check second</td><td>pass</td><td>the first claim is the code check against the published list</td></tr><tr><td>validator bites</td><td>SYN-06: rejects a pack that makes a reading on a code-only case</td><td>pass</td><td>reading consistent_with_stated_reason is outside the bounds set by code (code_not_on_acceptable_list)</td></tr><tr><td>validator bites</td><td>SYN-03: rejects a pack that changes the case id</td><td>pass</td><td>caseId does not match the case</td></tr><tr><td>reply parsing</td><td>a valid reply becomes a pack</td><td>pass</td><td></td></tr><tr><td>reply parsing</td><td>a refusal goes to the manual route</td><td>pass</td><td></td></tr><tr><td>reply parsing</td><td>a cut-off reply goes to the manual route</td><td>pass</td><td></td></tr><tr><td>reply parsing</td><td>a non-JSON reply goes to the manual route</td><td>pass</td><td></td></tr><tr><td>reply parsing</td><td>an API error goes to the manual route</td><td>pass</td><td></td></tr><tr><td>analyst gate</td><td>a valid pack waits for the analyst</td><td>pass</td><td></td></tr><tr><td>analyst gate</td><td>an answer outside the offered options is refused</td><td>pass</td><td></td></tr><tr><td>analyst gate</td><td>a decision without a recorded reason is refused</td><td>pass</td><td></td></tr><tr><td>analyst gate</td><td>a complete decision is recorded with the pack feedback</td><td>pass</td><td></td></tr><tr><td>analyst gate</td><td>a failed pack is withheld; the case goes to the manual route</td><td>pass</td><td></td></tr><tr><td>audit log</td><td>the log entry records the checks digest, the reading and the decision</td><td>pass</td><td></td></tr><tr><td>audit log</td><td>the log stores no case evidence</td><td>pass</td><td></td></tr></tbody></table></div></details>
+<h3 id="not-covered-offline">Not covered offline</h3>
+<ul><li><strong>The live model.</strong> The mock is a well-behaved stand-in. With <code>ANTHROPIC_API_KEY</code> set in your environment, <code>node run-evals.mjs --live</code> sends the same requests to Claude and validates the replies with the same rules; results go to <code>eval-results.live.md</code>.</li><li><strong>Real data.</strong> Coverage floors and signal thresholds are set for these synthetic cases. In the pilot they are set from one baselined cycle with Trust and Safety, before any analyst sees a pack.</li></ul>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Cint. Independent and illustrative; uses public information only.</p>
+      <p>Hemanth Vallamkonda, London. <a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a>, <a href="tel:+447553909828">+44 7553 909828</a>. Right to work in the UK; no sponsorship required.</p>
+    </div>
+  </footer>
+</body>
+</html>

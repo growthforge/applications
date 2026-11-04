@@ -1,0 +1,65 @@
+{
+  "title": "Evidence pack for one flagged reconciliation reversal (map step 3)",
+  "description": "The only output the model may return. Sent to the Messages API as output_config.format (json_schema) and checked again by validatePack in harness.mjs, which adds the contract rules a schema cannot express. There is deliberately no field for a decision: the analyst decides.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["caseId", "reasonCode", "claims", "reading", "confidence", "missingEvidence", "reviewerNote"],
+  "properties": {
+    "caseId": {
+      "type": "string",
+      "description": "Copied from checks.caseId."
+    },
+    "reasonCode": {
+      "type": "string",
+      "description": "Copied from checks.reasonCode."
+    },
+    "claims": {
+      "type": "array",
+      "description": "One fact per claim, each with its source. The first claim is the code check.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "text", "source"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["code_check", "completion_times", "grid_pattern", "setup_history", "supplier_context", "buyer_form"]
+          },
+          "text": {
+            "type": "string",
+            "description": "One short sentence. Counts copied exactly from checks; no new figures; no RIDs."
+          },
+          "source": {
+            "type": "string",
+            "enum": ["reconciliation_policy", "completion_log", "grid_answers", "target_group_history", "supplier_report", "buyer_form"]
+          }
+        }
+      }
+    },
+    "reading": {
+      "type": "string",
+      "description": "One of checks.allowedReadings.",
+      "enum": [
+        "consistent_with_stated_reason",
+        "partly_consistent_with_stated_reason",
+        "not_consistent_with_stated_reason",
+        "not_enough_evidence",
+        "code_not_on_acceptable_list"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "description": "No higher than checks.maxConfidence; not_applicable for not_enough_evidence and code_not_on_acceptable_list.",
+      "enum": ["high", "medium", "low", "not_applicable"]
+    },
+    "missingEvidence": {
+      "type": "array",
+      "description": "What the analyst would need. Required when the reading is not_enough_evidence.",
+      "items": { "type": "string" }
+    },
+    "reviewerNote": {
+      "type": "string",
+      "description": "At most three sentences for the analyst. Never recommends an outcome."
+    }
+  }
+}
