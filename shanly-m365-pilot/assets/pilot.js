@@ -208,6 +208,7 @@ function register(e) {
       <span>Today in the mock-up:</span> <output aria-live="off">${fmt(state.today)}</output>
       <button type="button" class="btn btn--ghost" data-day="-1" ${state.today <= e.received ? 'disabled' : ''}>Previous day</button>
       <button type="button" class="btn btn--ghost" data-day="1">Next day</button>
+      <button type="button" class="btn btn--ghost" data-jump>Jump to the first reminder</button>
       <label class="visually-hidden" for="f-today">Choose a date</label><input id="f-today" type="date" data-today min="${e.received}" value="${state.today}">
     </div>
     <p>${state.concludedOn ? `<span class="status status--met">Concluded</span> Closure letter recorded on ${fmt(state.concludedOn)}.` : '<button type="button" class="btn btn--ghost" data-conclude>Record the closure letter (concludes the complaint)</button>'}</p>
@@ -268,6 +269,17 @@ app?.addEventListener('click', (ev) => {
     state.today = moved < e.received ? e.received : moved;
     render();
     document.querySelector(`[data-day="${t.dataset.day}"]`)?.focus();
+    announceToday(e);
+  } else if ('jump' in t.dataset) {
+    let d = state.today;
+    for (let i = 0; i < 400; i++) {
+      const a = clock.assess({ received: e.received, reservation: state.reservation, completion: state.completion, sent: state.sent, today: d }, H);
+      if (!a.next || a.next.status === 'due-soon' || a.next.status === 'overdue') break;
+      d = clock.addDays(d, 1);
+    }
+    state.today = d;
+    render();
+    document.querySelector('[data-jump]')?.focus();
     announceToday(e);
   } else if ('conclude' in t.dataset) {
     state.concludedOn = state.today;

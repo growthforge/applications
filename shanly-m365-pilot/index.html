@@ -146,6 +146,7 @@
         <div class="pilot" data-illustrative>
           <div class="pilot__head">
             <p class="cluster"><span class="badge badge--accent">Illustrative data</span><span class="hint">Fictional customers and developments. Nothing is sent.</span></p>
+            <p class="evidence-strip"><span><strong>Working here:</strong> the date rules, tested</span><span><strong>Recorded:</strong> the AI smoke test</span><span><strong>Next:</strong> installing it in Microsoft 365 with IT</span></p>
             <button class="btn btn--ghost js-only" type="button" data-reset>Start again</button>
           </div>
 
@@ -188,6 +189,17 @@
           <div class="callout callout--note" role="note" aria-labelledby="unknown-h">
             <p class="callout__title" id="unknown-h">What I do not know yet</p>
             <p>How the Complaints Team logs complaints today, how many arrive, who signs the letters, and whether a register already exists. Aftercare items already run through Clixifix, which the business chose, and Clixifix also offers a complaints module, so some of this may already be covered. If so, the same method moves to the next process you choose.</p>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Week-one decision" tabindex="0">
+            <table class="table table--stack">
+              <caption>Week one decides the route, with the Complaints Team</caption>
+              <thead><tr><th scope="col">If we find</th><th scope="col">Then</th><th scope="col">Where the complaint record lives</th></tr></thead>
+              <tbody>
+                <tr><td data-label="If we find">Clixifix already tracks the dates and reminders well</td><td data-label="Then">Improve how it is configured and used; build nothing new</td><td data-label="Record">Clixifix</td></tr>
+                <tr><td data-label="If we find">Clixifix holds the record, but reminders or letters still happen by hand</td><td data-label="Then">A small flow on top of the existing record</td><td data-label="Record">Clixifix, read by the flow</td></tr>
+                <tr><td data-label="If we find">No register exists, or the gap is real</td><td data-label="Then">This pilot, with a named owner and a rule against duplicate records</td><td data-label="Record">The SharePoint register</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="stack">

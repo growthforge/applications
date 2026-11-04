@@ -219,3 +219,6 @@ html.js .no-js-only { display: none; }
 
 .clock__scale { display: none; }
 @media (min-width: 900px) { .clock__scale { display: block; margin-bottom: var(--space-2); } }
+
+.evidence-strip { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: var(--step--1); color: var(--text-muted); max-width: none; flex-basis: 100%; }
+.evidence-strip strong { color: var(--text); font-weight: 600; }
