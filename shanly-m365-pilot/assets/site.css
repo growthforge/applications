@@ -222,3 +222,42 @@ html.js .no-js-only { display: none; }
 
 .evidence-strip { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: var(--step--1); color: var(--text-muted); max-width: none; flex-basis: 100%; }
 .evidence-strip strong { color: var(--text); font-weight: 600; }
+
+/* Polish round (4 Nov): the three-minute route at the top, and contribution plus basis on two past builds */
+.route { border-top: var(--border-width) solid var(--border); padding-top: var(--space-5); }
+.route__head { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); align-items: baseline; margin-bottom: var(--space-4); }
+.route__head h2 { font-size: var(--step-2); }
+.route__list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-4) var(--space-5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11.5rem), 1fr)); counter-reset: route; }
+.route__item { max-width: none; counter-increment: route; display: block; border-top: 3px solid var(--accent); padding-top: var(--space-3); }
+.route__list > li + li { margin-top: 0; }
+.route__item > * + * { margin-top: var(--space-2); }
+.route__item h3 { font-size: var(--step-0); }
+.route__item h3::before { content: counter(route) ". "; font-family: var(--font-display); color: var(--accent); }
+.route__item p { font-size: var(--step--1); }
+.route__item .route__time { font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; color: var(--text-muted); }
+.route__item a { font-size: var(--step--1); font-weight: 600; display: inline-block; margin-right: var(--space-3); padding-block: var(--space-1); }
+
+.build__foot { margin-top: auto; padding-top: var(--space-3); border-top: var(--border-width) solid var(--border); }
+.build__foot > * + * { margin-top: var(--space-2); }
+.build__foot .build__result { margin-top: 0; padding-top: 0; border-top: 0; }
+.build__basis { font-size: var(--step--1); color: var(--text-muted); }
+.build__basis strong { color: var(--text); font-weight: 600; }
+@media print { .route__item { break-inside: avoid; } }
+.route__item > a + a { margin-top: 0; }
+/* Wide screens: the route takes the empty right half of the hero, so it is on the first screen */
+@media (min-width: 1100px) {
+  .hero__grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); column-gap: var(--space-7); align-items: start; }
+  .hero__grid > .hero__facts { grid-column: 1 / -1; }
+  .hero__grid > .route { grid-column: 2; grid-row: 1; border-top: 0; padding-top: 0; }
+  .route__list { grid-template-columns: 1fr; gap: 0; }
+  .route__item { border-top: var(--border-width) solid var(--border); padding-block: var(--space-3); }
+  .route__item:first-child { border-top: 3px solid var(--accent); }
+  .route__item .route__time { float: right; margin: 0 0 0 var(--space-3); }
+}
+/* Print: the build cards stack in one column so each stays whole on its page */
+@media print {
+  #built .grid:not(.grid--2) { grid-template-columns: 1fr; }
+  #built .section__intro { break-inside: avoid; break-after: avoid; }
+  .build__foot { margin-top: var(--space-3); }
+  .route__list { grid-template-columns: repeat(3, 1fr); }
+}

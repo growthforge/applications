@@ -57,6 +57,46 @@
               <a class="btn btn--ghost" href="build-pack.html">Open the build pack</a>
             </div>
           </div>
+
+          <section class="route" aria-labelledby="route-h">
+            <div class="route__head">
+              <p class="label">Short on time</p>
+              <h2 id="route-h">The three-minute route</h2>
+            </div>
+            <ol class="route__list">
+              <li class="route__item">
+                <p class="route__time" data-plan>15 seconds</p>
+                <h3>The task</h3>
+                <p data-src="S1 S3">Keep every date in Shanly Homes' published complaints timetable in view, using Microsoft 365 and Copilot.</p>
+                <a href="#clock">See the timetable</a>
+              </li>
+              <li class="route__item">
+                <p class="route__time" data-plan>15 seconds</p>
+                <h3>Where it stands</h3>
+                <p>Built and tested: the date rules. Designed and validated, not yet installed in a live tenant: SharePoint, Teams and Power Automate.</p>
+                <a href="build-pack.html#for-it">What is not verified yet</a>
+              </li>
+              <li class="route__item">
+                <p class="route__time" data-plan>70 seconds</p>
+                <h3>One complaint, followed through</h3>
+                <p>An illustrative complaint arrives on Christmas Eve. Confirm it, watch the clock start after the bank holidays, go to the first reminder, then approve the letter.</p>
+                <a href="#pilot">Open the pilot</a>
+              </li>
+              <li class="route__item">
+                <p class="route__time" data-plan>50 seconds</p>
+                <h3>The evidence</h3>
+                <p>Every date rule has its own passing test, every Microsoft file is validated against Microsoft's published schema, and the AI smoke test shows its failed first run.</p>
+                <a href="build-pack.html#engine">The tests</a> <a href="build-pack.html#smoke">The smoke test</a>
+              </li>
+              <li class="route__item">
+                <p class="route__time" data-plan>30 seconds</p>
+                <h3>One past build</h3>
+                <p data-fact="hv">MTest Labs: an AI test-design tool that testers run themselves, with my part in it and the basis of its result stated.</p>
+                <a href="#mtest">Read the MTest Labs case</a>
+              </li>
+            </ol>
+          </section>
+
           <ul class="hero__facts">
             <li><strong>From your published process</strong>The rules come from the customer care and New Homes Quality Code pages on shanlyhomes.com.</li>
             <li><strong>The simplest version first</strong>One SharePoint list with the date formulas and one daily reminder in Teams. Everything else is optional.</li>
@@ -64,7 +104,7 @@
           </ul>
         </div>
 
-        <figure class="clock" data-src="S1" aria-labelledby="clock-cap">
+        <figure class="clock" id="clock" data-src="S1" aria-labelledby="clock-cap">
           <p class="label clock__scale" aria-hidden="true">Days from the start, to scale</p>
           <div class="clock__track" aria-hidden="true">
             <span class="clock__tick" style="--at: 0%">0</span>
@@ -92,28 +132,36 @@
         <div class="section__intro">
           <p class="label">Several examples</p>
           <h2 id="built-h">What I have built, why, and how</h2>
-          <p>Your advert asks to see what candidates have built, why and how. Each of these was taken up by the people it was built for. Client systems are described, not shown; I would be glad to walk you through them in an interview.</p>
+          <p>Your advert asks to see what candidates have built, why and how. Each of these was taken up by the people it was built for. For the first two I also say what my part was and what each result rests on. Client systems are described, not shown; I would be glad to walk you through them in an interview.</p>
         </div>
         <div class="grid">
-          <article class="card build" data-fact="hv">
+          <article class="card build" id="mtest" data-fact="hv">
             <p class="label">MTest Labs, a software-testing firm · AI build, from December 2025</p>
             <h3>An AI test-design tool the testers run themselves</h3>
             <dl>
               <dt>Why</dt><dd>Designing tests by hand took a full 8-hour day, or 2 to 3 days on larger projects.</dd>
               <dt>How</dt><dd>A simple interface gathers the project documents and asks a short set of questions; staged AI agents then draft the scenarios and cases from the firm's own test library and past issue logs. A chat assistant lets the team ask questions of the firm's knowledge.</dd>
+              <dt>My part</dt><dd>An independent engagement. I designed and built the tool, its interface and the chat assistant, and refined them through build, test and improve cycles with the testers.</dd>
               <dt>Who adopted it</dt><dd>The testers. A tester approves every case before it reaches a client, and I trained the team to run it.</dd>
             </dl>
-            <p class="build__result">Test design now takes 1 to 3 supervised hours.</p>
+            <div class="build__foot">
+              <p class="build__result">Test design now takes 1 to 3 supervised hours.</p>
+              <p class="build__basis"><strong>Basis of the result.</strong> The comparison is the time to design tests for a project: before, a full 8-hour day, or 2 to 3 days on larger projects; now, 1 to 3 hours of supervised draft-and-review, so the tester's review is inside the figure. These are my figures from the engagement; the client's records are not shown here.</p>
+            </div>
           </article>
           <article class="card build" data-fact="hv">
             <p class="label">Atelier di Venice, an interior-design business · automation, from December 2025</p>
             <h3>One connected system, from first enquiry to delivery</h3>
             <dl>
               <dt>Why</dt><dd>Operations, marketing and finance steps were handled separately and by hand.</dd>
-              <dt>How</dt><dd>I mapped the business end to end, then automated the steps through low-code automation and APIs, connecting tools it already had. A Power BI dashboard replaced a monthly pack that was rekeyed by hand. Low-risk steps run on their own; client and financial steps stay with a person.</dd>
+              <dt>How</dt><dd>The business was mapped end to end, then the steps were automated through low-code automation and APIs, connecting tools it already had. A Power BI dashboard replaced a monthly pack that was rekeyed by hand. Low-risk steps run on their own; client and financial steps stay with a person.</dd>
+              <dt>My part</dt><dd>An independent engagement. I did the mapping, built the automations and the dashboard, and set where a person stays in the loop.</dd>
               <dt>Who adopted it</dt><dd>The owner, whom I trained to run it day to day.</dd>
             </dl>
-            <p class="build__result">Dozens of automated workflows, run by the owner.</p>
+            <div class="build__foot">
+              <p class="build__result">Dozens of automated workflows, run by the owner.</p>
+              <p class="build__basis"><strong>Basis of the result.</strong> A count of the workflows automated across operations, marketing and finance, not a time or cost saving; none is claimed. The system belongs to the client, so it is described rather than shown.</p>
+            </div>
           </article>
           <article class="card build" data-fact="hv">
             <p class="label">Bnk To The Future, a regulated investment platform · process redesign, September 2023 to September 2024</p>
