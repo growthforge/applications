@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HV monogram">
+  <style>
+    .bg { fill: #1b1d21; } .fg { stroke: #fbfaf8; }
+    @media (prefers-color-scheme: dark) { .bg { fill: #ecebe7; } .fg { stroke: #121417; } }
+  </style>
+  <rect class="bg" width="64" height="64" rx="14"/>
+  <g class="fg" fill="none" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 18v28M30 18v28M14 32h16"/>
+    <path d="M37 18l7.5 28L52 18"/>
+  </g>
+</svg>
