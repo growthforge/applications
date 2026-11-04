@@ -1,0 +1,130 @@
+{
+  "about": "The illustrative organisation: a FinTech running on Azure, made up for this pack. Owners, use cases, gateway wiring and allocation rules. Nothing here describes a real company.",
+  "currency": "USD",
+  "months": [
+    "2026-08",
+    "2026-09",
+    "2026-10"
+  ],
+  "reportMonth": "2026-10",
+  "owners": {
+    "customer-ops": "Customer Operations",
+    "fincrime": "Financial Crime",
+    "fraud-analytics": "Fraud Analytics",
+    "engineering": "Engineering",
+    "unallocated": "Unallocated"
+  },
+  "useCases": {
+    "support-assistant": {
+      "name": "Support assistant",
+      "owner": "customer-ops",
+      "job": "email triage and reply drafts",
+      "outcome": "ticket resolved with the draft accepted by an agent",
+      "outcomeNoun": "accepted draft",
+      "outcomePlural": "accepted drafts",
+      "models": "GPT-5.4 mini for most tickets, GPT-5.4 for hard cases"
+    },
+    "kyc-review": {
+      "name": "KYC document review",
+      "owner": "fincrime",
+      "job": "summarising onboarding documents for analysts",
+      "outcome": "document summary approved by an analyst",
+      "outcomeNoun": "approved summary",
+      "outcomePlural": "approved summaries",
+      "models": "Claude Sonnet 5.5 through Microsoft Foundry"
+    },
+    "fraud-explain": {
+      "name": "Fraud alert explanations",
+      "owner": "fraud-analytics",
+      "job": "plain-language explanations of fraud alerts",
+      "outcome": "alert explanation used in a decision",
+      "outcomeNoun": "explanation used",
+      "outcomePlural": "explanations used",
+      "models": "GPT-5.4 nano"
+    },
+    "knowledge-assistant": {
+      "name": "Internal knowledge assistant",
+      "owner": "engineering",
+      "job": "answers from internal documentation (retrieval)",
+      "outcome": "answer rated useful",
+      "outcomeNoun": "useful answer",
+      "outcomePlural": "useful answers",
+      "models": "GPT-5.4 mini with embeddings and AI Search"
+    }
+  },
+  "gateway": {
+    "about": "Which billed lines the API Management gateway meters. Azure OpenAI deployments are matched on the deployment name at the end of ResourceId. The Claude line is one aggregated Claude Consumption Unit (CCU) line per day, so it is matched on its ResourceId and split by each team's list-price estimate.",
+    "ccuLines": {
+      "/subscriptions/sub-ai-prod/resourceGroups/rg-ai-prod/providers/Microsoft.CognitiveServices/accounts/foundry-prod-uks": {
+        "models": [
+          "claude-sonnet-5.5"
+        ]
+      }
+    },
+    "retrievalDeployment": "embed-shared"
+  },
+  "allocation": {
+    "ownerTag": "owner",
+    "poolTag": "cost-pool",
+    "pools": {
+      "shared-ai-platform": {
+        "method": "retrieval-call-share",
+        "about": "AI Search and the embeddings deployment, split by each use case's share of retrieval calls (embedding requests through the gateway) on the day."
+      }
+    },
+    "resourceGroupTags": {
+      "rg-platform-prod": {
+        "owner": "engineering"
+      },
+      "rg-platform-nonprod": {
+        "owner": "engineering"
+      },
+      "rg-data-prod": {
+        "owner": "engineering"
+      },
+      "rg-ai-prod": {},
+      "rg-ai-nonprod": {},
+      "rg-shared-observability": {}
+    },
+    "subscriptionTags": {
+      "sub-ai-prod": {},
+      "sub-ai-nonprod": {},
+      "sub-platform-prod": {},
+      "sub-platform-nonprod": {},
+      "sub-shared": {}
+    },
+    "precedence": [
+      "resource",
+      "resourceGroup",
+      "subscription"
+    ],
+    "targets": {
+      "crawl": 0.7,
+      "walk": 0.85,
+      "run": 0.9,
+      "src": "S5"
+    }
+  },
+  "budget": {
+    "multiple": 1.15,
+    "thresholds": [
+      0.8,
+      1.0
+    ],
+    "forecastThreshold": 1.0,
+    "dataLagDays": 1,
+    "trailingDaysForUnitCost": 7,
+    "trailingDaysForVolume": 14,
+    "src": "S3",
+    "evaluation": "Azure evaluates budgets about once every 24 hours on actual cost [S8]; the ledger raises an alert on the day after the data crosses the threshold."
+  },
+  "decision": {
+    "stopBelowValueToCost": 1.0,
+    "scaleFromValueToCost": 3.0,
+    "about": "Decided on avoidable cost per successful outcome: the cost that stops if the use case stops (its model tokens and per-call embeddings). The fixed shared AI Search tier is not avoidable: it stays and is re-spread over the other users. Stop when avoidable cost is at or above the illustrative value. Fix when value is less than three times avoidable cost, or the success rate is below the owner's quality bar. Scale otherwise."
+  },
+  "commitment": {
+    "savingsPlanDiscount": null,
+    "about": "Savings plans and reservations are bought at discounted hourly rates, so the hourly commitment is the steady pay-as-you-go floor times (1 - discount). The discount comes from Microsoft's savings plan recommendation for the actual SKU mix (Cost Management), not from this pack's sources, so it is left as a parameter: set it here to size the commitment."
+  }
+}

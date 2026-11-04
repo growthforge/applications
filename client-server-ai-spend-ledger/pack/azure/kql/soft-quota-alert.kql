@@ -1,0 +1,26 @@
+// soft-quota-alert.kql: the production "soft quota". Production calls are never blocked by a monthly
+// quota (llm-token-limit would answer 403); instead this query runs as an Azure Monitor scheduled query
+// alert every hour and returns a row for each production use case and deployment past 80% or 100% of its
+// monthly token allowance. Outside production the gateway enforces the hard quota itself.
+//
+// Assumed names: AppMetrics and the dimensions in tokens-by-team.kql. Allowances are illustrative and
+// would be set from each owner's budget (budget / blended cost per 1M tokens), reviewed monthly.
+let monthStart = startofmonth(now());
+let allowance = datatable(useCase: string, deployment: string, monthlyTokens: long) [
+    "support-assistant", "gpt54mini-shared", 3000000000,
+    "support-assistant", "gpt-support-hard", 900000000,
+    "knowledge-assistant", "gpt54mini-shared", 900000000,
+    "fraud-explain", "gpt54nano-fraud", 12000000000,
+    "kyc-review", "claude-sonnet-55-kyc", 3000000000
+];
+AppMetrics
+| where TimeGenerated >= monthStart and Name == "Total Tokens"
+| extend environment = tostring(Properties["environment"]), useCase = tostring(Properties["use-case"]),
+         deployment = tostring(Properties["deployment"])
+| where environment == "prod"
+| summarize usedTokens = sum(Sum) by useCase, deployment
+| join kind=inner allowance on useCase, deployment
+| extend usedShare = usedTokens / todouble(monthlyTokens)
+| extend level = case(usedShare >= 1.0, "100% of allowance", usedShare >= 0.8, "80% of allowance", "")
+| where isnotempty(level)
+| project useCase, deployment, usedTokens, monthlyTokens, usedShare, level

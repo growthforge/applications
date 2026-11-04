@@ -1,0 +1,38 @@
+// cost-per-outcome.kql: daily list-price estimate per use case divided by successful outcomes.
+//
+// Assumed names (check before use):
+//   AppMetrics          gateway token metrics, as in tokens-by-team.kql
+//   AiOutcomes_CL       a custom table each use case writes once per run: TimeGenerated, UseCase,
+//                       Outcome ("successful", "failed", "discarded"), Retry (bool), ReviewMinutes
+// Prices are published list prices per 1M tokens, read on 3 Nov 2026: Azure OpenAI Global Standard from
+// the Azure Retail Prices API (UK South) and Claude Sonnet 5.5 from Anthropic's pricing page. Cached and
+// cache-write tokens are not split here, so the estimate runs slightly high on cached workloads.
+// This gives a same-day signal only. The figure a finance team reports is the ledger's: billed cost
+// allocated by gateway shares, then divided by the same outcomes.
+let monthStart = startofmonth(now());
+let price = datatable(deployment: string, inPerM: real, outPerM: real) [
+    "gpt54mini-shared", 0.75, 4.50,
+    "gpt-support-hard", 2.50, 15.00,
+    "gpt54nano-fraud", 0.20, 1.25,
+    "claude-sonnet-55-kyc", 2.00, 10.00
+];
+let tokens = AppMetrics
+    | where TimeGenerated >= monthStart and Name in ("Prompt Tokens", "Completion Tokens")
+    | extend useCase = tostring(Properties["use-case"]), deployment = tostring(Properties["deployment"])
+    | summarize prompt = sumif(Sum, Name == "Prompt Tokens"), completion = sumif(Sum, Name == "Completion Tokens")
+        by day = startofday(TimeGenerated), useCase, deployment
+    | join kind=leftouter price on deployment
+    | extend estimateUsd = prompt / 1e6 * inPerM + completion / 1e6 * outPerM
+    | summarize estimateUsd = sum(estimateUsd), unpricedDeployments = countif(isnull(inPerM)) by day, useCase;
+let outcomes = AiOutcomes_CL
+    | where TimeGenerated >= monthStart
+    | summarize runs = count(), successful = countif(Outcome == "successful"),
+        failed = countif(Outcome == "failed"), discarded = countif(Outcome == "discarded"),
+        retries = countif(Retry == true), reviewMinutes = sum(ReviewMinutes)
+        by day = startofday(TimeGenerated), useCase = UseCase;
+tokens
+| join kind=inner outcomes on day, useCase
+| extend costPerSuccessfulOutcome = iff(successful > 0, estimateUsd / successful, real(null)),
+         failedShare = iff(runs > 0, todouble(failed + discarded) / runs, real(null))
+| project day, useCase, estimateUsd, runs, successful, failed, discarded, retries, costPerSuccessfulOutcome, failedShare, unpricedDeployments
+| order by day asc, useCase asc

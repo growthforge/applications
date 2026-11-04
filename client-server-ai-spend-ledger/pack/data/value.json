@@ -1,0 +1,33 @@
+{
+  "about": "Illustrative value per successful outcome and the owner's quality bar for each use case. These are assumptions, not measurements: each one says how it was reached so an owner can replace it with their own figure. Loaded costs per minute are illustrative.",
+  "useCases": {
+    "support-assistant": {
+      "minutesSaved": 3,
+      "loadedCostPerMinute": 0.80,
+      "assumption": "An accepted draft saves an agent about 3 minutes of writing, net of the time spent reviewing it, at an illustrative loaded cost of $0.80 a minute.",
+      "qualityBar": 0.80,
+      "qualityBarText": "at least 80% of drafts accepted"
+    },
+    "kyc-review": {
+      "minutesSaved": 12,
+      "loadedCostPerMinute": 1.00,
+      "assumption": "An approved summary saves an analyst about 12 minutes of reading, net of review, at an illustrative $1.00 a minute.",
+      "qualityBar": 0.85,
+      "qualityBarText": "at least 85% of summaries approved"
+    },
+    "fraud-explain": {
+      "minutesSaved": 0.667,
+      "loadedCostPerMinute": 0.90,
+      "assumption": "An explanation used in a decision saves an analyst about 40 seconds at an illustrative $0.90 a minute.",
+      "qualityBar": 0.40,
+      "qualityBarText": "at least 40% of explanations used"
+    },
+    "knowledge-assistant": {
+      "minutesSaved": 0.5,
+      "loadedCostPerMinute": 1.10,
+      "assumption": "A useful answer saves an engineer about 30 seconds against the existing wiki search, at an illustrative $1.10 a minute.",
+      "qualityBar": 0.60,
+      "qualityBarText": "at least 60% of answers rated useful"
+    }
+  }
+}

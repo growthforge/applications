@@ -1,0 +1,8 @@
+{
+  "name": "ai-spend-ledger-pack",
+  "private": true,
+  "description": "Illustrative AI spend ledger: data, engine and tests. Run the tests with: node --test",
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "license": "MIT"
+}

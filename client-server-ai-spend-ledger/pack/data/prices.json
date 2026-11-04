@@ -1,0 +1,43 @@
+{
+  "about": "Published list prices used by the ledger. USD per 1 million tokens unless the unit says otherwise. Every row names its source and the date it was read. These are retail list prices, not negotiated prices: the bill (focus_export.csv) stays the source of truth and these prices are used only for the list-price estimate, the reconciliation, the levers and the what-if.",
+  "currency": "USD",
+  "readOn": "2026-11-03",
+  "sources": {
+    "S10": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "S11": "https://prices.azure.com/api/retail/prices (serviceName 'Foundry Models', armRegionName 'uksouth', priceType 'Consumption', retail, USD)",
+    "S12": "https://developers.openai.com/api/docs/pricing and https://developers.openai.com/api/docs/guides/batch"
+  },
+  "models": {
+    "gpt-5.4": { "label": "GPT-5.4", "developer": "OpenAI", "host": "Azure OpenAI, Global Standard", "tokenizer": "openai" },
+    "gpt-5.4-mini": { "label": "GPT-5.4 mini", "developer": "OpenAI", "host": "Azure OpenAI, Global Standard", "tokenizer": "openai" },
+    "gpt-5.4-nano": { "label": "GPT-5.4 nano", "developer": "OpenAI", "host": "Azure OpenAI, Global Standard", "tokenizer": "openai" },
+    "gpt-5.2": { "label": "GPT-5.2", "developer": "OpenAI", "host": "Azure OpenAI, Global Standard", "tokenizer": "openai" },
+    "claude-sonnet-5.5": { "label": "Claude Sonnet 5.5", "developer": "Anthropic", "host": "Microsoft Foundry, billed as Claude Consumption Units", "tokenizer": "claude-new" }
+  },
+  "rows": [
+    { "model": "gpt-5.4", "tokenClass": "input", "usdPerMTok": 2.50, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "Global Standard, UK South retail meter" },
+    { "model": "gpt-5.4", "tokenClass": "cachedInput", "usdPerMTok": 0.25, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "cached input is 10% of input" },
+    { "model": "gpt-5.4", "tokenClass": "output", "usdPerMTok": 15.00, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-mini", "tokenClass": "input", "usdPerMTok": 0.75, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-mini", "tokenClass": "cachedInput", "usdPerMTok": 0.075, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-mini", "tokenClass": "output", "usdPerMTok": 4.50, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-nano", "tokenClass": "input", "usdPerMTok": 0.20, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-nano", "tokenClass": "cachedInput", "usdPerMTok": 0.02, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.4-nano", "tokenClass": "output", "usdPerMTok": 1.25, "effectiveFrom": "2026-03-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.2", "tokenClass": "input", "usdPerMTok": 1.75, "effectiveFrom": "2025-12-01", "src": "S11", "readOn": "2026-11-03", "note": "the support hard-case deployment ran this version until 7 October in the illustrative data" },
+    { "model": "gpt-5.2", "tokenClass": "cachedInput", "usdPerMTok": 0.175, "effectiveFrom": "2025-12-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "gpt-5.2", "tokenClass": "output", "usdPerMTok": 14.00, "effectiveFrom": "2025-12-01", "src": "S11", "readOn": "2026-11-03", "note": "" },
+    { "model": "claude-sonnet-5.5", "tokenClass": "input", "usdPerMTok": 2.00, "effectiveFrom": "2026-08-01", "src": "S10", "readOn": "2026-11-03", "note": "the price page states no effective date; set to the start of the illustrative window" },
+    { "model": "claude-sonnet-5.5", "tokenClass": "cacheWrite", "usdPerMTok": 2.50, "effectiveFrom": "2026-08-01", "src": "S10", "readOn": "2026-11-03", "note": "5-minute cache write, 1.25x input" },
+    { "model": "claude-sonnet-5.5", "tokenClass": "cachedInput", "usdPerMTok": 0.10, "effectiveFrom": "2026-08-01", "src": "S10", "readOn": "2026-11-03", "note": "cache read, 0.05x input on Sonnet 5.5" },
+    { "model": "claude-sonnet-5.5", "tokenClass": "output", "usdPerMTok": 10.00, "effectiveFrom": "2026-08-01", "src": "S10", "readOn": "2026-11-03", "note": "" }
+  ],
+  "rules": {
+    "batchMultiplier": { "value": 0.5, "src": "S10 S11 S12", "note": "Batch is 50% off input and output on Anthropic, OpenAI and Azure Global Standard batch, with results within 24 hours." },
+    "batchOnFoundryClaude": { "value": false, "src": "S10", "note": "Anthropic's batch platform list names the Claude API, Claude Platform on AWS and Claude Models on Google Cloud; Microsoft Foundry is not listed." },
+    "azureCacheWriteCharge": { "value": false, "src": "S11", "note": "Azure OpenAI prompt caching is automatic; no cache write charge on models before GPT-5.6." },
+    "ccuUsd": { "value": 0.01, "src": "S10", "note": "Claude in Microsoft Foundry is billed through Azure Marketplace in Claude Consumption Units at $0.01 per CCU; the Azure bill shows one aggregated CCU line." },
+    "claudeTokenizerUplift": { "value": 1.3, "src": "S10", "note": "Claude 4.7 and later produce roughly 30% more tokens for the same text than the previous tokenizer; compare cost per task, not list price." },
+    "ptuGlobalUsdPerHour": { "value": 1.00, "src": "S11", "note": "Provisioned Managed Global unit, UK South retail, per PTU-hour. Not used to size anything: PTU sizing needs the Foundry capacity calculator." }
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "about": "The optimisation pipeline's lever definitions. The engine (ledger/levers.js) prices each one from the October ledger. Within a use case the levers are applied in the order given, each on the cost that remains after the ones before it, so savings never add up independently. Evidence grades: measured (arithmetic on measured quantities), assumption-based (price-sheet arithmetic on an assumed share or rate, assumption shown), Foundation prior (the low end of a FinOps Foundation range, used until a test measures it). Statuses: identified, validated, realised, blocked, on hold. Validated and realised need measured evidence; the engine keeps any other lever at identified.",
+  "levers": [
+    {
+      "id": "support-routing",
+      "name": "Route simple hard-case tickets from GPT-5.4 to GPT-5.4 mini",
+      "useCase": "support-assistant",
+      "order": 1,
+      "type": "routing",
+      "component": "hard-path",
+      "eligible": {
+        "kind": "assumption",
+        "value": 0.4,
+        "text": "40% of hard-case tickets are simple enough for the mini model by the triage rule (assumption; confirm on a labelled sample)"
+      },
+      "effect": {
+        "kind": "prior",
+        "range": [
+          0.6,
+          0.9
+        ],
+        "point": 0.6,
+        "src": "S3",
+        "text": "low end of the Foundation range for right-sizing and routing"
+      },
+      "qualityGate": "Acceptance on routed tickets within 2 points of GPT-5.4 in a 200-ticket shadow test",
+      "caution": "Routing starts a new prompt cache on the mini deployment, so the caching lever is priced after it.",
+      "owner": "customer-ops",
+      "status": "identified"
+    },
+    {
+      "id": "support-caching",
+      "name": "Put the stable 4,000-token prefix first so automatic caching hits",
+      "useCase": "support-assistant",
+      "order": 2,
+      "type": "cache-azure",
+      "component": "input",
+      "eligible": {
+        "kind": "measured",
+        "text": "all input tokens; current hit rate and prompt size measured from the gateway's token counts"
+      },
+      "effect": {
+        "kind": "assumption",
+        "src": "S11",
+        "text": "cached input bills at 10% of the input price with no write charge; the achievable hit rate is the stable prefix's share of the prompt, assuming every call reuses it within the cache lifetime"
+      },
+      "qualityGate": "No change to draft content: the prompt is reordered, not rewritten",
+      "owner": "customer-ops",
+      "status": "identified",
+      "stablePrefixTokens": 4000
+    },
+    {
+      "id": "support-output-cap",
+      "name": "Cap reply length and ask for structured drafts",
+      "useCase": "support-assistant",
+      "order": 3,
+      "type": "prior",
+      "component": "output",
+      "eligible": {
+        "kind": "measured",
+        "text": "all output tokens"
+      },
+      "effect": {
+        "kind": "prior",
+        "range": [
+          0.1,
+          0.4
+        ],
+        "point": 0.1,
+        "src": "S3",
+        "text": "low end of the Foundation range for output length control"
+      },
+      "qualityGate": "Agent acceptance rate does not fall",
+      "owner": "customer-ops",
+      "status": "identified"
+    },
+    {
+      "id": "fraud-batch",
+      "name": "Send the overnight explanation backlog through the Batch API",
+      "useCase": "fraud-explain",
+      "order": 1,
+      "type": "batch",
+      "component": "all",
+      "eligible": {
+        "kind": "assumption",
+        "value": 0.4,
+        "text": "40% of explanations are for the overnight re-scoring backlog and can wait up to 24 hours (assumption from the team's process; confirm from gateway timestamps)"
+      },
+      "effect": {
+        "kind": "price-sheet",
+        "value": 0.5,
+        "src": "S11 S12",
+        "text": "Batch is 50% off input and output on Azure Global Standard"
+      },
+      "qualityGate": "Backlog explanations ready before the morning review",
+      "owner": "fraud-analytics",
+      "status": "identified"
+    },
+    {
+      "id": "kyc-batch",
+      "name": "Batch the overnight KYC document runs",
+      "useCase": "kyc-review",
+      "order": 1,
+      "type": "blocked",
+      "component": "all",
+      "blockedBy": "platform",
+      "eligible": {
+        "kind": "none",
+        "text": "overnight document runs"
+      },
+      "effect": {
+        "kind": "none",
+        "src": "S10",
+        "text": "Anthropic's batch platforms list does not include Microsoft Foundry"
+      },
+      "waysRound": [
+        "Run the overnight backlog through a platform that lists batch for Claude (the Claude API), after a procurement and data-residency review",
+        "Stay on Foundry and cache the shared review instructions instead"
+      ],
+      "qualityGate": "Not applicable until a platform route is agreed",
+      "owner": "fincrime",
+      "status": "blocked"
+    },
+    {
+      "id": "kyc-retry-cap",
+      "name": "Pre-check documents and cap retries on long PDFs",
+      "useCase": "kyc-review",
+      "order": 2,
+      "type": "failure",
+      "component": "all",
+      "eligible": {
+        "kind": "measured",
+        "text": "cost of failed runs above the August to September failure rate"
+      },
+      "effect": {
+        "kind": "assumption",
+        "value": 0.8,
+        "text": "a page-count pre-check and a two-retry cap remove 80% of the excess failures (assumption)"
+      },
+      "qualityGate": "Approval rate on documents that pass the pre-check does not fall",
+      "owner": "fincrime",
+      "status": "identified"
+    },
+    {
+      "id": "knowledge-context",
+      "name": "Trim retrieved context to the top passages",
+      "useCase": "knowledge-assistant",
+      "order": 1,
+      "type": "prior",
+      "component": "input",
+      "onlyIfDecision": [
+        "fix",
+        "scale"
+      ],
+      "eligible": {
+        "kind": "measured",
+        "text": "all input tokens"
+      },
+      "effect": {
+        "kind": "prior",
+        "range": [
+          0.2,
+          0.6
+        ],
+        "point": 0.2,
+        "src": "S3",
+        "text": "low end of the Foundation range for context management"
+      },
+      "qualityGate": "Share of answers rated useful does not fall",
+      "owner": "engineering",
+      "status": "identified"
+    },
+    {
+      "id": "search-tier",
+      "name": "Right-size the shared AI Search tier",
+      "resource": "srch-shared-uks",
+      "group": "platform",
+      "order": 1,
+      "type": "unpriced",
+      "eligible": {
+        "kind": "measured",
+        "text": "the fixed S2 tier (six search units) that both retrieval users share"
+      },
+      "effect": {
+        "kind": "none",
+        "text": "no AI Search price in this pack's research: measure query load and index size, then price the smaller tier from the Azure Retail Prices API"
+      },
+      "qualityGate": "Retrieval latency and answer quality hold for both users of the index",
+      "owner": "engineering",
+      "status": "identified"
+    },
+    {
+      "id": "aks-nonprod-schedule",
+      "name": "Scale non-production AKS to zero at night and at weekends",
+      "resource": "aks-nonprod-uks",
+      "order": 1,
+      "type": "schedule",
+      "changedOn": "2026-10-13",
+      "hoursOffPerWeek": 108,
+      "eligible": {
+        "kind": "measured",
+        "text": "the non-production cluster's daily cost before the schedule"
+      },
+      "effect": {
+        "kind": "measured",
+        "text": "daily cost after the schedule, from the bill"
+      },
+      "qualityGate": "Test environments up by 07:00 on working days",
+      "owner": "engineering",
+      "status": "realised"
+    },
+    {
+      "id": "vm-rightsize",
+      "name": "Rightsize VMs that stayed under the CPU threshold all quarter",
+      "order": 1,
+      "type": "rightsize",
+      "cpuThresholdPct": 20,
+      "eligible": {
+        "kind": "measured",
+        "text": "October cost of VMs whose monthly P95 CPU stayed under 20% (illustrative telemetry and threshold)"
+      },
+      "effect": {
+        "kind": "assumption",
+        "value": 0.5,
+        "text": "one size down in the same series (D16s v5 to D8s v5, D8s v5 to D4s v5) halves the hourly rate in this illustrative rate card; confirm both rates from the Azure Retail Prices API before counting it"
+      },
+      "qualityGate": "P95 CPU on the new size stays under the owner's limit for two weeks",
+      "owner": "fraud-analytics, fincrime",
+      "status": "identified"
+    },
+    {
+      "id": "storage-tiering",
+      "name": "Lifecycle tiering for logs and cost exports",
+      "resource": "stexportsuks",
+      "order": 1,
+      "type": "unpriced",
+      "eligible": {
+        "kind": "measured",
+        "text": "hot-tier storage of logs and exports older than 30 days"
+      },
+      "effect": {
+        "kind": "none",
+        "text": "no storage price in this pack's research: to be priced from the Azure Retail Prices API"
+      },
+      "qualityGate": "Audit retention periods still met",
+      "owner": "engineering",
+      "status": "identified"
+    }
+  ]
+}

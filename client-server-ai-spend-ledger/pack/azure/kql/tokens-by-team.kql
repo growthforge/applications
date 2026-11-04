@@ -1,0 +1,20 @@
+// tokens-by-team.kql: daily tokens by team, use case, environment and deployment, from the gateway's
+// llm-emit-token-metric output (namespace ai-spend-ledger, see ../apim-ai-gateway.policy.xml).
+//
+// Assumed names (check them in your workspace before relying on the query):
+//   table      AppMetrics, the custom metrics table of a workspace-based Application Insights resource
+//   metrics    "Prompt Tokens", "Completion Tokens", "Total Tokens" (cached tokens are a preview metric)
+//   dimensions Properties["team"], ["use-case"], ["environment"], ["deployment"], as the policy names them
+// This is the near-real-time view. The invoice-true figures come from the ledger, which allocates the
+// billed cost and uses these counts only to decide each team's share.
+let monthStart = startofmonth(now());
+AppMetrics
+| where TimeGenerated >= monthStart
+| where Name in ("Prompt Tokens", "Completion Tokens", "Total Tokens")
+| extend team = tostring(Properties["team"]),
+         useCase = tostring(Properties["use-case"]),
+         environment = tostring(Properties["environment"]),
+         deployment = tostring(Properties["deployment"])
+| summarize tokens = sum(Sum) by day = startofday(TimeGenerated), team, useCase, environment, deployment, Name
+| evaluate pivot(Name, sum(tokens))
+| order by day asc, team asc, useCase asc

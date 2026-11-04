@@ -1,0 +1,94 @@
+<!--
+  AI gateway policy for the illustrative organisation (a FinTech on Azure, made up for this pack).
+  Applied at API scope to the Azure OpenAI and Claude APIs in API Management.
+
+  Status: NOT DEPLOYED. Written against the Microsoft Learn policy reference pages for
+  llm-token-limit (page dated 1 April 2026) and llm-emit-token-metric (page dated 15 September 2026),
+  element and attribute names as documented there. Well-formed XML (checked with xmllint); policy
+  expressions use XML entities for quotes, which API Management decodes before evaluating them.
+
+  Convention: every team and use case gets its own API Management subscription, named
+  team.use-case.environment, for example customer-ops.support-assistant.prod. The gateway reads
+  team, use case and environment from that name, so a caller cannot charge another team by
+  sending a header. Subscriptions are created by the platform team, not by callers.
+
+  What it does:
+    1. Labels each call with team, use case, environment and deployment.
+    2. Production: soft limits. No monthly quota (a quota answers 403 and would stop customer work);
+       the monthly allowance is watched by an alert on the emitted metric at 80% and 100%
+       (kql/soft-quota-alert.kql). A high tokens-per-minute ceiling (429) still stops runaway loops.
+    3. Outside production: hard limits. Tokens per minute (429) and a monthly token quota (403).
+    4. Emits token counts to Application Insights with those four dimensions, which the ledger joins
+       to the bill to split shared lines between teams.
+-->
+<policies>
+  <!-- inbound: runs before the request is forwarded to the model backend -->
+  <inbound>
+    <!-- base: apply the product and global policies first (authentication, IP filtering) -->
+    <base />
+    <!-- team: first part of the subscription name; unknown when the name does not follow the convention -->
+    <set-variable name="team" value="@{ var p = (context.Subscription?.Name ?? &quot;&quot;).Split('.'); return p.Length == 3 ? p[0] : &quot;unknown&quot;; }" />
+    <!-- use-case: second part of the subscription name -->
+    <set-variable name="useCase" value="@{ var p = (context.Subscription?.Name ?? &quot;&quot;).Split('.'); return p.Length == 3 ? p[1] : &quot;unknown&quot;; }" />
+    <!-- environment: third part; anything other than prod is treated as non-production, so the hard limits apply -->
+    <set-variable name="environment" value="@{ var p = (context.Subscription?.Name ?? &quot;&quot;).Split('.'); return p.Length == 3 &amp;&amp; p[2] == &quot;prod&quot; ? &quot;prod&quot; : &quot;nonprod&quot;; }" />
+    <!-- deployment: the Azure OpenAI deployment from the URL template /openai/deployments/{deployment-id}/...; the Claude API uses a single named backend -->
+    <set-variable name="deployment" value="@(context.Request.MatchedParameters.ContainsKey(&quot;deployment-id&quot;) ? context.Request.MatchedParameters[&quot;deployment-id&quot;] : &quot;claude-sonnet-55-kyc&quot;)" />
+    <!-- choose: pick the limit by environment -->
+    <choose>
+      <!-- when: production traffic -->
+      <when condition="@((string)context.Variables[&quot;environment&quot;] == &quot;prod&quot;)">
+        <!-- llm-token-limit (production): keyed by subscription and deployment, so each use case has its own
+             counter per model. Rate only: 1,000,000 tokens a minute is several times the busiest use case's normal peak and exists to stop
+             runaway agent loops (429 with Retry-After). Counters are per gateway and not aggregated across
+             regions, and concurrent requests can briefly exceed the limit (Microsoft Learn). -->
+        <llm-token-limit counter-key="@(context.Subscription.Id + &quot;:&quot; + (string)context.Variables[&quot;deployment&quot;])" tokens-per-minute="1000000" estimate-prompt-tokens="false" remaining-tokens-variable-name="remainingTokens" tokens-consumed-variable-name="tokensConsumed" />
+      </when>
+      <!-- otherwise: development, test and sandbox traffic -->
+      <otherwise>
+        <!-- llm-token-limit (outside production): hard limits keyed the same way. 50,000 tokens a minute (429)
+             and 20 million tokens a month per subscription and model (403 until the period resets; Monthly
+             windows start at the UTC month). Prompt tokens are estimated so blocked calls never reach the
+             model. -->
+        <llm-token-limit counter-key="@(context.Subscription.Id + &quot;:&quot; + (string)context.Variables[&quot;deployment&quot;])" tokens-per-minute="50000" token-quota="20000000" token-quota-period="Monthly" estimate-prompt-tokens="true" remaining-quota-tokens-variable-name="remainingQuotaTokens" remaining-tokens-variable-name="remainingTokens" tokens-consumed-variable-name="tokensConsumed" />
+      </otherwise>
+    </choose>
+    <!-- llm-emit-token-metric: sends prompt, completion and total token counts (cached tokens in preview) to
+         Application Insights in the ai-spend-ledger namespace. Needs Application Insights integration with
+         custom metrics enabled. Four custom dimensions (the limit is five per policy). Subscription ID is not
+         added because the three labels already identify the subscription, and fewer dimensions keep the
+         product of unique values well under the 1,000 active time series API Management tracks per namespace
+         (beyond that, data is silently discarded). For OpenAI streaming calls set include_usage to true, or
+         counts can be missing. -->
+    <llm-emit-token-metric namespace="ai-spend-ledger">
+      <!-- dimension: owning team, from the subscription name -->
+      <dimension name="team" value="@((string)context.Variables[&quot;team&quot;])" />
+      <!-- dimension: use case, the unit the ledger reports cost per successful outcome for -->
+      <dimension name="use-case" value="@((string)context.Variables[&quot;useCase&quot;])" />
+      <!-- dimension: prod or nonprod, so production and experiments are never mixed in one figure -->
+      <dimension name="environment" value="@((string)context.Variables[&quot;environment&quot;])" />
+      <!-- dimension: model deployment, the key the ledger matches to the billed line -->
+      <dimension name="deployment" value="@((string)context.Variables[&quot;deployment&quot;])" />
+    </llm-emit-token-metric>
+  </inbound>
+  <!-- backend: forward to the model; nothing extra here -->
+  <backend>
+    <!-- base: the API's backend settings (Azure OpenAI deployment or the Claude endpoint) -->
+    <base />
+  </backend>
+  <!-- outbound: runs on the way back to the caller -->
+  <outbound>
+    <!-- base: inherited outbound policies -->
+    <base />
+    <!-- set-header: tell the caller how much of the per-minute allowance is left, so clients can back off before a 429 -->
+    <set-header name="x-ai-tokens-remaining-minute" exists-action="override">
+      <!-- value: the variable llm-token-limit filled in -->
+      <value>@(context.Variables.ContainsKey("remainingTokens") ? context.Variables["remainingTokens"].ToString() : "")</value>
+    </set-header>
+  </outbound>
+  <!-- on-error: runs if any step fails, including a 429 or 403 from the token limit -->
+  <on-error>
+    <!-- base: inherited error handling and logging -->
+    <base />
+  </on-error>
+</policies>

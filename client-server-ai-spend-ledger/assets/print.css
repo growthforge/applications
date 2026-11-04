@@ -1,0 +1,102 @@
+/*
+  Build Studio print styles: portrait A4, light theme only, nothing clipped.
+  Load after tokens.css and components.css. Everything is wrapped in
+  @media print, so it can be linked normally or inlined.
+
+  pdf.mjs assumes the @page side margins below (16mm) when it checks that no
+  element is wider than the printable area. Change both together.
+
+  Opt-outs and helpers:
+    .no-print            hidden in print
+    .print-only          hidden on screen, shown in print
+    .page-break-before   force a new page before this element
+    a.no-url             do not print the URL after this link
+*/
+
+.print-only { display: none; }
+
+@media print {
+  @page { size: A4 portrait; margin: 18mm 16mm 20mm 16mm; }
+
+  /* Force the light palette whatever the system or [data-theme] says. Same
+     specificity as the dark selectors in tokens.css; this file loads later. */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f4f2ee;
+    --text: #111316;
+    --text-muted: #45494f;
+    --border: #cfcac2;
+    --border-strong: #7a766f;
+    --accent: var(--brand);
+    --accent-ink: var(--brand-ink, #ffffff);
+    --accent-soft: color-mix(in srgb, var(--brand) 8%, #ffffff);
+    --human-led: #2f4b7c;   --human-led-bg: #e6ecf6;
+    --ai-assist: #0f6b5c;   --ai-assist-bg: #dcf0ea;
+    --ai-automate: #6b3fa0; --ai-automate-bg: #efe7f8;
+    --escalate: #a1261b;    --escalate-bg: #fbe4e0;
+    --shadow-1: none;
+    --shadow-2: none;
+  }
+
+  html { font-size: 10.5pt; }
+  body { background: #ffffff; color: var(--text); line-height: 1.45; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Hide screen-only chrome. */
+  .skip-link, .site-nav, .theme-toggle, .stepper__bar, .tabs__list, .no-print,
+  button, [role="tablist"] { display: none !important; }
+  .print-only { display: block; }
+
+  /* Every tab panel and every step is visible in print. */
+  .tabs__panel, .tabs__panel[hidden], .stepper__step, .stepper__step[hidden] { display: block !important; }
+  .tabs__panel + .tabs__panel, .stepper__step + .stepper__step {
+    margin-top: 6mm !important; padding-top: 4mm !important; border-top: 1px solid var(--border) !important;
+  }
+  /* Closed <details> open in print: components.js and pdf.mjs set open on
+     beforeprint; this rule covers browsers that support ::details-content. */
+  details > summary { list-style: none; font-weight: var(--weight-bold); }
+
+  /* Nothing clipped: scrollers expand, wide things shrink to the page. */
+  .table-wrap, pre, .stepper, .card, .alloc, .matrix { overflow: visible !important; max-width: 100% !important; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  img, svg, canvas, video, iframe { max-width: 100% !important; height: auto !important; }
+  .wrap { max-width: none; padding-inline: 0; }
+  .table { width: 100%; table-layout: auto; font-size: 9pt; }
+  .table th, .table td { padding: 2mm 2.5mm; word-break: normal; overflow-wrap: anywhere; }
+  .table thead th { white-space: normal; }
+  .table thead { display: table-header-group; }
+
+  /* Denser grids on paper (the printable width is about 670 CSS px). */
+  .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .alloc { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 3mm; }
+  .grid { --grid-min: 180px; gap: 4mm; }
+  .stat__value { font-size: 20pt; }
+
+  /* Compact vertical rhythm on paper. */
+  .hero { padding-block: 0 6mm; }
+  .section { padding-block: 6mm; }
+  .section--alt { background: none; }
+  .site-footer { padding-block: 6mm 0; background: none; }
+
+  /* Page-break rules. */
+  h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  .card, .stat, .callout, .timeline__item, .matrix, .alloc__lane, .stepper__step,
+  figure, tr, img, svg, blockquote, pre { break-inside: avoid-page; page-break-inside: avoid; }
+  .section { break-inside: auto; }
+  p, li { orphans: 3; widows: 3; }
+  .page-break-before { break-before: page; page-break-before: always; }
+
+  /* Print external link targets after the text, where that helps a reader. */
+  main a[href^="http"]:not(.no-url)::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em; color: var(--text-muted); overflow-wrap: anywhere; word-break: break-all;
+  }
+  a { color: var(--text); text-decoration: underline; }
+}
+
+@media print {
+  /* Separate block: an engine that does not know ::details-content drops only this. */
+  details::details-content { content-visibility: visible !important; display: block !important; }
+}
