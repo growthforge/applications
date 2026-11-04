@@ -79,7 +79,7 @@ The execution pauses at **Wait for the analyst's decision** until the analyst se
 { "decision": "send_to_audit", "analyst": "A1", "reason": "...", "packFeedback": "accepted" }
 ```
 
-Before any real use: put header authentication on the webhook, replace **Load case(s)** with the lookup in the existing queue, write the log to an approved append-only store instead of workflow static data, and take the step through the DPO screen and the InfoSec review. The build, buy or configure choice belongs to AI/Data Architecture; this pack is a prototype to make that conversation concrete, not a tool choice.
+The webhook trigger already requires header authentication (attach a Header Auth credential before calling it), the analyst notification goes only to an allowlisted https host checked by parsed hostname with user info rejected, and it never follows redirects. Before any real use: replace **Load case(s)** with the lookup in the existing queue, write the log to an approved append-only store instead of workflow static data, and take the step through the DPO screen and the InfoSec review. The build, buy or configure choice belongs to AI/Data Architecture; this pack is a prototype to make that conversation concrete, not a tool choice.
 
 ## What has been tested
 
