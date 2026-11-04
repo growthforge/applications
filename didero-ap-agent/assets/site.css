@@ -125,6 +125,8 @@ code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
 .st::before { content: ""; width: 8px; height: 8px; }
 .st--agent { background: var(--agent-bg); color: var(--agent); }
 .st--agent::before { background: var(--agent); border-radius: 50%; }
+.st--done { background: var(--agent-bg); color: var(--agent); }
+.st--done::before { background: var(--agent); border-radius: 50%; }
 .st--person { background: var(--person-bg); color: var(--person); }
 .st--person::before { border: 2px solid var(--person); border-radius: 50%; width: 6px; height: 6px; }
 .st--fraud { background: var(--fraud-bg); color: var(--fraud); }

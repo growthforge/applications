@@ -50,8 +50,9 @@ Who: Deployment strategist with Didero product and engineering for anything that
 - Extraction checked field by field on the customer’s real document layouts
 - Approval routing and notifications live in the channel the team already uses
 - Kill switch tested: one setting returns every action to recommend-only
+- ERP write access granted only for the fields the agent may change (confirmed date and price on acknowledgements), and tested in the sandbox company: one write confirmed by reading it back, one failed write left with a person
 
-**Gate:** Field accuracy at least 98% on required fields; zero unsafe auto-actions on the test set; the AP lead signs the tuning log.
+**Gate:** Field accuracy at least 98% on required fields; zero unsafe auto-actions on the test set; scoped write access tested in the sandbox; the AP lead signs the tuning log.
 
 ### Supervised go-live, lowest risk first (days 13 to 17)
 Autonomy switched on in order of risk: acknowledgements and chasing first, invoice matching second.

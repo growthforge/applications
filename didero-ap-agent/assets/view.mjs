@@ -5,7 +5,8 @@ export function esc(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export function status(r) {
+export function status(r, resolution) {
+  if (resolution) return { cls: 'st--done', label: 'Decided by a person' };
   if (r.action === 'hold_fraud') return { cls: 'st--fraud', label: 'Possible payment fraud' };
   if (r.needsHuman) return { cls: 'st--person', label: 'Waiting for a person' };
   return { cls: 'st--agent', label: 'Agent acted' };
@@ -16,8 +17,8 @@ export function title(r) {
   return r.subject;
 }
 
-export function itemButton(r, current) {
-  const s = status(r);
+export function itemButton(r, current, resolution) {
+  const s = status(r, resolution);
   const why = REASONS[r.reasons[r.reasons.length - 1]] && r.action !== 'needs_approval' && r.action !== 'exception' && r.action !== 'hold_fraud'
     ? REASONS[r.reasons[r.reasons.length - 1]].label : (REASONS[r.reasons[0]] || { label: r.reasons[0] }).label;
   return `<li><button type="button" class="item-btn" data-id="${esc(r.id)}"${current ? ' aria-current="true"' : ''}>`
@@ -36,7 +37,7 @@ function fields(doc) {
 }
 
 export function detail(r, email, resolution) {
-  const s = status(r);
+  const s = status(r, resolution);
   const verdict = ACTIONS[r.action] ? ACTIONS[r.action].label : r.action;
   const reasons = r.reasons.map((code) => {
     const x = REASONS[code];
@@ -49,14 +50,14 @@ export function detail(r, email, resolution) {
   let act = '';
   if (r.needsHuman) {
     act = resolution
-      ? `<p class="resolved" tabindex="-1"><strong>Resolved: ${esc(resolution.label)}.</strong> ${esc(resolution.effect)} (simulated).</p>`
+      ? `<div class="resolved" tabindex="-1"><p><strong>Decision recorded: ${esc(resolution.label)}.</strong></p><p>Next: ${esc(resolution.effect)}</p><p class="muted">Recorded here only. In a deployment the ERP update runs next and the case stays open until the system confirms the write; a failed write stays with a person.</p></div>`
       : `<div><h4>Resolve it</h4><div class="resolve" role="group" aria-label="Resolutions for ${esc(r.id)}">${(r.options || []).map((o) => `<button type="button" data-resolve="${esc(o.id)}">${esc(o.label)}</button>`).join('')}</div></div>`;
   }
   const audit = (r.audit || []).map((a) => `<li><span class="actor">${esc(a.actor)}</span><span>${esc(a.step)}: ${esc(a.detail)}</span></li>`).join('');
   const mail = email ? `<div><h4>The email</h4><pre class="email">${esc(email.body)}</pre></div>` : '';
   return `<div class="detail__head"><span class="st ${s.cls}">${esc(s.label)}</span><h3>${esc(title(r))}</h3>`
     + (email ? `<p class="detail__from">${esc(r.id)} from ${esc(email.from)}</p>` : `<p class="detail__from">${esc(r.id)}: the morning chase job</p>`) + `</div>`
-    + `<p class="detail__verdict">${esc(verdict)}</p>`
+    + `<p class="detail__verdict">${esc(verdict)}${resolution ? ': decided' : ''}</p>`
     + (r.summary ? `<p class="detail__summary">${esc(r.summary)}</p>` : '') + paired
     + `<div><h4>Why</h4><ul class="reasons">${reasons}</ul></div>`
     + act + draft + checks + fields(r.doc) + mail

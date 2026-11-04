@@ -197,20 +197,28 @@ export function mockExtract(email) {
   let m;
   while ((m = full.exec(body))) out.lines.push({ sku: m[1].trim(), description: m[2].trim(), qty: Number(m[3]), unit_price: Number(m[4]) });
   while ((m = short.exec(body))) out.lines.push({ sku: m[1].trim(), description: null, qty: Number(m[2]), unit_price: Number(m[3]) });
+  const missing = missingRequired(out);
+  if (missing.length) {
+    out.confidence = 'low';
+    out.notes = 'Missing: ' + missing.join(', ');
+  }
+  return out;
+}
+
+// The fields each document type must carry before any rule may act on it, checked in code whatever confidence
+// the parser or the model reports. A date must be a real YYYY-MM-DD date.
+export function missingRequired(doc) {
   const need = {
     invoice: ['supplier_name', 'document_number', 'net', 'vat', 'total'],
     credit_note: ['supplier_name', 'document_number', 'total'],
     po_acknowledgement: ['po_number', 'confirmed_delivery_date'],
     delivery_update: ['po_number', 'confirmed_delivery_date'],
     payment_query: ['document_number'],
-  }[out.document_type] || [];
-  const missing = need.filter((k) => out[k] == null);
-  if (out.document_type === 'invoice' && out.lines.length === 0) missing.push('lines');
-  if (missing.length) {
-    out.confidence = 'low';
-    out.notes = 'Missing: ' + missing.join(', ');
-  }
-  return out;
+  }[doc.document_type] || [];
+  const missing = need.filter((k) => doc[k] == null || doc[k] === '');
+  if (doc.document_type === 'invoice' && !(doc.lines || []).length) missing.push('lines');
+  if (doc.confirmed_delivery_date != null && !(/^\d{4}-\d{2}-\d{2}$/.test(doc.confirmed_delivery_date) && !Number.isNaN(Date.parse(doc.confirmed_delivery_date)))) missing.push('valid confirmed_delivery_date');
+  return missing;
 }
 
 // Messages API request body for the same extraction (raw HTTP, as n8n's HTTP Request node sends it).
@@ -247,7 +255,11 @@ export function parseClaudeExtraction(response) {
     return fail('not valid JSON');
   }
   const problems = validateAgainstSchema(doc, EXTRACTION_SCHEMA, 'doc');
-  return problems.length ? fail('schema: ' + problems.slice(0, 3).join('; ')) : doc;
+  if (problems.length) return fail('schema: ' + problems.slice(0, 3).join('; '));
+  // Schema-valid is not enough: a model can return null for a required field and still say "high".
+  const missing = missingRequired(doc);
+  if (missing.length && doc.confidence === 'high') return { ...doc, confidence: 'low', notes: 'Missing: ' + missing.join(', ') + (doc.notes ? '. ' + doc.notes : '') };
+  return doc;
 }
 
 // Minimal JSON Schema check for the subset used above (types, enum, anyOf, required, no extra keys).
@@ -348,6 +360,11 @@ export function decide(doc, email, erp, cfg, state) {
   if (doc.confidence !== 'high') {
     reasons.push('EXTRACTION_LOW_CONFIDENCE');
     return out('exception', { summary: doc.notes || 'Could not read the document reliably.' });
+  }
+  const missing = missingRequired(doc); // checked again here, so no reader can skip it
+  if (missing.length) {
+    reasons.push('EXTRACTION_LOW_CONFIDENCE');
+    return out('exception', { summary: 'Missing: ' + missing.join(', ') + '. Not acted on.' });
   }
   const sup = findSupplier(erp, doc, email);
 

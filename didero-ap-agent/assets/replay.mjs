@@ -6,7 +6,7 @@ import { itemButton, detail } from './view.mjs';
 
 document.documentElement.classList.replace('no-js', 'js');
 
-const FEATURED = ['E07', 'E03', 'E10', 'E21', 'CHASE-PO-24009', 'E19'];
+const FEATURED = ['E21', 'E07', 'E03', 'E10', 'CHASE-PO-24009', 'E19'];
 const run = runAgent(structuredClone(ERP), INBOX, DEFAULT_CONFIG);
 const items = run.results.map((r) => ({ ...r, audit: run.audit.filter((a) => a.itemId === r.id) }));
 const byId = Object.fromEntries(items.map((r) => [r.id, r]));
@@ -21,7 +21,7 @@ let current = FEATURED[0];
 
 function renderList() {
   const ids = view === 'featured' ? FEATURED : items.map((r) => r.id);
-  list.innerHTML = ids.map((id) => itemButton(byId[id], id === current)).join('');
+  list.innerHTML = ids.map((id) => itemButton(byId[id], id === current, resolved[id])).join('');
 }
 
 function show(id, { focus = false } = {}) {
@@ -57,6 +57,7 @@ panel.addEventListener('click', (e) => {
   const option = r.options.find((o) => o.id === b.dataset.resolve);
   resolved[current] = option;
   r.audit = [...r.audit, { at: new Date().toISOString(), itemId: r.id, actor: 'you', step: 'human decision', detail: option.label }];
+  renderList();
   show(current);
   panel.querySelector('.resolved').focus();
   status.textContent = `${r.id}: ${option.label}. ${Object.keys(resolved).length} of ${items.filter((x) => x.needsHuman).length} items for a person resolved.`;
