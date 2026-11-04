@@ -1,0 +1,11 @@
+{
+ "series": [
+  "pack/mcp-server/data/series/ons-opi.json"
+ ],
+ "benchmarks": "pack/mcp-server/data/benchmarks.json",
+ "plans": [
+  "pack/mcp-server/data/plans/PLAN-OFF-01.json",
+  "pack/mcp-server/data/plans/PLAN-SCH-02.json",
+  "pack/mcp-server/data/plans/PLAN-WHS-03.json"
+ ]
+}

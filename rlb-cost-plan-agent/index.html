@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>An MCP server for cost-plan checks, designed for Copilot Studio</title>
+  <meta name="description" content="Read-only MCP tools a Copilot Studio agent can call to take a first pass over a cost plan, with a basis, a status and a history on every figure. Independent work by Hemanth Vallamkonda, following up an AI Solutions Engineer application to Rider Levett Bucknall.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="An MCP server for cost-plan checks, designed for Copilot Studio">
+  <meta property="og:description" content="Independent, illustrative work by Hemanth Vallamkonda for the AI Solutions Engineer role at Rider Levett Bucknall.">
+  <meta property="og:url" content="https://growthforge.github.io/applications/rlb-cost-plan-agent/">
+  <meta property="og:image" content="https://growthforge.github.io/applications/rlb-cost-plan-agent/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/montserrat-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/print.css">
+  <script defer src="assets/components.js"></script>
+  <script type="module" src="assets/walkthrough.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="strip">
+    <div class="wrap strip__inner">
+      <p class="strip__text"><span class="strip__name">Hemanth Vallamkonda</span> <span class="strip__dot" aria-hidden="true">·</span> follow-up to my AI Solutions Engineer application <span class="strip__dot" aria-hidden="true">·</span> <a href="#contact">contact</a></p>
+      <nav aria-label="Pages">
+        <ul class="strip__nav">
+          <li><a href="#try">Try it</a></li>
+          <li><a href="build.html">Build guide</a></li>
+          <li><a href="downloads/cost-plan-check-pack.zip">Download the pack</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="title">
+      <div class="wrap hero__grid">
+        <div class="hero__text">
+          <p class="label">MCP server <span aria-hidden="true">·</span> Copilot Studio <span aria-hidden="true">·</span> cost plans</p>
+          <h1 id="title">An MCP server for cost-plan checks, designed for Copilot Studio</h1>
+          <p class="lede">Three read-only tools a Copilot Studio agent can call to take a first pass over a cost plan. Every figure comes back with its basis, its status and its history, and nothing the tools do can approve a number.</p>
+        </div>
+
+        <figure class="callcard" data-illustrative aria-labelledby="callcard-cap">
+          <div class="callcard__bar"><span class="callcard__live">A real tool call</span><span class="callcard__proto"><code>MCP 2026-07-28</code> over Streamable HTTP</span></div>
+          <p class="callcard__result" id="hero-line"><!-- pre:hero-line -->A first pass over a £33.8m synthetic plan: 6 items for review, including a £45,000 transposed line total.<!-- /pre:hero-line --></p>
+          <p class="callcard__step">Request <code class="callcard__tool">tools/call check_cost_plan</code></p>
+          <pre class="code code--dark"><code id="hero-args"><!-- pre:hero-args -->{ <span class="j-k">&quot;plan_id&quot;</span>: <span class="j-s">&quot;PLAN-OFF-01&quot;</span> }<!-- /pre:hero-args --></code></pre>
+          <p class="callcard__step">Structured result (excerpt)</p>
+          <pre class="code code--dark"><code id="hero-result"><!-- pre:hero-result -->{
+  <span class="j-k">&quot;checked&quot;</span>: {
+    <span class="j-k">&quot;plan_id&quot;</span>: <span class="j-s">&quot;PLAN-OFF-01&quot;</span>,
+    <span class="j-k">&quot;line_count&quot;</span>: <span class="j-n">13</span>,
+    <span class="j-k">&quot;stated_total&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;hash&quot;</span>: <span class="j-s">&quot;11222ce25f70&quot;</span>
+  },
+  <span class="j-k">&quot;summary&quot;</span>: {
+    <span class="j-k">&quot;items_for_review&quot;</span>: <span class="j-n">6</span>,
+    <span class="j-k">&quot;checks&quot;</span>: <span class="j-n">3</span>,
+    <span class="j-k">&quot;reviews&quot;</span>: <span class="j-n">2</span>,
+    <span class="j-k">&quot;notes&quot;</span>: <span class="j-n">1</span>
+  },
+  <span class="j-k">&quot;flags&quot;</span>: [
+    <span class="j-s">&quot;F01 check L01: Line total does not match rate x GIFA&quot;</span>,
+    <span class="j-s">&quot;F02 check L03: Inflation may be counted twice&quot;</span>,
+    <span class="j-s">&quot;F03 check L09: Percentage base to confirm&quot;</span>,
+    <span class="j-s">&quot;F04 review L02: Rate is older than the estimate base date&quot;</span>,
+    <span class="j-s">&quot;F05 review L05: Basis too vague to trace&quot;</span>,
+    <span class="j-s">&quot;F06 note L04: Outside the synthetic range (soft)&quot;</span>
+  ],
+  <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;first_pass&quot;</span>
+}<!-- /pre:hero-result --></code></pre>
+          <details class="more more--dark"><summary>Full result, with basis, status and history</summary><pre class="code code--dark"><code id="hero-full"><!-- pre:hero-full -->{
+  <span class="j-k">&quot;checked&quot;</span>: {
+    <span class="j-k">&quot;plan_id&quot;</span>: <span class="j-s">&quot;PLAN-OFF-01&quot;</span>,
+    <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Synthetic office scheme, Stage 2 cost plan&quot;</span>,
+    <span class="j-k">&quot;source&quot;</span>: <span class="j-s">&quot;store&quot;</span>,
+    <span class="j-k">&quot;source_ref&quot;</span>: <span class="j-s">&quot;data/plans/PLAN-OFF-01.json&quot;</span>,
+    <span class="j-k">&quot;line_count&quot;</span>: <span class="j-n">13</span>,
+    <span class="j-k">&quot;stated_total&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;lines_total&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;hash&quot;</span>: <span class="j-s">&quot;11222ce25f70&quot;</span>,
+    <span class="j-k">&quot;gifa_m2&quot;</span>: <span class="j-n">8400</span>,
+    <span class="j-k">&quot;estimate_base_date&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+    <span class="j-k">&quot;building_type&quot;</span>: <span class="j-s">&quot;office&quot;</span>
+  },
+  <span class="j-k">&quot;summary&quot;</span>: {
+    <span class="j-k">&quot;items_for_review&quot;</span>: <span class="j-n">6</span>,
+    <span class="j-k">&quot;checks&quot;</span>: <span class="j-n">3</span>,
+    <span class="j-k">&quot;reviews&quot;</span>: <span class="j-n">2</span>,
+    <span class="j-k">&quot;notes&quot;</span>: <span class="j-n">1</span>
+  },
+  <span class="j-k">&quot;flags&quot;</span>: [
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L01&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;arithmetic&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Line total does not match rate x GIFA&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;Stated total £2,349,000; £285.00 x 8,400 m² gives £2,394,000, so the stated figure is £45,000 lower.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;stated&quot;</span>: <span class="j-n">2349000</span>,
+        <span class="j-k">&quot;expected&quot;</span>: <span class="j-n">2394000</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">-45000</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Check the extension and the floor area used on this line.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F01&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L03&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;inflation_double_count&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Inflation may be counted twice&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;This rate carries prices to Jun 2027, 12 months beyond the estimate base date (Jun 2026), and line L14 adds a group 14 inflation allowance of 4.50% from Jun 2026. The overlapping months are priced twice.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;months&quot;</span>: <span class="j-n">12</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark rate including forecast inflation to Jun 2027&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Hold the rate at the estimate base date and carry inflation only in group 14.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F02&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L09&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;percentage_base&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Percentage base to confirm&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;14.00% is applied to groups 1 to 8 (£22,425,000), leaving out group 0 (facilitating works). That is often deliberate, for example when facilitating works are let as a separate contract with their own preliminaries. If it is not intended, the Table 2.1 order (groups 0 to 8, £22,744,200) gives £3,184,188, £44,688 more.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;stated&quot;</span>: <span class="j-n">3139500</span>,
+        <span class="j-k">&quot;expected&quot;</span>: <span class="j-n">3184188</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">44688</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Preliminaries at 14 per cent of the works (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Confirm with the cost manager whether the base is intended, and say so in the basis.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F03&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L02&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;base_date&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;review&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Rate is older than the estimate base date&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;Rate dated Dec 2021; the estimate base date is Jun 2026, 54 months later. The index alone (All new work, 121.7 to 150.9) takes £960.00 to £1,190.34 per m², before any location adjustment.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">960</span>,
+        <span class="j-k">&quot;rebased_rate&quot;</span>: <span class="j-n">1190.34</span>,
+        <span class="j-k">&quot;months&quot;</span>: <span class="j-n">54</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark set, office median at Dec 2021&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Rebase it with rebase_rate once the location factors are known (ask; 1.00 to 1.00 means not adjusted), or record why the older rate stands.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;rebase_rate&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;{\&quot;rate\&quot;:960,\&quot;from_month\&quot;:\&quot;2021-12\&quot;,\&quot;to_month\&quot;:\&quot;2026-06\&quot;,\&quot;series\&quot;:\&quot;all_new_work\&quot;,\&quot;unit\&quot;:\&quot;per_m2_gifa\&quot;,\&quot;nrm1_group\&quot;:2}&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F04&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L05&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">5</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;basis&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;review&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Basis too vague to trace&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;The basis reads \&quot;TBC\&quot;, which does not say where the figure came from or when.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {},
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;TBC&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;State the source and its date (benchmark set, measured quantities, quotation or tender) and the status.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F05&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L04&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;benchmark_range&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;note&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Outside the synthetic range (soft)&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;£140.00 per m² is above the synthetic office range for fittings, furnishings and equipment at Jun 2026 (£43 to £94, median £72) by £46 (48.6%). Location not adjusted. Synthetic data: context for a reviewer, not evidence of an error.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">140</span>,
+        <span class="j-k">&quot;range_low&quot;</span>: <span class="j-n">43.47</span>,
+        <span class="j-k">&quot;range_high&quot;</span>: <span class="j-n">94.22</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">45.78</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Client brief allowance for loose furniture, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Look at the basis of this line; check the range with get_benchmark if needed (it asks for the location factor).&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;get_benchmark&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;{\&quot;building_type\&quot;:\&quot;office\&quot;,\&quot;nrm1_group\&quot;:4,\&quot;to_month\&quot;:\&quot;2026-06\&quot;}&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F06&quot;</span>
+    }
+  ],
+  <span class="j-k">&quot;build_up&quot;</span>: {
+    <span class="j-k">&quot;facilitating_works&quot;</span>: <span class="j-n">319200</span>,
+    <span class="j-k">&quot;building_works&quot;</span>: <span class="j-n">22425000</span>,
+    <span class="j-k">&quot;preliminaries&quot;</span>: <span class="j-n">3139500</span>,
+    <span class="j-k">&quot;overheads_and_profit&quot;</span>: <span class="j-n">1553022</span>,
+    <span class="j-k">&quot;works_cost_estimate&quot;</span>: <span class="j-n">27436722</span>,
+    <span class="j-k">&quot;fees&quot;</span>: <span class="j-n">2469305</span>,
+    <span class="j-k">&quot;other_project_costs&quot;</span>: <span class="j-n">180000</span>,
+    <span class="j-k">&quot;base_cost_estimate&quot;</span>: <span class="j-n">30086027</span>,
+    <span class="j-k">&quot;risks&quot;</span>: <span class="j-n">2256452</span>,
+    <span class="j-k">&quot;cost_limit_excluding_inflation&quot;</span>: <span class="j-n">32342479</span>,
+    <span class="j-k">&quot;inflation&quot;</span>: <span class="j-n">1455412</span>,
+    <span class="j-k">&quot;cost_limit_including_inflation&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;cost_per_m2_gifa&quot;</span>: <span class="j-n">4023.56</span>,
+    <span class="j-k">&quot;vat&quot;</span>: <span class="j-s">&quot;excluded&quot;</span>
+  },
+  <span class="j-k">&quot;lines&quot;</span>: [
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L00&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">0</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Facilitating works&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Facilitating works&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">319200</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Desk study allowance for site clearance, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">38</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L01&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2349000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">285</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F01&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L02&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">8064000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark set, office median at Dec 2021&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">960</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2021-12&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F04&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L03&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1974000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark rate including forecast inflation to Jun 2027&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">235</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2027-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F02&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L04&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1176000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Client brief allowance for loose furniture, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">140</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F06&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L05&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">5</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">7602000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;TBC&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">905</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F05&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L08&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">8</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;External works&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;External works&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1260000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">150</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L09&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">3139500</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Preliminaries at 14 per cent of the works (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">14</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_1_to_8&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F03&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L10&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">10</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's overheads and profit&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Main contractor's overheads and profit&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1553022</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Overheads and profit at 6 per cent (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">6</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_9&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L11&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">11</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Project and design team fees&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Project and design team fees&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2469305</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Consultant fees at 9 per cent of the works cost estimate (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_10&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L12&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">12</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Other project costs&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Other project costs&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;lump_sum&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">180000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Surveys, planning and legal costs, client schedule Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L13&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">13</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Risks&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Risks&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2256452</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Design development and construction risk from the synthetic risk register&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">7.5</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_12&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L14&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">14</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Inflation&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Inflation&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1455412</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Tender and construction inflation to the construction midpoint (synthetic forecast)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">4.5</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_13&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    }
+  ],
+  <span class="j-k">&quot;skipped&quot;</span>: [
+    <span class="j-s">&quot;Benchmark range for L03: the rate is dated Jun 2027 and cannot be brought to Jun 2026 with the published index, so it was not compared.&quot;</span>
+  ],
+  <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Plan PLAN-OFF-01 (data/plans/PLAN-OFF-01.json), 13 lines, hash 11222ce25f70; cost-plan-check rules 1.1; benchmark comparison against the synthetic set SYN-BENCH-2026 at Jun 2026; rebasing suggestions use All new work with location factor 1.00 (not adjusted).&quot;</span>,
+  <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;first_pass&quot;</span>,
+  <span class="j-k">&quot;status_note&quot;</span>: <span class="j-s">&quot;Items for the cost manager to review. The tool has not approved, changed or sent anything, and a line it does not flag is not thereby confirmed.&quot;</span>,
+  <span class="j-k">&quot;history&quot;</span>: [
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;loaded&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;Plan PLAN-OFF-01 read from the sample store (data/plans/PLAN-OFF-01.json): 13 lines, stated total £33,797,891, hash 11222ce25f70.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;checked&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;cost-plan-check rules 1.1: arithmetic, basis, base dates, percentage additions, inflation, then the soft benchmark range.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;result&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;6 items for review (3 checks, 2 reviews, 1 note).&quot;</span>
+    }
+  ]
+}<!-- /pre:hero-full --></code></pre></details>
+          <figcaption id="callcard-cap" class="callcard__cap">Synthetic plan (illustrative), checked against real ONS index values (Open Government Licence). The same code gives this result on the server, in the tests and on this page.</figcaption>
+        </figure>
+
+        <ul class="facts" aria-label="What the server is">
+          <li class="fact"><span class="fact__title">Read-only tools, plain schemas</span><span class="fact__text">No approve, edit or send tools. No $ref, no exclusive bounds, no type arrays, string enums, checked on what the server emits; plans go in by reference.</span></li>
+          <li class="fact"><span class="fact__title">Provenance in every result</span><span class="fact__text">Basis, status and history in the structured result, and in the words the model reads.</span></li>
+          <li class="fact"><span class="fact__title">Tested with more than one client</span><span class="fact__text">The <code>SDK v2</code> client in current and legacy modes, the <code>v1</code> SDK client, raw JSON-RPC with curl, and the MCP Inspector.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="try" aria-labelledby="try-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="label">Try it</p>
+          <h2 id="try-title">An agent's first pass over a synthetic cost plan</h2>
+          <p>Four questions a cost manager might ask, each answered by the tool code the server runs. Change a rate and the results follow. Then the review step, which belongs to a person.</p>
+        </div>
+
+        <div class="try" data-illustrative>
+          <p class="try__badge"><span class="badge">Synthetic data (illustrative)</span> Made by a seeded generator; not RLB, BCIS or market data.</p>
+          <div class="try__grid">
+            <div class="plan">
+              <h3 class="plan__title">Plan <code>PLAN-OFF-01</code>: synthetic office, Stage 2</h3>
+              <p class="plan__meta">GIFA 8,400 m², estimate base date Jun 2026. Edit any rate in pounds per m².</p>
+              <div class="plan__table" id="plan-table"><!-- pre:plan-table --><table class="plan-table">
+  <caption class="visually-hidden">Lines of the synthetic cost plan, with editable rates for priced lines</caption>
+  <colgroup><col class="c-ref"><col class="c-el"><col class="c-rate"><col class="c-total"></colgroup>
+  <thead><tr><th scope="col">Ref</th><th scope="col">Element</th><th scope="col" class="num">Rate <span class="unit">£/m²</span></th><th scope="col" class="num">Total £</th></tr></thead>
+  <tbody>
+<tr data-line="L00"><th scope="row">L00</th><td class="el"><span class="el__name">Facilitating works</span><span class="marks" data-marks="L00"></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L00">Rate in pounds per m² for L00 Facilitating works</label><input class="rate" id="rate-L00" data-rate="L00" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="38" disabled></td><td class="num" data-total="L00">319,200</td></tr>
+<tr data-line="L01"><th scope="row">L01</th><td class="el"><span class="el__name">Substructure</span><span class="marks" data-marks="L01"><span class="mark mark--check" title="F01: Line total does not match rate x GIFA">F01</span></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L01">Rate in pounds per m² for L01 Substructure</label><input class="rate" id="rate-L01" data-rate="L01" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="285" disabled></td><td class="num" data-total="L01">2,349,000</td></tr>
+<tr data-line="L02"><th scope="row">L02</th><td class="el"><span class="el__name">Superstructure</span><span class="marks" data-marks="L02"><span class="mark mark--review" title="F04: Rate is older than the estimate base date">F04</span></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L02">Rate in pounds per m² for L02 Superstructure</label><input class="rate" id="rate-L02" data-rate="L02" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="960" disabled></td><td class="num" data-total="L02">8,064,000</td></tr>
+<tr data-line="L03"><th scope="row">L03</th><td class="el"><span class="el__name">Internal finishes</span><span class="marks" data-marks="L03"><span class="mark mark--check" title="F02: Inflation may be counted twice">F02</span></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L03">Rate in pounds per m² for L03 Internal finishes</label><input class="rate" id="rate-L03" data-rate="L03" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="235" disabled></td><td class="num" data-total="L03">1,974,000</td></tr>
+<tr data-line="L04"><th scope="row">L04</th><td class="el"><span class="el__name">Fittings, furnishings and equipment</span><span class="marks" data-marks="L04"><span class="mark mark--note" title="F06: Outside the synthetic range (soft)">F06</span></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L04">Rate in pounds per m² for L04 Fittings, furnishings and equipment</label><input class="rate" id="rate-L04" data-rate="L04" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="140" disabled></td><td class="num" data-total="L04">1,176,000</td></tr>
+<tr data-line="L05"><th scope="row">L05</th><td class="el"><span class="el__name">Services</span><span class="marks" data-marks="L05"><span class="mark mark--review" title="F05: Basis too vague to trace">F05</span></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L05">Rate in pounds per m² for L05 Services</label><input class="rate" id="rate-L05" data-rate="L05" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="905" disabled></td><td class="num" data-total="L05">7,602,000</td></tr>
+<tr data-line="L08"><th scope="row">L08</th><td class="el"><span class="el__name">External works</span><span class="marks" data-marks="L08"></span></td><td class="num rate-cell"><label class="visually-hidden" for="rate-L08">Rate in pounds per m² for L08 External works</label><input class="rate" id="rate-L08" data-rate="L08" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="150" disabled></td><td class="num" data-total="L08">1,260,000</td></tr>
+<tr data-line="L09"><th scope="row">L09</th><td class="el"><span class="el__name">Main contractor's preliminaries</span><span class="marks" data-marks="L09"><span class="mark mark--check" title="F03: Percentage base to confirm">F03</span></span></td><td class="num rate-cell"><span class="pct">14%</span><span class="pct__base">of groups 1 to 8</span></td><td class="num" data-total="L09">3,139,500</td></tr>
+<tr data-line="L10"><th scope="row">L10</th><td class="el"><span class="el__name">Main contractor's overheads and profit</span><span class="marks" data-marks="L10"></span></td><td class="num rate-cell"><span class="pct">6%</span><span class="pct__base">of groups 0 to 9</span></td><td class="num" data-total="L10">1,553,022</td></tr>
+<tr data-line="L11"><th scope="row">L11</th><td class="el"><span class="el__name">Project and design team fees</span><span class="marks" data-marks="L11"></span></td><td class="num rate-cell"><span class="pct">9%</span><span class="pct__base">of groups 0 to 10</span></td><td class="num" data-total="L11">2,469,305</td></tr>
+<tr data-line="L12"><th scope="row">L12</th><td class="el"><span class="el__name">Other project costs</span><span class="marks" data-marks="L12"></span></td><td class="num rate-cell"><span class="pct__base">lump sum</span></td><td class="num" data-total="L12">180,000</td></tr>
+<tr data-line="L13"><th scope="row">L13</th><td class="el"><span class="el__name">Risks</span><span class="marks" data-marks="L13"></span></td><td class="num rate-cell"><span class="pct">7.5%</span><span class="pct__base">of groups 0 to 12</span></td><td class="num" data-total="L13">2,256,452</td></tr>
+<tr data-line="L14"><th scope="row">L14</th><td class="el"><span class="el__name">Inflation</span><span class="marks" data-marks="L14"></span></td><td class="num rate-cell"><span class="pct">4.5%</span><span class="pct__base">of groups 0 to 13</span></td><td class="num" data-total="L14">1,455,412</td></tr>
+  </tbody>
+  <tfoot><tr><th scope="row" colspan="3">Plan total</th><td class="num" data-total="PLAN">33,797,891</td></tr></tfoot>
+</table><!-- /pre:plan-table --></div>
+              <p class="plan__error" id="plan-error"></p>
+              <p class="plan__echo" id="plan-echo"><!-- pre:plan-echo -->The tool checks PLAN-OFF-01: 13 lines, total £33,797,891, hash <code>11222ce25f70</code>.<!-- /pre:plan-echo --></p>
+              <button class="btn btn--ghost" type="button" id="plan-reset" hidden>Reset the plan</button>
+              <noscript><p class="note">JavaScript is off, so the rates cannot be edited. The results show the stored plan, produced by the same code when the page was built.</p></noscript>
+            </div>
+
+            <div class="agent">
+              <div class="tabs" data-tabs data-label="Agent questions and the review step">
+                <ul class="tabs__list">
+                  <li><a href="#q-check"><span data-ordinal>1</span> Check</a></li>
+                  <li><a href="#q-rebase"><span data-ordinal>2</span> Rebase</a></li>
+                  <li><a href="#q-bench"><span data-ordinal>3</span> Benchmark</a></li>
+                  <li><a href="#q-refuse"><span data-ordinal>4</span> Refusal</a></li>
+                  <li><a href="#q-review"><span data-ordinal>5</span> Review</a></li>
+                </ul>
+                <section class="tabs__panel" id="q-check" aria-label="Check the plan"><div id="q-check-body"><!-- pre:q-check --><div class="turn">
+  <p class="turn__who">The cost manager asks</p>
+  <p class="turn__ask">Check PLAN-OFF-01 before it goes to the client.</p>
+  <p class="turn__who">The agent calls</p>
+  <div class="call">
+  <p class="call__head"><span class="call__label">tools/call</span> <code class="call__tool">check_cost_plan</code></p>
+  <pre class="code call__args" data-args="{&quot;plan_id&quot;:&quot;PLAN-OFF-01&quot;}"><code>{ <span class="j-k">&quot;plan_id&quot;</span>: <span class="j-s">&quot;PLAN-OFF-01&quot;</span> }</code></pre>
+</div>
+  <p class="turn__who">The tool returns</p>
+  <div class="result" data-outcome="result">
+  <p class="echo"><span class="echo__label">Checked</span> PLAN-OFF-01: 13 lines, total £33,797,891, hash <code>11222ce25f70</code></p>
+  <p class="result__figure"><span class="result__value">6 items</span><span class="result__unit">for review</span></p>
+  <p class="result__sub">3 to confirm, 2 needing a judgement, 1 soft note; checks first.</p>
+  <ol class="items"><li class="item item--check" data-flag="F01" data-check="arithmetic" data-line="L01">
+      <p class="item__head"><span class="tag tag--check">To confirm</span> <span class="item__id">F01</span> <span class="item__line">L01 Substructure</span></p>
+      <p class="item__title">Line total does not match rate x GIFA</p>
+      <p class="item__msg">Stated total £2,349,000; £285.00 x 8,400 m² gives £2,394,000, so the stated figure is £45,000 lower.</p>
+      <p class="item__meta">Line basis: Measured approximate quantities priced at Jun 2026 (synthetic). Line status: measured estimate.</p>
+    </li><li class="item item--check" data-flag="F02" data-check="inflation_double_count" data-line="L03">
+      <p class="item__head"><span class="tag tag--check">To confirm</span> <span class="item__id">F02</span> <span class="item__line">L03 Internal finishes</span></p>
+      <p class="item__title">Inflation may be counted twice</p>
+      <p class="item__msg">This rate carries prices to Jun 2027, 12 months beyond the estimate base date (Jun 2026), and line L14 adds a group 14 inflation allowance of 4.50% from Jun 2026. The overlapping months are priced twice.</p>
+      <p class="item__meta">Line basis: Synthetic benchmark rate including forecast inflation to Jun 2027. Line status: benchmark.</p>
+    </li><li class="item item--check" data-flag="F03" data-check="percentage_base" data-line="L09">
+      <p class="item__head"><span class="tag tag--check">To confirm</span> <span class="item__id">F03</span> <span class="item__line">L09 Main contractor's preliminaries</span></p>
+      <p class="item__title">Percentage base to confirm</p>
+      <p class="item__msg">14.00% is applied to groups 1 to 8 (£22,425,000), leaving out group 0 (facilitating works). That is often deliberate, for example when facilitating works are let as a separate contract with their own preliminaries. If it is not intended, the Table 2.1 order (groups 0 to 8, £22,744,200) gives £3,184,188, £44,688 more.</p>
+      <p class="item__meta">Line basis: Preliminaries at 14 per cent of the works (synthetic assumption). Line status: allowance.</p>
+    </li><li class="item item--review" data-flag="F04" data-check="base_date" data-line="L02">
+      <p class="item__head"><span class="tag tag--review">Needs a judgement</span> <span class="item__id">F04</span> <span class="item__line">L02 Superstructure</span></p>
+      <p class="item__title">Rate is older than the estimate base date</p>
+      <p class="item__msg">Rate dated Dec 2021; the estimate base date is Jun 2026, 54 months later. The index alone (All new work, 121.7 to 150.9) takes £960.00 to £1,190.34 per m², before any location adjustment.</p>
+      <p class="item__meta">Line basis: Synthetic benchmark set, office median at Dec 2021. Line status: benchmark.</p>
+    </li><li class="item item--review" data-flag="F05" data-check="basis" data-line="L05">
+      <p class="item__head"><span class="tag tag--review">Needs a judgement</span> <span class="item__id">F05</span> <span class="item__line">L05 Services</span></p>
+      <p class="item__title">Basis too vague to trace</p>
+      <p class="item__msg">The basis reads &quot;TBC&quot;, which does not say where the figure came from or when.</p>
+      <p class="item__meta">Line basis: TBC. Line status: measured estimate.</p>
+    </li><li class="item item--note" data-flag="F06" data-check="benchmark_range" data-line="L04">
+      <p class="item__head"><span class="tag tag--note">Soft note</span> <span class="item__id">F06</span> <span class="item__line">L04 Fittings, furnishings and equipment</span></p>
+      <p class="item__title">Outside the synthetic range (soft)</p>
+      <p class="item__msg">£140.00 per m² is above the synthetic office range for fittings, furnishings and equipment at Jun 2026 (£43 to £94, median £72) by £46 (48.6%). Location not adjusted. Synthetic data: context for a reviewer, not evidence of an error.</p>
+      <p class="item__meta">Line basis: Client brief allowance for loose furniture, Jun 2026 (synthetic). Line status: allowance.</p>
+    </li></ol>
+  <p class="result__sub">Cost limit including inflation £33,797,891 (£4,024 per m² GIFA), VAT excluded, from the stated lines.</p>
+  <dl class="prov">
+    <div class="prov__row"><dt>Basis</dt><dd>Plan PLAN-OFF-01 (data/plans/PLAN-OFF-01.json), 13 lines, hash 11222ce25f70; cost-plan-check rules 1.1; benchmark comparison against the synthetic set SYN-BENCH-2026 at Jun 2026; rebasing suggestions use All new work with location factor 1.00 (not adjusted).</dd></div>
+    <div class="prov__row"><dt>Status</dt><dd><span class="status">First pass</span> Items for the cost manager to review. The tool has not approved, changed or sent anything, and a line it does not flag is not thereby confirmed.</dd></div>
+    <div class="prov__row"><dt>History</dt><dd><ol class="history"><li><span class="history__event">loaded</span> Plan PLAN-OFF-01 read from the sample store (data/plans/PLAN-OFF-01.json): 13 lines, stated total £33,797,891, hash 11222ce25f70.</li><li><span class="history__event">checked</span> cost-plan-check rules 1.1: arithmetic, basis, base dates, percentage additions, inflation, then the soft benchmark range.</li><li><span class="history__event">result</span> 6 items for review (3 checks, 2 reviews, 1 note).</li></ol></dd></div>
+  </dl>
+  <details class="more"><summary>Text the model reads</summary><pre class="code code--text"><code>First-pass check of PLAN-OFF-01, Synthetic office scheme, Stage 2 cost plan: 13 lines, stated total £33,797,891, plan hash 11222ce25f70, estimate base date Jun 2026.
+6 items for review: 3 to confirm, 2 needing a judgement, 1 soft benchmark note.
+F01 [check] L01 Substructure: Line total does not match rate x GIFA. Stated total £2,349,000; £285.00 x 8,400 m² gives £2,394,000, so the stated figure is £45,000 lower. Line basis: Measured approximate quantities priced at Jun 2026 (synthetic); line status: measured_estimate.
+F02 [check] L03 Internal finishes: Inflation may be counted twice. This rate carries prices to Jun 2027, 12 months beyond the estimate base date (Jun 2026), and line L14 adds a group 14 inflation allowance of 4.50% from Jun 2026. The overlapping months are priced twice. Line basis: Synthetic benchmark rate including forecast inflation to Jun 2027; line status: benchmark.
+F03 [check] L09 Main contractor's preliminaries: Percentage base to confirm. 14.00% is applied to groups 1 to 8 (£22,425,000), leaving out group 0 (facilitating works). That is often deliberate, for example when facilitating works are let as a separate contract with their own preliminaries. If it is not intended, the Table 2.1 order (groups 0 to 8, £22,744,200) gives £3,184,188, £44,688 more. Line basis: Preliminaries at 14 per cent of the works (synthetic assumption); line status: allowance.
+F04 [review] L02 Superstructure: Rate is older than the estimate base date. Rate dated Dec 2021; the estimate base date is Jun 2026, 54 months later. The index alone (All new work, 121.7 to 150.9) takes £960.00 to £1,190.34 per m², before any location adjustment. Line basis: Synthetic benchmark set, office median at Dec 2021; line status: benchmark.
+F05 [review] L05 Services: Basis too vague to trace. The basis reads &quot;TBC&quot;, which does not say where the figure came from or when. Line basis: TBC; line status: measured_estimate.
+F06 [note] L04 Fittings, furnishings and equipment: Outside the synthetic range (soft). £140.00 per m² is above the synthetic office range for fittings, furnishings and equipment at Jun 2026 (£43 to £94, median £72) by £46 (48.6%). Location not adjusted. Synthetic data: context for a reviewer, not evidence of an error. Line basis: Client brief allowance for loose furniture, Jun 2026 (synthetic); line status: allowance.
+Not checked: Benchmark range for L03: the rate is dated Jun 2027 and cannot be brought to Jun 2026 with the published index, so it was not compared.
+Cost limit including inflation £33,797,891 (£4,024 per m² GIFA), VAT excluded, from the stated line totals.
+Basis: Plan PLAN-OFF-01 (data/plans/PLAN-OFF-01.json), 13 lines, hash 11222ce25f70; cost-plan-check rules 1.1; benchmark comparison against the synthetic set SYN-BENCH-2026 at Jun 2026; rebasing suggestions use All new work with location factor 1.00 (not adjusted).
+Status: first pass. Items for the cost manager to review. The tool has not approved, changed or sent anything, and a line it does not flag is not thereby confirmed.</code></pre></details>
+  <details class="more"><summary>Full structured result (JSON)</summary><pre class="code result-json"><code>{
+  <span class="j-k">&quot;checked&quot;</span>: {
+    <span class="j-k">&quot;plan_id&quot;</span>: <span class="j-s">&quot;PLAN-OFF-01&quot;</span>,
+    <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Synthetic office scheme, Stage 2 cost plan&quot;</span>,
+    <span class="j-k">&quot;source&quot;</span>: <span class="j-s">&quot;store&quot;</span>,
+    <span class="j-k">&quot;source_ref&quot;</span>: <span class="j-s">&quot;data/plans/PLAN-OFF-01.json&quot;</span>,
+    <span class="j-k">&quot;line_count&quot;</span>: <span class="j-n">13</span>,
+    <span class="j-k">&quot;stated_total&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;lines_total&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;hash&quot;</span>: <span class="j-s">&quot;11222ce25f70&quot;</span>,
+    <span class="j-k">&quot;gifa_m2&quot;</span>: <span class="j-n">8400</span>,
+    <span class="j-k">&quot;estimate_base_date&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+    <span class="j-k">&quot;building_type&quot;</span>: <span class="j-s">&quot;office&quot;</span>
+  },
+  <span class="j-k">&quot;summary&quot;</span>: {
+    <span class="j-k">&quot;items_for_review&quot;</span>: <span class="j-n">6</span>,
+    <span class="j-k">&quot;checks&quot;</span>: <span class="j-n">3</span>,
+    <span class="j-k">&quot;reviews&quot;</span>: <span class="j-n">2</span>,
+    <span class="j-k">&quot;notes&quot;</span>: <span class="j-n">1</span>
+  },
+  <span class="j-k">&quot;flags&quot;</span>: [
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L01&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;arithmetic&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Line total does not match rate x GIFA&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;Stated total £2,349,000; £285.00 x 8,400 m² gives £2,394,000, so the stated figure is £45,000 lower.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;stated&quot;</span>: <span class="j-n">2349000</span>,
+        <span class="j-k">&quot;expected&quot;</span>: <span class="j-n">2394000</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">-45000</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Check the extension and the floor area used on this line.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F01&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L03&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;inflation_double_count&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Inflation may be counted twice&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;This rate carries prices to Jun 2027, 12 months beyond the estimate base date (Jun 2026), and line L14 adds a group 14 inflation allowance of 4.50% from Jun 2026. The overlapping months are priced twice.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;months&quot;</span>: <span class="j-n">12</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark rate including forecast inflation to Jun 2027&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Hold the rate at the estimate base date and carry inflation only in group 14.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F02&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L09&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;percentage_base&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;check&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Percentage base to confirm&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;14.00% is applied to groups 1 to 8 (£22,425,000), leaving out group 0 (facilitating works). That is often deliberate, for example when facilitating works are let as a separate contract with their own preliminaries. If it is not intended, the Table 2.1 order (groups 0 to 8, £22,744,200) gives £3,184,188, £44,688 more.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;stated&quot;</span>: <span class="j-n">3139500</span>,
+        <span class="j-k">&quot;expected&quot;</span>: <span class="j-n">3184188</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">44688</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Preliminaries at 14 per cent of the works (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Confirm with the cost manager whether the base is intended, and say so in the basis.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F03&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L02&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;base_date&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;review&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Rate is older than the estimate base date&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;Rate dated Dec 2021; the estimate base date is Jun 2026, 54 months later. The index alone (All new work, 121.7 to 150.9) takes £960.00 to £1,190.34 per m², before any location adjustment.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">960</span>,
+        <span class="j-k">&quot;rebased_rate&quot;</span>: <span class="j-n">1190.34</span>,
+        <span class="j-k">&quot;months&quot;</span>: <span class="j-n">54</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark set, office median at Dec 2021&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Rebase it with rebase_rate once the location factors are known (ask; 1.00 to 1.00 means not adjusted), or record why the older rate stands.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;rebase_rate&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;{\&quot;rate\&quot;:960,\&quot;from_month\&quot;:\&quot;2021-12\&quot;,\&quot;to_month\&quot;:\&quot;2026-06\&quot;,\&quot;series\&quot;:\&quot;all_new_work\&quot;,\&quot;unit\&quot;:\&quot;per_m2_gifa\&quot;,\&quot;nrm1_group\&quot;:2}&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F04&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L05&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">5</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;basis&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;review&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Basis too vague to trace&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;The basis reads \&quot;TBC\&quot;, which does not say where the figure came from or when.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {},
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;TBC&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;State the source and its date (benchmark set, measured quantities, quotation or tender) and the status.&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F05&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;line_ref&quot;</span>: <span class="j-s">&quot;L04&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;check&quot;</span>: <span class="j-s">&quot;benchmark_range&quot;</span>,
+      <span class="j-k">&quot;severity&quot;</span>: <span class="j-s">&quot;note&quot;</span>,
+      <span class="j-k">&quot;title&quot;</span>: <span class="j-s">&quot;Outside the synthetic range (soft)&quot;</span>,
+      <span class="j-k">&quot;message&quot;</span>: <span class="j-s">&quot;£140.00 per m² is above the synthetic office range for fittings, furnishings and equipment at Jun 2026 (£43 to £94, median £72) by £46 (48.6%). Location not adjusted. Synthetic data: context for a reviewer, not evidence of an error.&quot;</span>,
+      <span class="j-k">&quot;figures&quot;</span>: {
+        <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">140</span>,
+        <span class="j-k">&quot;range_low&quot;</span>: <span class="j-n">43.47</span>,
+        <span class="j-k">&quot;range_high&quot;</span>: <span class="j-n">94.22</span>,
+        <span class="j-k">&quot;difference&quot;</span>: <span class="j-n">45.78</span>
+      },
+      <span class="j-k">&quot;line_basis&quot;</span>: <span class="j-s">&quot;Client brief allowance for loose furniture, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;line_status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;next_step&quot;</span>: <span class="j-s">&quot;Look at the basis of this line; check the range with get_benchmark if needed (it asks for the location factor).&quot;</span>,
+      <span class="j-k">&quot;suggested_call&quot;</span>: {
+        <span class="j-k">&quot;tool&quot;</span>: <span class="j-s">&quot;get_benchmark&quot;</span>,
+        <span class="j-k">&quot;arguments_json&quot;</span>: <span class="j-s">&quot;{\&quot;building_type\&quot;:\&quot;office\&quot;,\&quot;nrm1_group\&quot;:4,\&quot;to_month\&quot;:\&quot;2026-06\&quot;}&quot;</span>
+      },
+      <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;F06&quot;</span>
+    }
+  ],
+  <span class="j-k">&quot;build_up&quot;</span>: {
+    <span class="j-k">&quot;facilitating_works&quot;</span>: <span class="j-n">319200</span>,
+    <span class="j-k">&quot;building_works&quot;</span>: <span class="j-n">22425000</span>,
+    <span class="j-k">&quot;preliminaries&quot;</span>: <span class="j-n">3139500</span>,
+    <span class="j-k">&quot;overheads_and_profit&quot;</span>: <span class="j-n">1553022</span>,
+    <span class="j-k">&quot;works_cost_estimate&quot;</span>: <span class="j-n">27436722</span>,
+    <span class="j-k">&quot;fees&quot;</span>: <span class="j-n">2469305</span>,
+    <span class="j-k">&quot;other_project_costs&quot;</span>: <span class="j-n">180000</span>,
+    <span class="j-k">&quot;base_cost_estimate&quot;</span>: <span class="j-n">30086027</span>,
+    <span class="j-k">&quot;risks&quot;</span>: <span class="j-n">2256452</span>,
+    <span class="j-k">&quot;cost_limit_excluding_inflation&quot;</span>: <span class="j-n">32342479</span>,
+    <span class="j-k">&quot;inflation&quot;</span>: <span class="j-n">1455412</span>,
+    <span class="j-k">&quot;cost_limit_including_inflation&quot;</span>: <span class="j-n">33797891</span>,
+    <span class="j-k">&quot;cost_per_m2_gifa&quot;</span>: <span class="j-n">4023.56</span>,
+    <span class="j-k">&quot;vat&quot;</span>: <span class="j-s">&quot;excluded&quot;</span>
+  },
+  <span class="j-k">&quot;lines&quot;</span>: [
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L00&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">0</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Facilitating works&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Facilitating works&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">319200</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Desk study allowance for site clearance, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">38</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L01&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Substructure&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2349000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">285</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F01&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L02&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Superstructure&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">8064000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark set, office median at Dec 2021&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">960</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2021-12&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F04&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L03&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Internal finishes&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1974000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Synthetic benchmark rate including forecast inflation to Jun 2027&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;benchmark&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">235</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2027-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F02&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L04&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1176000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Client brief allowance for loose furniture, Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">140</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F06&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L05&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">5</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Services&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">7602000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;TBC&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">905</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F05&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L08&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">8</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;External works&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;External works&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1260000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Measured approximate quantities priced at Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;measured_estimate&quot;</span>,
+      <span class="j-k">&quot;rate_per_m2&quot;</span>: <span class="j-n">150</span>,
+      <span class="j-k">&quot;effective_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L09&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Main contractor's preliminaries&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">3139500</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Preliminaries at 14 per cent of the works (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">14</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_1_to_8&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: [
+        <span class="j-s">&quot;F03&quot;</span>
+      ]
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L10&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">10</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Main contractor's overheads and profit&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Main contractor's overheads and profit&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1553022</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Overheads and profit at 6 per cent (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">6</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_9&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L11&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">11</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Project and design team fees&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Project and design team fees&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2469305</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Consultant fees at 9 per cent of the works cost estimate (synthetic assumption)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">9</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_10&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L12&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">12</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Other project costs&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Other project costs&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;lump_sum&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">180000</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Surveys, planning and legal costs, client schedule Jun 2026 (synthetic)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L13&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">13</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Risks&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Risks&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">2256452</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Design development and construction risk from the synthetic risk register&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">7.5</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_12&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    },
+    {
+      <span class="j-k">&quot;ref&quot;</span>: <span class="j-s">&quot;L14&quot;</span>,
+      <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">14</span>,
+      <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Inflation&quot;</span>,
+      <span class="j-k">&quot;description&quot;</span>: <span class="j-s">&quot;Inflation&quot;</span>,
+      <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+      <span class="j-k">&quot;total&quot;</span>: <span class="j-n">1455412</span>,
+      <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Tender and construction inflation to the construction midpoint (synthetic forecast)&quot;</span>,
+      <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;allowance&quot;</span>,
+      <span class="j-k">&quot;percentage&quot;</span>: <span class="j-n">4.5</span>,
+      <span class="j-k">&quot;applied_to&quot;</span>: <span class="j-s">&quot;groups_0_to_13&quot;</span>,
+      <span class="j-k">&quot;flag_ids&quot;</span>: []
+    }
+  ],
+  <span class="j-k">&quot;skipped&quot;</span>: [
+    <span class="j-s">&quot;Benchmark range for L03: the rate is dated Jun 2027 and cannot be brought to Jun 2026 with the published index, so it was not compared.&quot;</span>
+  ],
+  <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Plan PLAN-OFF-01 (data/plans/PLAN-OFF-01.json), 13 lines, hash 11222ce25f70; cost-plan-check rules 1.1; benchmark comparison against the synthetic set SYN-BENCH-2026 at Jun 2026; rebasing suggestions use All new work with location factor 1.00 (not adjusted).&quot;</span>,
+  <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;first_pass&quot;</span>,
+  <span class="j-k">&quot;status_note&quot;</span>: <span class="j-s">&quot;Items for the cost manager to review. The tool has not approved, changed or sent anything, and a line it does not flag is not thereby confirmed.&quot;</span>,
+  <span class="j-k">&quot;history&quot;</span>: [
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;loaded&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;Plan PLAN-OFF-01 read from the sample store (data/plans/PLAN-OFF-01.json): 13 lines, stated total £33,797,891, hash 11222ce25f70.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;checked&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;cost-plan-check rules 1.1: arithmetic, basis, base dates, percentage additions, inflation, then the soft benchmark range.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;result&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;6 items for review (3 checks, 2 reviews, 1 note).&quot;</span>
+    }
+  ]
+}</code></pre></details>
+</div>
+</div><!-- /pre:q-check --></div></section>
+                <section class="tabs__panel" id="q-rebase" aria-label="Rebase a rate"><div id="q-rebase-body"><!-- pre:q-rebase --><div class="turn">
+  <p class="turn__who">The cost manager asks</p>
+  <p class="turn__ask">Bring the superstructure rate (£960 per m² at Dec 2021) to the estimate base date. No location adjustment at either end.</p>
+  <p class="turn__who">The agent calls</p>
+  <div class="call">
+  <p class="call__head"><span class="call__label">tools/call</span> <code class="call__tool">rebase_rate</code></p>
+  <pre class="code call__args" data-args="{&quot;rate&quot;:960,&quot;from_month&quot;:&quot;2021-12&quot;,&quot;to_month&quot;:&quot;2026-06&quot;,&quot;series&quot;:&quot;all_new_work&quot;,&quot;from_location_factor&quot;:1,&quot;to_location_factor&quot;:1,&quot;nrm1_group&quot;:2}"><code>{
+  <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">960</span>,
+  <span class="j-k">&quot;from_month&quot;</span>: <span class="j-s">&quot;2021-12&quot;</span>,
+  <span class="j-k">&quot;to_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+  <span class="j-k">&quot;series&quot;</span>: <span class="j-s">&quot;all_new_work&quot;</span>,
+  <span class="j-k">&quot;from_location_factor&quot;</span>: <span class="j-n">1</span>,
+  <span class="j-k">&quot;to_location_factor&quot;</span>: <span class="j-n">1</span>,
+  <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>
+}</code></pre>
+</div>
+  <p class="turn__who">The tool returns</p>
+  <div class="result" data-outcome="result">
+  <p class="result__figure"><span class="result__value">£1,190</span><span class="result__unit"> per m² GIFA at Jun 2026</span></p>
+  <p class="result__sub">£1,190.34 to the penny, from £960.00 at Dec 2021: x 150.9 / 121.7 (All new work), location factors 1.00 to 1.00 (not adjusted).</p>
+  <dl class="prov">
+    <div class="prov__row"><dt>Basis</dt><dd>Office for National Statistics All new work index (2015=100): Dec 2021 121.7 to Jun 2026 150.9; location factors 1.00 to 1.00 (not adjusted); input £960.00 per m² GIFA at Dec 2021.</dd></div>
+    <div class="prov__row"><dt>Status</dt><dd><span class="status">Indicative</span> A first-pass figure for the cost manager to review. Not approved, and not a tender price.</dd></div>
+    <div class="prov__row"><dt>History</dt><dd><ol class="history"><li><span class="history__event">input</span> £960.00 per m² GIFA at Dec 2021, as supplied by the caller for Superstructure.</li><li><span class="history__event">index ratio</span> x 150.9 / 121.7 = x 1.239934 (All new work, released 2026-08-13).</li><li><span class="history__event">location factors</span> x 1.00 / 1.00 (not adjusted).</li><li><span class="history__event">result</span> £1,190.34 per m² GIFA at Jun 2026; displayed as £1,190.</li></ol></dd></div>
+  </dl>
+  <details class="more"><summary>Text the model reads</summary><pre class="code code--text"><code>Rebased figure: £1,190 per m² GIFA at Jun 2026 (£1,190.34 to the penny), from £960.00 per m² GIFA at Dec 2021.
+Basis: Office for National Statistics All new work index (2015=100): Dec 2021 121.7 to Jun 2026 150.9; location factors 1.00 to 1.00 (not adjusted); input £960.00 per m² GIFA at Dec 2021. Index ratio 1.239934, a change of 23.99 per cent. Source: Office for National Statistics, Construction output price indices, licensed under the Open Government Licence v3.0. Released 2026-08-13.
+Status: indicative. A first-pass figure for the cost manager to review. Not approved, and not a tender price.
+Caveats: Output price indices are modelled from materials, plant and labour costs plus a profit mark-up. They are a proxy for output prices, not a tender price index, and can lag tender prices after market shocks. No regional series is published, so a location factor has to be supplied separately. Recent months are provisional and can be revised for up to twelve months.</code></pre></details>
+  <details class="more"><summary>Full structured result (JSON)</summary><pre class="code result-json"><code>{
+  <span class="j-k">&quot;figure&quot;</span>: {
+    <span class="j-k">&quot;value&quot;</span>: <span class="j-n">1190.34</span>,
+    <span class="j-k">&quot;unrounded&quot;</span>: <span class="j-n">1190.3368940016435</span>,
+    <span class="j-k">&quot;display&quot;</span>: <span class="j-s">&quot;£1,190 per m² GIFA&quot;</span>,
+    <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+    <span class="j-k">&quot;month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>
+  },
+  <span class="j-k">&quot;input&quot;</span>: {
+    <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">960</span>,
+    <span class="j-k">&quot;from_month&quot;</span>: <span class="j-s">&quot;2021-12&quot;</span>,
+    <span class="j-k">&quot;to_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+    <span class="j-k">&quot;series&quot;</span>: <span class="j-s">&quot;all_new_work&quot;</span>,
+    <span class="j-k">&quot;from_location_factor&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;to_location_factor&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;per_m2_gifa&quot;</span>,
+    <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">2</span>
+  },
+  <span class="j-k">&quot;index&quot;</span>: {
+    <span class="j-k">&quot;series_id&quot;</span>: <span class="j-s">&quot;all_new_work&quot;</span>,
+    <span class="j-k">&quot;series_name&quot;</span>: <span class="j-s">&quot;All new work&quot;</span>,
+    <span class="j-k">&quot;kind&quot;</span>: <span class="j-s">&quot;output_price_index&quot;</span>,
+    <span class="j-k">&quot;index_base&quot;</span>: <span class="j-s">&quot;2015=100&quot;</span>,
+    <span class="j-k">&quot;from_value&quot;</span>: <span class="j-n">121.7</span>,
+    <span class="j-k">&quot;to_value&quot;</span>: <span class="j-n">150.9</span>,
+    <span class="j-k">&quot;ratio&quot;</span>: <span class="j-n">1.2399342645850453</span>,
+    <span class="j-k">&quot;percentage_change&quot;</span>: <span class="j-n">23.99</span>
+  },
+  <span class="j-k">&quot;location&quot;</span>: {
+    <span class="j-k">&quot;from_factor&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;to_factor&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;ratio&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;note&quot;</span>: <span class="j-s">&quot;1.00 to 1.00: not adjusted for location. No free UK location factor series is published (the ONS indices have no regional split); licensed or in-house factors should be stated if location matters.&quot;</span>
+  },
+  <span class="j-k">&quot;formula&quot;</span>: <span class="j-s">&quot;Ra2 = Ra1 x (index2 / index1) x (to location factor / from location factor)&quot;</span>,
+  <span class="j-k">&quot;rounding&quot;</span>: <span class="j-s">&quot;Displayed to the nearest pound; value held to the penny; unrounded kept for audit.&quot;</span>,
+  <span class="j-k">&quot;caveats&quot;</span>: [
+    <span class="j-s">&quot;Output price indices are modelled from materials, plant and labour costs plus a profit mark-up. They are a proxy for output prices, not a tender price index, and can lag tender prices after market shocks.&quot;</span>,
+    <span class="j-s">&quot;No regional series is published, so a location factor has to be supplied separately.&quot;</span>,
+    <span class="j-s">&quot;Recent months are provisional and can be revised for up to twelve months.&quot;</span>
+  ],
+  <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Office for National Statistics All new work index (2015=100): Dec 2021 121.7 to Jun 2026 150.9; location factors 1.00 to 1.00 (not adjusted); input £960.00 per m² GIFA at Dec 2021.&quot;</span>,
+  <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;indicative&quot;</span>,
+  <span class="j-k">&quot;status_note&quot;</span>: <span class="j-s">&quot;A first-pass figure for the cost manager to review. Not approved, and not a tender price.&quot;</span>,
+  <span class="j-k">&quot;history&quot;</span>: [
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;input&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;£960.00 per m² GIFA at Dec 2021, as supplied by the caller for Superstructure.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;index ratio&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;x 150.9 / 121.7 = x 1.239934 (All new work, released 2026-08-13).&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;location factors&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;x 1.00 / 1.00 (not adjusted).&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">4</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;result&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;£1,190.34 per m² GIFA at Jun 2026; displayed as £1,190.&quot;</span>
+    }
+  ],
+  <span class="j-k">&quot;source&quot;</span>: {
+    <span class="j-k">&quot;publisher&quot;</span>: <span class="j-s">&quot;Office for National Statistics&quot;</span>,
+    <span class="j-k">&quot;dataset&quot;</span>: <span class="j-s">&quot;Construction Output Price Indices (OPIs), Quarter 2 (April to June) 2026&quot;</span>,
+    <span class="j-k">&quot;released&quot;</span>: <span class="j-s">&quot;2026-08-13&quot;</span>,
+    <span class="j-k">&quot;licence&quot;</span>: <span class="j-s">&quot;Open Government Licence v3.0&quot;</span>,
+    <span class="j-k">&quot;url&quot;</span>: <span class="j-s">&quot;https://www.ons.gov.uk/businessindustryandtrade/constructionindustry/datasets/interimconstructionoutputpriceindices&quot;</span>,
+    <span class="j-k">&quot;attribution&quot;</span>: <span class="j-s">&quot;Source: Office for National Statistics, Construction output price indices, licensed under the Open Government Licence v3.0.&quot;</span>,
+    <span class="j-k">&quot;index_base&quot;</span>: <span class="j-s">&quot;2015=100&quot;</span>
+  }
+}</code></pre></details>
+</div>
+</div><!-- /pre:q-rebase --></div></section>
+                <section class="tabs__panel" id="q-bench" aria-label="Benchmark"><div id="q-bench-body"><!-- pre:q-bench --><div class="turn">
+  <p class="turn__who">The cost manager asks</p>
+  <p class="turn__ask">Is the furniture allowance (£140 per m²) reasonable for an office? No location adjustment.</p>
+  <p class="turn__who">The agent calls</p>
+  <div class="call">
+  <p class="call__head"><span class="call__label">tools/call</span> <code class="call__tool">get_benchmark</code></p>
+  <pre class="code call__args" data-args="{&quot;building_type&quot;:&quot;office&quot;,&quot;nrm1_group&quot;:4,&quot;to_month&quot;:&quot;2026-06&quot;,&quot;location_factor&quot;:1}"><code>{
+  <span class="j-k">&quot;building_type&quot;</span>: <span class="j-s">&quot;office&quot;</span>,
+  <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+  <span class="j-k">&quot;to_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+  <span class="j-k">&quot;location_factor&quot;</span>: <span class="j-n">1</span>
+}</code></pre>
+</div>
+  <p class="turn__who">The tool returns</p>
+  <div class="result" data-outcome="result">
+  <p class="result__figure"><span class="result__value">£43 to £94</span><span class="result__unit"> per m² GIFA, median £72</span></p>
+  <p class="result__sub">Office, fittings, furnishings and equipment (group 4), Jun 2026; 12 synthetic projects.</p>
+  <p class="result__compare">Compared on this page: the plan's L04 rate, £140 per m², sits above the range. A prompt to look at the line's basis, not a verdict.</p>
+  <dl class="prov">
+    <div class="prov__row"><dt>Basis</dt><dd>Synthetic elemental benchmark set (SYN-BENCH-2026, seed 20261104): 12 synthetic projects, low and high are the 10th and 90th percentiles, linear interpolation between order statistics, at Jun 2026; location factor 1.00 (not adjusted).</dd></div>
+    <div class="prov__row"><dt>Status</dt><dd><span class="status">Synthetic</span> Synthetic, soft range for context only; a cost manager decides what it means for this project.</dd></div>
+    <div class="prov__row"><dt>History</dt><dd><ol class="history"><li><span class="history__event">dataset</span> Synthetic elemental benchmark set (SYN-BENCH-2026), 12 synthetic office projects, each rebased by the generator to Jun 2026 with All new work.</li><li><span class="history__event">range</span> Low and high are the 10th and 90th percentiles, linear interpolation between order statistics: low £43.47, median £71.97, high £94.22 at Jun 2026.</li><li><span class="history__event">location factor</span> x 1.00 (not adjusted).</li></ol></dd></div>
+  </dl>
+  <details class="more"><summary>Text the model reads</summary><pre class="code code--text"><code>Synthetic range for office, fittings, furnishings and equipment (group 4) at Jun 2026: £43 to £94 per m² GIFA (median £72), from 12 synthetic projects.
+Basis: Synthetic elemental benchmark set (SYN-BENCH-2026, seed 20261104): 12 synthetic projects, low and high are the 10th and 90th percentiles, linear interpolation between order statistics, at Jun 2026; location factor 1.00 (not adjusted).
+Status: synthetic. Synthetic, soft range for context only; a cost manager decides what it means for this project.
+Caveats: Synthetic data made by a seeded generator to exercise the checks. It is not RLB, BCIS or market data, and it is not a target. A rate outside the range is a prompt for a reviewer to look at the basis, not evidence of an error.</code></pre></details>
+  <details class="more"><summary>Full structured result (JSON)</summary><pre class="code result-json"><code>{
+  <span class="j-k">&quot;building_type&quot;</span>: <span class="j-s">&quot;office&quot;</span>,
+  <span class="j-k">&quot;building_type_name&quot;</span>: <span class="j-s">&quot;Office&quot;</span>,
+  <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">4</span>,
+  <span class="j-k">&quot;group_name&quot;</span>: <span class="j-s">&quot;Fittings, furnishings and equipment&quot;</span>,
+  <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;GBP per m2 GIFA&quot;</span>,
+  <span class="j-k">&quot;month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+  <span class="j-k">&quot;range&quot;</span>: {
+    <span class="j-k">&quot;low&quot;</span>: <span class="j-n">43.47</span>,
+    <span class="j-k">&quot;median&quot;</span>: <span class="j-n">71.97</span>,
+    <span class="j-k">&quot;high&quot;</span>: <span class="j-n">94.22</span>,
+    <span class="j-k">&quot;mean&quot;</span>: <span class="j-n">70.13</span>,
+    <span class="j-k">&quot;project_count&quot;</span>: <span class="j-n">12</span>
+  },
+  <span class="j-k">&quot;display&quot;</span>: <span class="j-s">&quot;£43 to £94 per m² GIFA (median £72)&quot;</span>,
+  <span class="j-k">&quot;dataset&quot;</span>: {
+    <span class="j-k">&quot;id&quot;</span>: <span class="j-s">&quot;SYN-BENCH-2026&quot;</span>,
+    <span class="j-k">&quot;name&quot;</span>: <span class="j-s">&quot;Synthetic elemental benchmark set&quot;</span>,
+    <span class="j-k">&quot;synthetic&quot;</span>: <span class="j-l">true</span>,
+    <span class="j-k">&quot;seed&quot;</span>: <span class="j-n">20261104</span>,
+    <span class="j-k">&quot;generator&quot;</span>: <span class="j-s">&quot;tools/generate_synthetic.mjs&quot;</span>,
+    <span class="j-k">&quot;base_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>
+  },
+  <span class="j-k">&quot;rebased&quot;</span>: {
+    <span class="j-k">&quot;applied&quot;</span>: <span class="j-l">false</span>,
+    <span class="j-k">&quot;from_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+    <span class="j-k">&quot;to_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+    <span class="j-k">&quot;series_id&quot;</span>: <span class="j-s">&quot;all_new_work&quot;</span>,
+    <span class="j-k">&quot;ratio&quot;</span>: <span class="j-n">1</span>
+  },
+  <span class="j-k">&quot;location&quot;</span>: {
+    <span class="j-k">&quot;factor&quot;</span>: <span class="j-n">1</span>,
+    <span class="j-k">&quot;note&quot;</span>: <span class="j-s">&quot;1.00: not adjusted for location. No free UK location factor series is published (the ONS indices have no regional split); a licensed or in-house factor should be stated if location matters.&quot;</span>
+  },
+  <span class="j-k">&quot;percentile_method&quot;</span>: <span class="j-s">&quot;Low and high are the 10th and 90th percentiles, linear interpolation between order statistics&quot;</span>,
+  <span class="j-k">&quot;caveats&quot;</span>: [
+    <span class="j-s">&quot;Synthetic data made by a seeded generator to exercise the checks. It is not RLB, BCIS or market data, and it is not a target.&quot;</span>,
+    <span class="j-s">&quot;A rate outside the range is a prompt for a reviewer to look at the basis, not evidence of an error.&quot;</span>
+  ],
+  <span class="j-k">&quot;basis&quot;</span>: <span class="j-s">&quot;Synthetic elemental benchmark set (SYN-BENCH-2026, seed 20261104): 12 synthetic projects, low and high are the 10th and 90th percentiles, linear interpolation between order statistics, at Jun 2026; location factor 1.00 (not adjusted).&quot;</span>,
+  <span class="j-k">&quot;status&quot;</span>: <span class="j-s">&quot;synthetic&quot;</span>,
+  <span class="j-k">&quot;status_note&quot;</span>: <span class="j-s">&quot;Synthetic, soft range for context only; a cost manager decides what it means for this project.&quot;</span>,
+  <span class="j-k">&quot;history&quot;</span>: [
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">1</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;dataset&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;Synthetic elemental benchmark set (SYN-BENCH-2026), 12 synthetic office projects, each rebased by the generator to Jun 2026 with All new work.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">2</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;range&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;Low and high are the 10th and 90th percentiles, linear interpolation between order statistics: low £43.47, median £71.97, high £94.22 at Jun 2026.&quot;</span>
+    },
+    {
+      <span class="j-k">&quot;step&quot;</span>: <span class="j-n">3</span>,
+      <span class="j-k">&quot;event&quot;</span>: <span class="j-s">&quot;location factor&quot;</span>,
+      <span class="j-k">&quot;detail&quot;</span>: <span class="j-s">&quot;x 1.00 (not adjusted).&quot;</span>
+    }
+  ]
+}</code></pre></details>
+</div>
+</div><!-- /pre:q-bench --></div></section>
+                <section class="tabs__panel" id="q-refuse" aria-label="A refusal"><div id="q-refuse-body"><!-- pre:q-refuse --><div class="turn">
+  <p class="turn__who">The cost manager asks</p>
+  <p class="turn__ask">Rebase the 14 per cent preliminaries to Jun 2026 as well.</p>
+  <p class="turn__who">The agent calls</p>
+  <div class="call">
+  <p class="call__head"><span class="call__label">tools/call</span> <code class="call__tool">rebase_rate</code></p>
+  <pre class="code call__args" data-args="{&quot;rate&quot;:14,&quot;unit&quot;:&quot;percent&quot;,&quot;nrm1_group&quot;:9,&quot;from_month&quot;:&quot;2021-12&quot;,&quot;to_month&quot;:&quot;2026-06&quot;,&quot;from_location_factor&quot;:1,&quot;to_location_factor&quot;:1}"><code>{
+  <span class="j-k">&quot;rate&quot;</span>: <span class="j-n">14</span>,
+  <span class="j-k">&quot;unit&quot;</span>: <span class="j-s">&quot;percent&quot;</span>,
+  <span class="j-k">&quot;nrm1_group&quot;</span>: <span class="j-n">9</span>,
+  <span class="j-k">&quot;from_month&quot;</span>: <span class="j-s">&quot;2021-12&quot;</span>,
+  <span class="j-k">&quot;to_month&quot;</span>: <span class="j-s">&quot;2026-06&quot;</span>,
+  <span class="j-k">&quot;from_location_factor&quot;</span>: <span class="j-n">1</span>,
+  <span class="j-k">&quot;to_location_factor&quot;</span>: <span class="j-n">1</span>
+}</code></pre>
+</div>
+  <p class="turn__who">The tool returns</p>
+  <div class="result result--refusal" data-outcome="refusal">
+  <p class="result__tag"><span class="tag tag--refusal">Refused</span> <code>percentage_addition</code></p>
+  <p class="result__reason">A percentage is not rebased. Percentage additions (preliminaries, overheads and profit, fees, risk, inflation) update themselves when the percentage is applied to the rebased rates (NRM 1 section 2.10).</p>
+  <p class="result__next"><strong>Next step:</strong> Rebase the element rates, then apply the same percentage to the new total.</p>
+  <details class="more"><summary>Text the model reads</summary><pre class="code code--text"><code>Refused (percentage_addition): A percentage is not rebased. Percentage additions (preliminaries, overheads and profit, fees, risk, inflation) update themselves when the percentage is applied to the rebased rates (NRM 1 section 2.10). Next step: Rebase the element rates, then apply the same percentage to the new total.</code></pre></details>
+  
+</div>
+</div><!-- /pre:q-refuse --></div></section>
+                <section class="tabs__panel" id="q-review" aria-label="Consultant review">
+                  <div class="turn">
+                    <p class="turn__who">The cost manager reviews</p>
+                    <p class="turn__ask turn__ask--plain">Each item from the check, with a decision. The agent cannot make these, and nothing here approves the plan.</p>
+                    <div id="q-review-body"><!-- pre:q-review --><ol class="review"><li class="review__row">
+      <label for="rv-F01"><span class="tag tag--check">To confirm</span> <span class="item__id">F01</span> L01: Line total does not match rate x GIFA</label>
+      <select id="rv-F01" data-review="L01:arithmetic"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li><li class="review__row">
+      <label for="rv-F02"><span class="tag tag--check">To confirm</span> <span class="item__id">F02</span> L03: Inflation may be counted twice</label>
+      <select id="rv-F02" data-review="L03:inflation_double_count"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li><li class="review__row">
+      <label for="rv-F03"><span class="tag tag--check">To confirm</span> <span class="item__id">F03</span> L09: Percentage base to confirm</label>
+      <select id="rv-F03" data-review="L09:percentage_base"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li><li class="review__row">
+      <label for="rv-F04"><span class="tag tag--review">Needs a judgement</span> <span class="item__id">F04</span> L02: Rate is older than the estimate base date</label>
+      <select id="rv-F04" data-review="L02:base_date"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li><li class="review__row">
+      <label for="rv-F05"><span class="tag tag--review">Needs a judgement</span> <span class="item__id">F05</span> L05: Basis too vague to trace</label>
+      <select id="rv-F05" data-review="L05:basis"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li><li class="review__row">
+      <label for="rv-F06"><span class="tag tag--note">Soft note</span> <span class="item__id">F06</span> L04: Outside the synthetic range (soft)</label>
+      <select id="rv-F06" data-review="L04:benchmark_range"><option value="" selected>Not reviewed yet</option><option value="correct">Correct the plan</option><option value="accept">Accept as stated, with a note</option><option value="query">Query with the design team</option></select>
+    </li></ol>
+  <p class="review__summary" data-review-summary>0 of 6 items reviewed by the cost manager on this page. The plan is approved in the cost system by a named person, not by the agent: the server has no approve, edit or send tool.</p><!-- /pre:q-review --></div>
+                  </div>
+                </section>
+              </div>
+              <p class="visually-hidden" id="wt-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="plugs" aria-labelledby="plugs-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="label">How it plugs in</p>
+          <h2 id="plugs-title">From a question in Teams to an answer a cost manager can trace</h2>
+        </div>
+        <ol class="flow">
+          <li class="flow__box"><span class="flow__k">Agent</span><span class="flow__t">Copilot Studio</span><span class="flow__d">Generative orchestration on; SharePoint method notes as knowledge, numbers only from tools.</span></li>
+          <li class="flow__box"><span class="flow__k">Protocol</span><span class="flow__t">MCP over Streamable HTTP</span><span class="flow__d">One stateless <code>POST /mcp</code>; a token for testing, Entra ID for production.</span></li>
+          <li class="flow__box"><span class="flow__k">Tools</span><span class="flow__t">This server</span><span class="flow__d">Check a plan, rebase a rate, a synthetic benchmark. Read-only.</span></li>
+          <li class="flow__box"><span class="flow__k">Data</span><span class="flow__t">Indices and plans</span><span class="flow__d">ONS output price indices; synthetic benchmarks and plans. A firm's own index plugs in as a file.</span></li>
+          <li class="flow__box flow__box--end"><span class="flow__k">Answer</span><span class="flow__t">With provenance, then review</span><span class="flow__d">Basis, status and history in words. A named cost manager approves, outside the agent.</span></li>
+        </ol>
+        <p class="boundary"><strong>Security boundary:</strong> tools read bundled data and make no network calls; Host, Origin, rate limit and token are checked before a request body is read; approval stays with a person.</p>
+        <p><a class="btn" href="build.html">Open the build guide</a></p>
+      </div>
+    </section>
+
+    <section class="section" id="background" aria-labelledby="bg-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="label">Background that fits</p>
+          <h2 id="bg-title">What I have built before</h2>
+        </div>
+        <ul class="bg" data-fact="hv">
+          <li>At MTest Labs I built a multi-agent test-design tool grounded in the firm's own test library and issue logs, with a conversational assistant over the firm's knowledge. Test design went from <span class="nowrap">an 8-hour day,</span> or <span class="nowrap">2 to 3 days,</span> to <span class="nowrap">1 to 3 supervised hours;</span> a tester approves every case, and I trained the team.</li>
+          <li>At Atelier di Venice I built dozens of automated workflows across operations, marketing and finance through low-code automation and APIs.</li>
+          <li>I have used n8n for over a year, and I build in JavaScript and Python, with SharePoint and <span class="nowrap">Microsoft 365</span> integration.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="contact" aria-labelledby="contact-title">
+      <div class="wrap contact">
+        <div class="contact__head">
+          <p class="label">Contact</p>
+          <h2 id="contact-title">Happy to walk through the code</h2>
+        </div>
+        <ul class="contact__list">
+          <li><a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a></li>
+          <li><a href="tel:+447553909828">+44 7553 909828</a></li>
+          <li><a href="build.html">Build guide</a> and <a href="downloads/cost-plan-check-pack.zip">the pack</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p class="site-footer__disclaimer">Prepared by Hemanth Vallamkonda as part of an application to Rider Levett Bucknall. Independent and illustrative; uses public information only.</p>
+      <p><a href="mailto:vallamkondahemanth@gmail.com">vallamkondahemanth@gmail.com</a> · <a href="tel:+447553909828">+44 7553 909828</a> · Right to work in the UK; no sponsorship required.</p>
+      <p>Not affiliated with or endorsed by Rider Levett Bucknall. ONS data under the Open Government Licence v3.0. Fonts: Montserrat and JetBrains Mono (SIL Open Font License).</p>
+    </div>
+  </footer>
+</body>
+</html>

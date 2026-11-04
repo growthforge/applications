@@ -1,0 +1,155 @@
+{
+ "plan_id": "PLAN-OFF-01",
+ "title": "Synthetic office scheme, Stage 2 cost plan",
+ "synthetic": true,
+ "building_type": "office",
+ "gifa_m2": 8400,
+ "estimate_base_date": "2026-06",
+ "lines": [
+  {
+   "ref": "L00",
+   "nrm1_group": 0,
+   "description": "Facilitating works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 38,
+   "total": 319200,
+   "basis": "Desk study allowance for site clearance, Jun 2026 (synthetic)",
+   "status": "allowance",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L01",
+   "nrm1_group": 1,
+   "description": "Substructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 285,
+   "total": 2349000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L02",
+   "nrm1_group": 2,
+   "description": "Superstructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 960,
+   "total": 8064000,
+   "basis": "Synthetic benchmark set, office median at Dec 2021",
+   "status": "benchmark",
+   "rate_base_date": "2021-12"
+  },
+  {
+   "ref": "L03",
+   "nrm1_group": 3,
+   "description": "Internal finishes",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 235,
+   "total": 1974000,
+   "basis": "Synthetic benchmark rate including forecast inflation to Jun 2027",
+   "status": "benchmark",
+   "rate_base_date": "2026-06",
+   "rebased_to": "2027-06"
+  },
+  {
+   "ref": "L04",
+   "nrm1_group": 4,
+   "description": "Fittings, furnishings and equipment",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 140,
+   "total": 1176000,
+   "basis": "Client brief allowance for loose furniture, Jun 2026 (synthetic)",
+   "status": "allowance",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L05",
+   "nrm1_group": 5,
+   "description": "Services",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 905,
+   "total": 7602000,
+   "basis": "TBC",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L08",
+   "nrm1_group": 8,
+   "description": "External works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 150,
+   "total": 1260000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L09",
+   "nrm1_group": 9,
+   "description": "Main contractor's preliminaries",
+   "unit": "percent",
+   "percentage": 14,
+   "applied_to": "groups_1_to_8",
+   "total": 3139500,
+   "basis": "Preliminaries at 14 per cent of the works (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L10",
+   "nrm1_group": 10,
+   "description": "Main contractor's overheads and profit",
+   "unit": "percent",
+   "percentage": 6,
+   "applied_to": "groups_0_to_9",
+   "total": 1553022,
+   "basis": "Overheads and profit at 6 per cent (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L11",
+   "nrm1_group": 11,
+   "description": "Project and design team fees",
+   "unit": "percent",
+   "percentage": 9,
+   "applied_to": "groups_0_to_10",
+   "total": 2469305,
+   "basis": "Consultant fees at 9 per cent of the works cost estimate (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L12",
+   "nrm1_group": 12,
+   "description": "Other project costs",
+   "unit": "lump_sum",
+   "total": 180000,
+   "basis": "Surveys, planning and legal costs, client schedule Jun 2026 (synthetic)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L13",
+   "nrm1_group": 13,
+   "description": "Risks",
+   "unit": "percent",
+   "percentage": 7.5,
+   "applied_to": "groups_0_to_12",
+   "total": 2256452,
+   "basis": "Design development and construction risk from the synthetic risk register",
+   "status": "allowance"
+  },
+  {
+   "ref": "L14",
+   "nrm1_group": 14,
+   "description": "Inflation",
+   "unit": "percent",
+   "percentage": 4.5,
+   "applied_to": "groups_0_to_13",
+   "total": 1455412,
+   "basis": "Tender and construction inflation to the construction midpoint (synthetic forecast)",
+   "status": "allowance",
+   "inflation_from": "2026-06",
+   "inflation_to": "2027-09"
+  }
+ ],
+ "stated_total": 33797891
+}

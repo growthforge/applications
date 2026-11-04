@@ -1,0 +1,37 @@
+{
+  "name": "cost-plan-check-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Read-only MCP server for first-pass checks of UK elemental cost plans: arithmetic, basis, base dates, percentage additions, inflation and a soft synthetic benchmark range. Designed for Copilot Studio (Streamable HTTP); also serves local clients over stdio.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "server/http.js",
+  "bin": {
+    "cost-plan-check-stdio": "server/stdio.js"
+  },
+  "scripts": {
+    "start": "node server/http.js",
+    "start:stdio": "node server/stdio.js",
+    "test": "node --test --test-reporter=spec test/core.test.js test/evaluation.test.js test/schema.test.js test/integration.test.js",
+    "test:unit": "node --test --test-reporter=spec test/core.test.js test/evaluation.test.js",
+    "test:schema": "node --test --test-reporter=spec test/schema.test.js",
+    "test:integration": "node --test --test-reporter=spec test/integration.test.js",
+    "test:curl": "bash test/curl.sh",
+    "inspect": "bash test/inspector.sh",
+    "typecheck": "tsc -p tsconfig.json",
+    "data:check": "node tools/generate_synthetic.mjs --check"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "2.1.2",
+    "@modelcontextprotocol/server": "2.4.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@types/node": "22.20.5",
+    "typescript": "6.0.3"
+  }
+}

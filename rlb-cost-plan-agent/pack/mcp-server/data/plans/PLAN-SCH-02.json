@@ -1,0 +1,145 @@
+{
+ "plan_id": "PLAN-SCH-02",
+ "title": "Synthetic secondary school, Stage 3 cost plan",
+ "synthetic": true,
+ "building_type": "school",
+ "gifa_m2": 12000,
+ "estimate_base_date": "2026-03",
+ "lines": [
+  {
+   "ref": "L00",
+   "nrm1_group": 0,
+   "description": "Facilitating works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 30,
+   "total": 360000,
+   "basis": "Site investigation report allowance, Mar 2026 (synthetic)",
+   "status": "allowance",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L01",
+   "nrm1_group": 1,
+   "description": "Substructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 225,
+   "total": 2700000,
+   "basis": "Measured approximate quantities priced at Mar 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L02",
+   "nrm1_group": 2,
+   "description": "Superstructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 975,
+   "total": 11700000,
+   "basis": "Measured approximate quantities priced at Mar 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L03",
+   "nrm1_group": 3,
+   "description": "Internal finishes",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 205,
+   "total": 2460000,
+   "basis": "Measured approximate quantities priced at Mar 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L04",
+   "nrm1_group": 4,
+   "description": "Fittings, furnishings and equipment",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 115,
+   "total": 1380000,
+   "basis": "Department schedule of loose and fixed equipment, Mar 2026 (synthetic)",
+   "status": "allowance",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L05",
+   "nrm1_group": 5,
+   "description": "Services",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 765,
+   "total": 9180000,
+   "basis": "MEP consultant cost plan, Mar 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L08",
+   "nrm1_group": 8,
+   "description": "External works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 255,
+   "total": 3060000,
+   "basis": "Measured approximate quantities priced at Mar 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-03"
+  },
+  {
+   "ref": "L09",
+   "nrm1_group": 9,
+   "description": "Main contractor's preliminaries",
+   "unit": "lump_sum",
+   "total": 2150000,
+   "basis": "Preliminaries from a 2024 tender, indexed to Mar 2026 (synthetic)",
+   "status": "tendered",
+   "rate_base_date": "2024-03",
+   "rebased_to": "2026-03"
+  },
+  {
+   "ref": "L10",
+   "nrm1_group": 10,
+   "description": "Main contractor's overheads and profit",
+   "unit": "percent",
+   "percentage": 5.5,
+   "applied_to": "groups_0_to_8",
+   "total": 1696200,
+   "basis": "Overheads and profit at 5.5 per cent (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L11",
+   "nrm1_group": 11,
+   "description": "Project and design team fees",
+   "unit": "percent",
+   "percentage": 8,
+   "applied_to": "groups_0_to_10",
+   "total": 2774896,
+   "basis": "Consultant fees at 8 per cent of the works cost estimate (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L13",
+   "nrm1_group": 13,
+   "description": "Risks",
+   "unit": "percent",
+   "percentage": 6,
+   "applied_to": "groups_0_to_12",
+   "total": 2247666,
+   "basis": "Risk allowance from the synthetic risk register, Mar 2026",
+   "status": "allowance"
+  },
+  {
+   "ref": "L14",
+   "nrm1_group": 14,
+   "description": "Inflation",
+   "unit": "percent",
+   "percentage": 6.8,
+   "applied_to": "groups_0_to_13",
+   "total": 2700196,
+   "basis": "Inflation from the 2024 tender date to the construction midpoint (synthetic forecast)",
+   "status": "allowance",
+   "inflation_from": "2024-03",
+   "inflation_to": "2027-06"
+  }
+ ],
+ "stated_total": 42408958
+}

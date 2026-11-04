@@ -1,0 +1,134 @@
+{
+ "plan_id": "PLAN-WHS-03",
+ "title": "Synthetic distribution warehouse, Stage 2 cost plan",
+ "synthetic": true,
+ "building_type": "warehouse",
+ "gifa_m2": 24000,
+ "estimate_base_date": "2026-06",
+ "lines": [
+  {
+   "ref": "L00",
+   "nrm1_group": 0,
+   "description": "Facilitating works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 28,
+   "total": 672000,
+   "basis": "Earthworks allowance from the synthetic site appraisal, Jun 2026",
+   "status": "allowance",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L01",
+   "nrm1_group": 1,
+   "description": "Substructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 182,
+   "total": 4368000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L02",
+   "nrm1_group": 2,
+   "description": "Superstructure",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 615,
+   "total": 14760000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L03",
+   "nrm1_group": 3,
+   "description": "Internal finishes",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 40,
+   "total": 960000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L05",
+   "nrm1_group": 5,
+   "description": "Services",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 212,
+   "total": 5088000,
+   "basis": "MEP consultant cost plan, Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L08",
+   "nrm1_group": 8,
+   "description": "External works",
+   "unit": "per_m2_gifa",
+   "rate_per_m2": 236,
+   "total": 5664000,
+   "basis": "Measured approximate quantities priced at Jun 2026 (synthetic)",
+   "status": "measured_estimate",
+   "rate_base_date": "2026-06"
+  },
+  {
+   "ref": "L09",
+   "nrm1_group": 9,
+   "description": "Main contractor's preliminaries",
+   "unit": "percent",
+   "percentage": 12,
+   "applied_to": "groups_0_to_8",
+   "total": 3781440,
+   "basis": "Preliminaries at 12 per cent of the works (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L10",
+   "nrm1_group": 10,
+   "description": "Main contractor's overheads and profit",
+   "unit": "percent",
+   "percentage": 5,
+   "applied_to": "groups_0_to_9",
+   "total": 1764672,
+   "basis": "Overheads and profit at 5 per cent (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L11",
+   "nrm1_group": 11,
+   "description": "Project and design team fees",
+   "unit": "percent",
+   "percentage": 7,
+   "applied_to": "groups_0_to_10",
+   "total": 2594068,
+   "basis": "Consultant fees at 7 per cent of the works cost estimate (synthetic assumption)",
+   "status": "allowance"
+  },
+  {
+   "ref": "L13",
+   "nrm1_group": 13,
+   "description": "Risks",
+   "unit": "percent",
+   "percentage": 5,
+   "applied_to": "groups_0_to_12",
+   "total": 1982609,
+   "basis": "Risk allowance from the synthetic risk register, Jun 2026",
+   "status": "allowance"
+  },
+  {
+   "ref": "L14",
+   "nrm1_group": 14,
+   "description": "Inflation",
+   "unit": "percent",
+   "percentage": 3.8,
+   "applied_to": "groups_0_to_13",
+   "total": 1582122,
+   "basis": "Tender and construction inflation from Jun 2026 to the construction midpoint (synthetic forecast)",
+   "status": "allowance",
+   "inflation_from": "2026-06",
+   "inflation_to": "2027-06"
+  }
+ ],
+ "stated_total": 43216911
+}
